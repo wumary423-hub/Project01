@@ -1,10 +1,14 @@
 # SmallSailer01 — Canonical Ship Design
 
-Status: **Stage 2.6.1 main-rig selection substantially locked; Headsail retrofit pending program-interface approval**  
+Status: **Stage 2.6.1 locked for phase-one production; program contract V0.1.1 synchronized**  
 Working name: **`SmallSailer01`**  
 Catalog mapping: final `ShipTypeId` to be assigned at UE hookup.
 
-This document is the art/design source for the first workflow ship. Program interfaces are governed by `.cursor/rules/ship-system.mdc` and `Docs/Ship/ShipAssetContract.md`. Where this design proposes an interface not yet accepted by program, it is explicitly marked **pending program approval** and must not silently override the locked contract.
+Authority order:
+
+> `.cursor/rules/ship-system.mdc` > `Docs/Ship/ShipAssetContract.md` > `Docs/Ship/SmallSailer01.md`
+
+This document is the art/design source for the first workflow ship. Program interfaces follow `.cursor/rules/ship-system.mdc`; shared delivery details follow `Docs/Ship/ShipAssetContract.md`.
 
 ## 1. Gameplay role
 
@@ -94,6 +98,7 @@ Bow / work area
 - clean, restrained structure;
 - figurehead mount at bow/stem body;
 - one stowed anchor;
+- one program-approved optional Headsail retrofit position at the bow;
 - no over-detailed decorative clutter.
 
 ### Mast
@@ -133,7 +138,7 @@ The ship asset's standing/running rigging is **visual only**.
 - do not spend modeling time on tiny knots, numerous blocks or dense rope networks;
 - future boarding/swing ropes are a separate gameplay asset family.
 
-## 9. Sail-slot and RigType design — Stage 2.6.1
+## 9. Sail-slot and RigType design — Stage 2.6.1 LOCKED
 
 ### 9.1 Slot model
 
@@ -150,7 +155,7 @@ General ship-system design separates **slot position** from **sail/rig type**:
 - a mizzen is still a MastRig slot, not an independent fourth slot category;
 - upper sails / topsails do not create separate gameplay slots; they are part of the same MastRig package;
 - future `StaySail_*` slots live between masts;
-- future `Headsail_*` slots live in the bow/bowsprit region.
+- `Headsail_*` slots live in the bow/bowsprit region.
 
 ### 9.2 RigTypes supported by the hull design
 
@@ -164,18 +169,18 @@ Gaff
 
 These are alternate main-rig configurations for the same `MastRig_01` position. Changing RigType changes the full visible rig package, not merely a texture or numeric stat.
 
-### 9.3 Phase-one resource production
+### 9.3 Phase-one resource production — LOCKED
 
-**Phase one will produce both:**
+Phase one produces both:
 
 ```text
 Square
 Lateen
 ```
 
-Each requires its own complete Full / Half / Furled triplet so the first workflow can test **sail refit / MastRig replacement** as well as state switching.
+Each requires its own complete Full / Half / Furled triplet so the first workflow can test **main-rig refit / MastRig replacement** as well as state switching.
 
-Planned naming after program/catalog paths are updated:
+Production names:
 
 ```text
 SM_SmallSailer01_MastRig01_Square_Full
@@ -187,41 +192,42 @@ SM_SmallSailer01_MastRig01_Lateen_Half
 SM_SmallSailer01_MastRig01_Lateen_Furled
 ```
 
-Until the program-side V0.1 `TBD` naming/catalog rule is explicitly updated, resource working/export files may continue using the contract-approved `TBD` placeholder during intermediate production. Do not silently break the program contract.
+`MastRig01_TBD_*` is no longer the production naming rule; it may appear only on intermediate work before final rename.
 
-`Gaff` remains a supported future RigType but is **not required in the first production batch**.
+`Gaff` remains compatible with the hull/design system but is **not produced in phase one**.
 
 ### 9.4 Starter configuration
 
-The fallback/starter ship is **not required to expose every supported rig or auxiliary sail at game start**. Availability/unlock is gameplay configuration, not a hull-geometry limitation.
+The fallback/starter ship does not expose every supported sail option at game start.
 
-The exact default starter main RigType (Square vs Lateen) may be selected in gameplay/catalog configuration after both resource variants exist; it does not block production of either rig set.
+- exact starter main RigType (`Square` vs `Lateen`) remains a gameplay/catalog choice after both resource variants exist;
+- starter/fallback configuration has **no Headsail mesh equipped**;
+- supported but unequipped does not mean unsupported by the hull.
 
-### 9.5 Headsail retrofit — design-approved, program interface pending
+### 9.5 Headsail retrofit — PROGRAM APPROVED V0.1.1
 
-Design decision:
-
-- `SmallSailer01` may support **one optional Headsail/Jib retrofit**;
-- the free starter/fallback configuration does **not** have the Headsail installed;
-- intended gameplay pacing: player may gain/install the Headsail after roughly the first ~20 minutes of play;
-- this gives the first ship an early, visible upgrade and allows testing the sail-refit workflow beyond swapping the main MastRig.
-
-**Important:** current program V0.1 contract explicitly excludes Headsail on the first ship. Therefore the following remains a **proposal pending program-side approval/rule update**:
+`SmallSailer01` supports one optional Headsail/Jib retrofit through:
 
 ```text
 Attach_Headsail_01
-Headsail_01 visual asset/state set
 ```
 
-Do not add this socket to the authoritative delivery/Validate list until `.cursor/rules/ship-system.mdc` is updated by the program side.
+Design and program rules:
 
-Recommended resource behavior if/when approved:
+- `Attach_Headsail_01` lives on the Hull;
+- starter/fallback configuration has no Headsail child mesh;
+- intended gameplay pacing is an early visible upgrade, roughly around the first ~20 minutes of play;
+- Headsail remains independent of `MastRig_01`, so installing/removing it does not require replacing the main-rig package;
+- this slice tests visual/refit workflow only; no Headsail performance Modifier is required yet;
+- resource side handles mesh, pivot and visual states; availability/unlock/data logic belongs to program/gameplay.
 
-- one bow Headsail slot;
-- Jib-style triangular auxiliary sail;
-- independent of `MastRig_01` so it can be absent on the starter configuration and installed later;
-- resource side handles Mesh / pivot / visual state only;
-- gameplay performance modifiers, availability and unlock timing are program/data concerns.
+When produced, use:
+
+```text
+SM_SmallSailer01_Headsail01_Full
+SM_SmallSailer01_Headsail01_Half
+SM_SmallSailer01_Headsail01_Furled
+```
 
 ### 9.6 Sail-state presentation
 
@@ -240,7 +246,7 @@ Each state is a whole MastRig package containing mast + main spars/yards + sail 
 - first ship has **one** flag position;
 - position is at the mast top;
 - flag is a separate replaceable mesh;
-- `Attach_Flag` lives on each active MastRig state mesh;
+- `Attach_Flag` lives on every produced active MastRig state mesh;
 - mast down → hide flag.
 
 Flag artwork itself may remain a placeholder during the first workflow.
@@ -347,10 +353,12 @@ It must preserve the same ship identity as the 3D asset, especially:
 
 - one mast;
 - one deck level;
-- currently equipped main RigType silhouette where the UI design chooses to reflect loadout;
+- the represented main RigType silhouette;
 - hull proportion and fullness;
 - bow and stern character;
 - cargo-hold / major-space logic.
+
+The starter diagram/loadout may omit the optional Headsail even though the hull supports the retrofit.
 
 ## 15. First-workflow success criteria
 
@@ -367,7 +375,7 @@ Concept Design
 → Lateen MastRig Full/Half/Furled
 → main-rig refit test
 → modular attachments
-→ optional Headsail retrofit after program interface approval
+→ Headsail retrofit interface / asset test
 → damage presentation
 → LOD / Collision / Pivot / Scale
 → FBX
