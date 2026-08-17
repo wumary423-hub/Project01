@@ -1,0 +1,334 @@
+---
+description: Ship system design lock — instances, composition, flagship mesh
+alwaysApply: true
+---
+
+# Ship system (design lock)
+
+Status: **v0 composition + catalog + flagship outfit UI** — ship instances + in-port fleet compose + flagship mesh + `DT_Ships` + port **改装** schematic. No build rules, ship trade, 改造, or 改装 stats.
+
+## Role
+
+- **船** = world entity (`UShipObject` in `UShipManagerSubsystem`).
+- At sea the unit of presence is always **Fleet**. No `AShip`. A one-ship group still appears as a fleet.
+- `AFleet` mesh = **flagship** catalog mesh. Flagship is designated on the fleet (`FlagshipShipId`), not stored as a second truth on the ship.
+
+## Architecture
+
+| Piece | Path / type |
+|----|-----|
+| Object | `UShipObject` — `Source/.../Ship/` |
+| Manager | `UShipManagerSubsystem` |
+| Settings | `UShipManagerSettings` |
+| Types | `ShipTypes.h` (`Ship_<N>`, `ShipType_TempCog` / `TempCaravel` / `TempCarrack`) |
+| Catalog | `DT_Ships` / `FShipDefinition` — `Content/Ship/` |
+| Tools | `Tools/CreateShipsDataTable.py` → `/Game/Ship/DT_Ships` |
+| UI | city port `UCityPortWidget` + `UFleetManagementWidget` + flagship outfit `UShipOutfitWidget` under city panel |
+| Save | `FShipSaveData` in `SaveTypes.h` (schema **v7**) |
+
+Logic only at sea — **no `AShip`**.
+
+## Ids & identity
+
+- Ship Id: `Ship_<序号>` (serial). Fleet Id: `Fleet_<序号>`. **No** `Fleet_Player_*` as a player mark.
+- Player command: `UFleetManagerSubsystem::PlayerCommandedFleetId`.
+- Player company ownership: `OwnerCompanyId == Company_Player`.
+- Pre-company: `OwnerCharacterId ==` player character (ships and fleets).
+- Company still uses reserved Id `Company_Player`.
+
+## Instance fields
+
+| Field | Lock |
+|----|-----|
+| `ShipId` / `ShipTypeId` / `DisplayName` | Serial id; catalog type; numbered placeholder name |
+| `OwnerCompanyId` / `OwnerCharacterId` | Company / pre-company player; both none = for-sale (later) |
+| `FleetId` | Empty = ungrouped |
+| `HostCityId` | Ungrouped → that city's **harbor**. Shipyard-finished ships also go to harbor. `Berth` not in v0 |
+
+Catalog `FShipDefinition` in **`DT_Ships`**: type id, display name, mesh, `BaseSpeed`, `BaseStrength`. Instance does not store speed/strength. Placeholder rows: `ShipType_TempCog` (柯克, claim hull), `ShipType_TempCaravel` (卡拉维尔, `Ship2` mesh), `ShipType_TempCarrack` (克拉克, temp reuse Cog mesh). Missing table → built-in Cog fallback. Edit hulls in the DataTable, not C++. Rebuild rows: `Tools/CreateShipsDataTable.py`.
+
+## Ungrouped / ownership
+
+- Not in a fleet → must sit in a city harbor (exceptions later).
+- Company-paid build → company owns (build later). Claimed starter → player character; founding company transfers those ships into `Company_Player`.
+- Dissolve fleet only **in port**; ships stay company-owned at local harbor. Harbor cap later (infinite now).
+
+## Composition (in port)
+
+- City panel → 港口 → 港口 UI → 舰队管理.
+- Layout: two columns (ships | personnel). Flagship slot and commander slot pinned top, highlighted. Overlay replaces the columns for fleet list / edit ships / commander pick.
+- Fleet list: fleets **in this city**. `[+]` create; **Cancel = create nothing**. New-fleet draft pre-fills appointable player as commander and **ungrouped** harbor ships only (does not steal from other fleets).
+- Max ships per fleet **32** (temp).
+- Flagship slot fixed top; empty prompt: must designate flagship. Click a listed ship to set flagship (drag later).
+- Edit ships: this city, owner-available (including ships already in company/player fleets here). Toggle in/out of **current** draft; overlay Confirm writes the draft.
+- Personnel: **flagship posts only** (not one person per ship). Commander slot on top. Pool: company employees if founded; else player + companions.
+- **Confirm** atomic: reject if no flagship or no commander.
+- Reset restores draft. Cancel closes without write.
+- First successful player compose writes `PlayerCommandedFleetId` (later fleets do not steal command).
+- Stealing ships / commander / flagship from another **own** fleet leaves that fleet **illegal in port**. Do not auto-repair. Illegal: cannot leave port, cannot MoveTo, NpcAi will not dispatch.
+- At sea: may retarget flagship **within** the fleet (commander auto-moves to new flagship 舰长室). No add/remove ships (remove = abandon, later). Capture later if world positions match.
+
+## Flagship
+
+- Legal fleet: exactly one flagship. Illegal in-port fleets may have none.
+- Scene mesh always follows flagship when legal.
+- Sink with remaining ships: pause, designate immediately (player / AI).
+- Last ship sunk: fleet destroyed; survivors → HQ, or nearest port else London if no company. Claim-at-harbor is the wipe fallback (same as starter claim: eligible when player owns **zero** ships).
+
+## Derived fleet stats (v0)
+
+- Speed = slowest ship `BaseSpeed`.
+- Strength = sum of ship `BaseStrength`.
+- Officer modifiers later.
+
+## Posts
+
+- Command authority stays on fleet 司令.
+- v0: flagship 舰长室 occupant **is** 司令 (bridge extra 司令 slot later).
+- Other ships: no post assignment this slice.
+
+## Outfit UI (in port, v0)
+
+- City panel → 港口 → **改装** (`UShipOutfitWidget`). Close returns to port.
+- **No character 3D** on the fleet mesh. Posts use a **2D outfit schematic** + **avatar icons** on slot anchors (see **Outfit schematic** below).
+- Flagship schematic. **舰长室** (highlighted) = 司令. **甲板** = 水手长, **炮位** = 炮长, **制图室** = 领航员.
+- Click a staffed compartment → pick from the same appoint pool as compose; Confirm writes the live fleet post (not a compose draft). 司令 replace-only (no 卸任). Other posts may 卸任.
+- Locked placeholders: **瞭望塔**, **船帆**, **火炮配置** — no appoint, no stats.
+- Target fleet: player commanded fleet in this city, else first owned fleet here.
+- Does **not** create Facility `HostKind = Ship` objects this slice.
+
+## Outfit schematic (2D — character slots)
+
+**Split from 3D hull:** strategic map = `AFleet` + hull/sail/flag meshes. In-port **改装** = one **matching 2D diagram** per ship type + **named slot anchors** for icons. Diagram is **UI art**, not a StaticMesh socket.
+
+### Assets
+
+| Asset | Path / prefix | Notes |
+|-------|----------------|-------|
+| Diagram texture | `Content/UI/Ship/` or `Content/Ship/UI/` — `T_<ShipType>_OutfitDiagram` | **2048×1024**, transparent; runtime may downscale. **8–10%** safe margin |
+| WBP | `WBP_ShipOutfit` | Clean diagram — **no baked hotspot art**; slot widgets overlaid in Canvas |
+
+- One diagram **per `ShipTypeId`**. v0 slot positions: **WBP manual** (see **3D asset pipeline §2D**). Normalized coords in DataTable — **later**.
+- Resource may supply **reference** normalized slot coords (0–1); not authoritative until program stores them.
+
+### Slot ids (UI anchor names)
+
+Stable ids for WBP and code. Map to `EFleetPost` when appointable.
+
+| Slot id | 中文 | `EFleetPost` | v0 |
+|---------|------|--------------|-----|
+| `OutfitSlot_CaptainCabin` | 舰长室 | Commander | appoint |
+| `OutfitSlot_Deck` | 甲板 | Boatswain | appoint |
+| `OutfitSlot_GunDeck` | 炮位 | Gunner | appoint |
+| `OutfitSlot_ChartRoom` | 制图室 | Navigator | appoint |
+| `OutfitSlot_Lookout` | 瞭望塔 | — | locked |
+| `OutfitSlot_Sails` | 船帆 | — | locked (3D sail state is separate) |
+| `OutfitSlot_CannonRefit` | 火炮配置 | — | locked |
+
+Fallback C++ button ids (`CaptainCabin`, `Deck`, `ChartRoom`, `GunDeck`, `Lookout`, `Sails`, `CannonRefit`) map 1:1 to `OutfitSlot_*` above.
+
+### Slot presentation
+
+- **Empty:** clickable hotspot on diagram.
+- **Staffed:** Character **avatar icon** (persisted in save) + optional name; click → appoint overlay.
+- **Never** attach character meshes to hull `Attach_*` sockets.
+
+### 3D vs 2D
+
+| Layer | Content |
+|-------|---------|
+| 3D `AFleet` | Hull + `MastRig` packages (Furled/Half/Full), flag, figurehead, rudder, anchor, damage FX, optional weapons |
+| 2D diagram | Crew at posts — avatar icons on `OutfitSlot_*` |
+
+Diagram: **bow left**, side view + slight top-side perspective; must match 3D on mast count, deck levels, rig silhouette, hull proportion, bow/stern, major spaces. Pixel-perfect optional v0.
+
+## 3D asset pipeline (program ↔ art contract — **V0.1 LOCKED**)
+
+**Status (2026-08-17):** **Formal first-ship contract.** Resource side **follows program**; do **not** re-open interface structure without explicit Ruida decision + rule update. Iterate only via **V0.2** after first UE hookup if needed.
+
+**Authority:** program defines sockets, naming, Validate, Import; art satisfies the contract.
+
+**Workflow name vs catalog:** resource working name **`SmallSailer01`** may differ from catalog **`ShipTypeId`** / `DT_Ships` row until mapped — intentional; maintain an explicit mapping at UE hookup.
+
+**RigType (Stage 2.6.1 — only remaining unlock):** until locked, MastRig mesh files use **`TBD`** in the filename triplet, e.g. `SM_SmallSailer01_MastRig01_TBD_Full.fbx`. After rig type locks, **rename all three as a set** (`Square` / `Lateen` / `Gaff`). Do not hardcode rig type in Validate or C++ before lock.
+
+**Stage 2.7:** final Concept Design for SmallSailer01 must **directly feed mesh production** (not exploration-only art).
+
+### Locked interface summary (do not re-discuss for first ship)
+
+- Hull = `AFleet` root StaticMesh; **`Pontoon_*` ×4 required**
+- **`Attach_Sail_Main` deprecated** → **`Attach_MastRig_01`**
+- MastRig = **scheme A** whole-package StaticMesh ×3 (`Full` / `Half` / `Furled`)
+- **`Attach_Flag` on MastRig** (not Hull)
+- Hull sockets: Figurehead, Rudder, Anchor, FX fire, Broken mast, Weapon (×2) — weapon **mesh** optional v0.1
+- **Not first ship:** StaySail, Headsail, multi-mast slots, Crew Socket
+- Sockets authored in **UE Static Mesh Editor** v0; Validate reads **final UE StaticMesh**
+- 2D diagram: **2048×1024**, transparent, **bow left**, **no baked hotspots**; WBP manual slot placement v0
+
+### First workflow ship (SmallSailer01)
+
+~15m single-mast small trader (concept only — **no** program hard-check on 15m / tonnage). Strategic view priority: **mast count > deck levels > rig silhouette > hull outline > major parts > small decor**. Typical camera **50–200m**; no Crew Socket.
+
+### Asset split
+
+| Layer | Delivers |
+|-------|----------|
+| **3D** | Hull + per-ship-type modules (see below) |
+| **2D** | `T_<ShipType>_OutfitDiagram` — same type identity as 3D |
+
+Cargo holds: 3D may show empty hold structure only — **no** dynamic cargo meshes. Rigging: **visual only**; simplified; **not** shared with future boarding ropes.
+
+### Hull StaticMesh (`AFleet` root)
+
+`FShipDefinition.Mesh` → `AFleet::MeshComponent`. **One FBX → one UE StaticMesh** for v0 import.
+
+#### Required — float (Error if missing)
+
+| Socket | Placement |
+|--------|-----------|
+| `Pontoon_Bow` | Bow centerline, design waterline |
+| `Pontoon_Stern` | Stern centerline, waterline |
+| `Pontoon_Port` | Midships port, waterline |
+| `Pontoon_Starboard` | Midships starboard, waterline |
+
+#### Required on Hull — attach (Warning if missing on first-ship validate)
+
+| Socket | Notes |
+|--------|--------|
+| `Attach_MastRig_01` | First-ship only mast rig hang point. **`Attach_Sail_Main` deprecated.** |
+| `Attach_Figurehead` | Bow / stem — **not** bowsprit tip |
+| `Attach_Rudder` | Rudder pivot at hinge axis |
+| `Attach_Anchor` | Stowed anchor v0 (no weigh-anchor anim) |
+| `Attach_FX_Fire` | Deck fire Niagara |
+| `Attach_Mast_Broken` | Broken-mast damage mesh |
+
+#### Optional on Hull — first ship
+
+| Socket | Notes |
+|--------|--------|
+| `Attach_FX_Fire_Mast` | Mast fire |
+| `Attach_Weapon_Port_01` | Light gun — **socket required**; mesh optional v0.1 |
+| `Attach_Weapon_Starboard_01` | Same |
+
+`Attach_MastRig_02/03`, `Attach_StaySail_*`, `Attach_Headsail_*`: **not** on first ship.
+
+### Mast Rig packages (scheme A — v0 lock)
+
+Each active `MastRig_XX` uses **three whole StaticMeshes** (mast + yards + sail + minimal rigging in one package):
+
+```text
+SM_<ShipType>_MastRig01_<RigType>_Full
+SM_<ShipType>_MastRig01_<RigType>_Half
+SM_<ShipType>_MastRig01_<RigType>_Furled
+```
+
+`<RigType>` = `Square` | `Lateen` | `Gaff` when locked (Stage 2.6.1); until then **`TBD`** for SmallSailer01. **Rig change = swap all three meshes** — not material-only.
+
+- Same pivot, transform, hang point; **one visible** at a time.
+- Topgallants / royals: **no extra gameplay slot** — baked into the same package (Basic vs Advanced rig = different mesh triplets).
+- Logic roles `Fore` / `Main` / `Mizzen` live in **data**, not socket names. Mizzen is still `MastRig_XX`.
+
+#### Flag socket — on MastRig mesh (program lock **A**)
+
+| Socket | Host mesh | Notes |
+|--------|-----------|--------|
+| `Attach_Flag` | **Active MastRig StaticMesh** (not Hull) | Main-mast top; independent flag mesh + MI. **Hide flag** when rig hidden / mast broken. |
+
+Hierarchy: `Hull` → child at `Attach_MastRig_01` → MastRig mesh → child at `Attach_Flag`.
+
+Validate: **Warning** if `Attach_Flag` missing on each imported MastRig triplet used by the type.
+
+### Sail visual states (presentation only)
+
+| State | Id | Suffix |
+|-------|-----|--------|
+| 收帆 | `Furled` | `_Furled` |
+| 半帆 | `Half` | `_Half` |
+| 满帆 | `Full` | `_Full` |
+
+No gameplay readback. Headsail **v0: not built**; future Headsail = visual mesh only until Modifier designed separately.
+
+### Damage / fire (presentation)
+
+| Event | Behavior |
+|-------|----------|
+| Mast down | Hide normal MastRig + flag; show `Attach_Mast_Broken` mesh |
+| Fire | Niagara on `Attach_FX_Fire*`; char — material/decal; structure — damage mesh |
+| No real-time break physics or cloth v0 |
+
+### Modular parts (separate FBX, not welded to Hull)
+
+| Part | Socket host |
+|------|-------------|
+| Figurehead | Hull `Attach_Figurehead` |
+| Rudder | Hull `Attach_Rudder` |
+| Anchor | Hull `Attach_Anchor` |
+| Weapons | Hull `Attach_Weapon_*` — hidden until installed |
+| Flag | MastRig `Attach_Flag` |
+
+### Socket authoring (v0)
+
+- **Author in UE Static Mesh Editor** after FBX import (preferred for first ship).
+- Validate reads **final UE StaticMesh** sockets — **not** required in source FBX.
+- Blender: Apply Rotation + Scale; **+X** forward; one asset per FBX.
+
+### 2D outfit diagram
+
+| Rule | Lock |
+|------|------|
+| Layout | Bow **left**; side + slight top-side perspective; no top-down |
+| Size | **2048×1024**, transparent, **8–10%** margin |
+| Hotspots | **Not** baked into art |
+| Slot placement v0 | **`WBP_ShipOutfit` manual** — not `DT_Ships` yet |
+| Reference coords | Resource may attach normalized 0–1 **suggestions**; program non-binding until V0.2 |
+
+### First-ship file checklist (working names)
+
+```text
+SM_SmallSailer01_Hull.fbx
+SM_SmallSailer01_MastRig01_TBD_Full.fbx
+SM_SmallSailer01_MastRig01_TBD_Half.fbx
+SM_SmallSailer01_MastRig01_TBD_Furled.fbx
+SM_SmallSailer01_Flag_Placeholder.fbx
+SM_SmallSailer01_Figurehead_Placeholder.fbx
+SM_SmallSailer01_Rudder.fbx
+SM_SmallSailer01_Anchor.fbx
+SM_SmallSailer01_MastBroken.fbx
+T_SmallSailer01_OutfitDiagram.png
+```
+
+Optional later: `SM_Weapon_LightCannon01.fbx` when cannon-mount flow is tested.
+
+### Weapon v0.1 (program lock **B→A**)
+
+- **Validate:** `Attach_Weapon_Port_01` + `Attach_Weapon_Starboard_01` on Hull (**Warning**).
+- **Mesh:** optional — no placeholder cannon until **火炮配置** refit slice opens (then add shared `SM_Weapon_LightCannon01`).
+
+### Validation (`Tools/ValidateShipMeshes.py`)
+
+| Check | Severity |
+|-------|----------|
+| Hull `Pontoon_*` ×4 | **Error** |
+| Hull `Attach_MastRig_01`, `Attach_Figurehead`, `Attach_Rudder`, `Attach_Anchor`, `Attach_FX_Fire`, `Attach_Mast_Broken` | **Warning** (first-ship set) |
+| Hull `Attach_Weapon_*` ×2 | **Warning** |
+| MastRig triplet `Attach_Flag` | **Warning** |
+| `DT_Ships` mesh paths exist | **Error** if flagship hull missing |
+
+Scale: **centralized later** — FBX provisional size OK.
+
+### Explicitly not first-ship
+
+Crew Socket / 3D crew; StaySail; Headsail; MastRig_02/03; dynamic cargo; full historical rigging; cloth sim; live mast fracture; boarding ropes.
+
+## Hull mesh interfaces (index)
+
+See **3D asset pipeline** above. Deprecated: `Attach_Sail_Main`, per-sail `_SailFurled` on Hull without MastRig package naming.
+
+## Bootstrap
+
+- **Player:** no preset fleet or ship. Hometown (temp **London**). Harbor **领取** one temp-type ship (player-owned, numbered name) → compose fleet.
+- **NPC:** each seeded company still gets one fleet + at least one company ship as flagship; commander = owner; at HQ harbor as `AFleet`. Hull from company seed `StarterShipTypeId` (built-in: Advisor = Caravel, Quartermaster = Carrack). Not in `PlayerCommandedFleetId`.
+
+## Explicitly out (this slice)
+
+- Shipyard build rules, ship commodity trade, 改造, 改装 stats (sails / cannons), officer stat mods, Facility ship compartments, harbor ungrouped cap, random fleet-name pool, at-sea flagship UI, abandon / capture, multi-fleet command switch, per-ship combat HP

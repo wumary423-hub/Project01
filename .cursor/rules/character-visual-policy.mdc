@@ -1,0 +1,42 @@
+---
+description: Character 3D visual policy — no individual person mesh or skeletal animation
+alwaysApply: true
+---
+
+# Character 3D visual policy (design lock)
+
+Status: **locked** (Ruida, 2026-08-17).
+
+## Individual characters (`Char_*`)
+
+| Rule | Lock |
+|------|------|
+| 3D mesh | **No** per-person StaticMesh / SkeletalMesh for registry characters. Do not model, rig, or spawn named individuals as 3D persons. |
+| Animation | **No** 3D skeletal animation for individuals (walk, idle, combat pose, emote on a person pawn). |
+| Identity | **2D avatar icon** (persisted in save) + UI text — Character panel, tavern, company, ship **2D outfit slots** (`ship-system.mdc`). |
+| Strategic map | **No** `ACharacter` / person Actor. **Not** parented to fleet, city, or ship 3D meshes. Agency through hosts (fleet, company, city logic). |
+| Logic | Unchanged: `UCharacterObject` + subsystems; posts on Company / Fleet — see `character-system.mdc`. |
+
+## When person-like expression is needed
+
+Use **other channels first** — do not default to individual 3D:
+
+- UI portraits / icons / panels
+- 2D schematic slot anchors (e.g. ship 改装 diagram)
+- Host motion on the map (fleet sails; city interaction UI)
+- Text, receipts, logs, future illustration or VFX **not** bound to a `Char_*` skeleton
+
+If a feature still feels like it “needs a 3D person,” **stop and discuss with Ruida** before adding assets or Actor types.
+
+## Exception — illustrative aggregates (not designed; may never ship)
+
+| Rule | Lock |
+|------|------|
+| Scope | **Anonymous mass** 3D **only** for schematic effect — e.g. “a crowd,” “an army unit” as **one** visual mass, **not** mappable to `Char_*` ids. |
+| Status | **Not designed.** **Not planned for v0.** **May never be implemented.** |
+| Prohibition | Do **not** use this exception for named NPCs, companions, officers, tavern hangers, or any registry character. |
+| Implementation | Requires **explicit Ruida decision** + update to this rule **before** art or code. |
+
+## Overturn
+
+Any change to individual 3D / skeletal policy requires an **explicit Ruida decision** and same-change updates to this file and `character-system.mdc` (**Scene & agency**).

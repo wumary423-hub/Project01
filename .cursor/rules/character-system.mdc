@@ -1,0 +1,144 @@
+---
+description: Character system design lock (registry + company employment + generation + tavern recruit)
+alwaysApply: true
+---
+
+# Character system (design lock)
+
+Status: **v0 + tavern recruit + office title read active** — registry + company employment + companions + generation collaborator + city tavern query/recruit + save **v6** (shared schema). Posts are **not** stored on Character. No age / tavern filters.
+
+## Role
+
+- Independent **character table** (`UCharacterObject` in `UCharacterManagerSubsystem`).
+- Characters must be **hired by a company** before company GM / owned-fleet posts. Unowned-fleet posts (before founding) appoint from the player person + companions.
+- Player has one world person (`PlayerCharacterId`); UI defaults to them.
+- Founding a company auto-hires **current operated character** (this slice = player character) **and** all companions of the player person.
+- **No Family module** — do not reintroduce.
+
+## Architecture
+
+| Piece | Path / type |
+|-------|-------------|
+| Object | `UCharacterObject` — `Source/.../Character/` |
+| Manager | `UCharacterManagerSubsystem` |
+| Generation | `UCharacterGeneration` (collaborator, Outer = manager; **not** a new system folder) |
+| Settings | `UCharacterManagerSettings` (avatar **folders**, NPC seeds, `TavernPoolSize`) |
+| Types | `CharacterTypes.h` (`Char_PlayerLeader`, `Char_Gen_*`, generate request) |
+| UI | `UCharacterPanelWidget` / list row → SimHud; city tavern `UCityTavernWidget` under city panel |
+| Save | `FCharacterSaveData` in `SaveTypes.h` (schema **v6**; character POD still has no post fields — `HostCityId` / `LeaderCharacterId` from v4) |
+
+Logic only — **no scene Actor / mesh** for individuals (see **`character-visual-policy.mdc`**).
+
+## Scene & agency (lock)
+
+Summary — full policy: **`character-visual-policy.mdc`**.
+
+| Rule | Lock |
+|------|------|
+| Visual | **No individual 3D mesh or skeletal animation** for `Char_*`. Identity = **avatar icon** (UI) + text. |
+| Strategic map | Characters are **never** independent person Actors. No walk / patrol as a person mesh. |
+| Where they “are” | **Logic only** — employed/serving on a fleet, city, or other logic host (office/post). **Not** on the 3D ship mesh. |
+| Ship posts (UI) | In-port **改装**: **2D ship diagram** + **avatar icon** per `OutfitSlot_*` — see `ship-system.mdc` **Outfit schematic**. |
+| How they act on the map | Through the **host** they operate. At sea: the **fleet** moves, patrols, fights, trades. |
+| Crowd / army 3D | Illustrative **mass** only — undecided, may never ship — see **`character-visual-policy.mdc`**. |
+| Overturn | Explicit Ruida decision + update **`character-visual-policy.mdc`** and this section. |
+
+## Fleet command vs other posts
+
+- **All** fleet gameplay actions (sail, attack, trade with fleets/cities, patrol, …) are issued under the **舰队司令** (`EFleetPost` Commander) of that fleet.
+- **Unrelated:** any future **ship-level 舰长** (ship system may not exist), and **other fleet office holders** (水手长 / 炮长 / 领航员, …). Those posts do not authorize fleet-level orders.
+- Character module does not store posts on `UCharacterObject`; occupants live on Company / Fleet — see `fleet-system.mdc` / company office rules.
+
+## Ids
+
+- Form: `Char_<Name>`. Player seed: **`Char_PlayerLeader`**. Generated pool: **`Char_Gen_1`**…
+- Collision: append numeric suffix (`Char_Foo_2`).
+- Category: `"Character"` / `"Character|…"`.
+
+## Fields (runtime)
+
+| Field | Meaning |
+|-------|---------|
+| `CompanyId` | Employer; `None` = unemployed |
+| `HostCityId` | City tavern this unemployed hanger is in; cleared on recruit |
+| `LeaderCharacterId` | Companion of that character; `None` = not a companion. Cleared when hired into a company |
+
+Posts are **not** fields on `UCharacterObject`. UI reads a display title from Company + Fleets (`GetCharacterOfficeTitle`). Owner identity is not a job slot and may combine with GM / fleet posts (e.g. `所有者；舰队司令`).
+
+## Employment
+
+- Character.`CompanyId` + Company.`EmployeeCharacterIds` (kept in sync via `HireCharacterToCompany` / `ClearCharacterEmployment`).
+- Hire also clears `HostCityId` and `LeaderCharacterId`.
+- **Cannot hire another company's owner** (`OwnerCharacterId`) into a different company.
+- After save Apply: `SyncCompanyEmployeeListsFromCharacters()` rebuilds company lists from Character.`CompanyId`.
+- Dismiss: **Company** `DismissEmployee` (company panel employee list). Not on Character UI.
+
+## Companions
+
+- **Not** a proto-company. New game still has **no** `Company_Player`.
+- Companion hangs on the character: `LeaderCharacterId` (player tavern recruits → `PlayerCharacterId`).
+- Found company: hire current operated character **plus** `HirePlayerCompanionsIntoCompany()` (all `Leader == PlayerCharacterId`), then Leader is cleared.
+- NPC-captain crews: **not this slice**. Seeded NPC **company starter fleets** + **fleet command AI** (state machine, host-budget) — see `npc-ai.mdc`.
+
+## Generation
+
+- Lives in Character module (`UCharacterGeneration`). Main path = **rules inside the module**.
+- **Temp rule (this slice):** new game / `ResetToBootstrap`, **after** city tavern facilities exist: create **exactly `TavernPoolSize` (default 10)** unemployed NPCs. Each independently assigned to a **random city that has a Tavern**. Some taverns 0, some many.
+- Important `NpcSeeds` are **not** in that 10 and **default not in taverns**.
+- Entities live **only** in the Character registry. Tavern facility stores **no roster**.
+- **When:** bootstrap / Reset — **not** on opening tavern.
+- **Special path:** `RequestGenerateCharacters` (tavern / events). Uncommon. **City tavern UI must not call it.**
+- Generated display names: placeholder `旅人 N`. Avatars from NPC folder pick.
+- Save Apply **does not** re-run the temp pool.
+
+## Tavern query / recruit
+
+Query “people in this tavern”: `HostCityId == city` AND `CompanyId` none AND `LeaderCharacterId` none AND not the player character.
+
+Recruit:
+
+- No company → companion of the player person (`LeaderCharacterId = PlayerCharacterId`), clear `HostCityId`.
+- Has company → `HireCharacterToCompany(..., Company_Player)` (clears host + leader).
+- After recruit they disappear from that city’s tavern list.
+
+## Bootstrap
+
+- New game / Initialize: seed player stub + important NPCs, then temp tavern pool. Company module then hires important NPC seeds into NPC companies; Fleet/Company seed one starter fleet per NPC company.
+- Character `Initialize` **depends on Facility** (Facility already depends on City).
+- Player creation UI (between new game and map): **later**; temporary seed for now.
+- Avatar: pick once from **content folders** at seed; **persist in save**; NPC folder scan excludes player avatar path.
+- Configure folders in **Project Settings → Game → Character Manager**.
+
+## Subsystem fields
+
+| Field | Meaning |
+|-------|---------|
+| `PlayerCharacterId` | Player's person (panel default) |
+| `CurrentOperatedCharacterId` | Who founds company / future actions; this slice = player |
+
+## Strategic HUD UI
+
+- Button + panel peer to Company on **`WBP_SimHud`**.
+- Default view: player character (name / Id / company / avatar placeholders).
+- Corner **所有角色列表** → sub-list of **all** registry characters (**no filter** this slice). Dedicated filters / intel range: **later**.
+- Open: **no** SimTime pause; **no** sail block.
+- Esc: close 编制 → 角色 → 商号 → 系统菜单.
+- Optional: `BP_SimPlayerController` → **UI|Character** → Character Panel Class.
+- Info line **职位：** from `GetCharacterOfficeTitle` (no post write on Character).
+
+City tavern UI: see **`facility-system.mdc`**. Sub-panel under city panel (peer to market). Empty list stays empty (no generate button).
+
+## Explicitly out (this slice)
+
+- Age / BirthDate / death
+- Kin / birth / retainer
+- Character-list filters / intel range
+- Generate-on-open tavern
+- Hire cost / Character-panel dismiss UI
+- Storing posts on `UCharacterObject` / `FCharacterSaveData`
+- NPC fleet **crews** (command AI is host-budget on the fleet — see `npc-ai.mdc`; other posts still numeric only)
+- Individual character 3D mesh / skeletal animation / strategic-map person Actor — see **`character-visual-policy.mdc`**
+- Ship-level 舰长 controlling fleet actions (fleet orders = 司令 only)
+- Player/NPC UObject subclasses (single `UCharacterObject`)
+- Name+surname random tables
+- Old-save migrate (pre-v5 discarded)
