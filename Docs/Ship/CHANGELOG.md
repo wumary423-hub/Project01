@@ -2,6 +2,54 @@
 
 This log tracks design-contract changes between program and art/resource workflows.
 
+## 2026-08-17 — V0.1.1 program contract synchronized
+
+### Authority order locked
+
+- `.cursor/rules/ship-system.mdc` > `Docs/Ship/ShipAssetContract.md` > `Docs/Ship/SmallSailer01.md`.
+- Program rules remain authoritative for sockets, naming, validation, import and catalog behavior.
+- Shared/documentation layers were updated to match program V0.1.1 rather than preserve superseded V0.1 wording.
+
+### Main-rig production now locked
+
+- `SmallSailer01` phase-one production builds **Square + Lateen**.
+- Each RigType has a complete `Full / Half / Furled` MastRig triplet.
+- Total phase-one MastRig set: **6 StaticMeshes**.
+- `MastRig01_TBD_*` is no longer the production naming rule; it may exist only as an intermediate working/export name before final rename.
+- `Gaff` remains design/hull-compatible but is **not produced in phase one**.
+- Starter default main RigType (`Square` vs `Lateen`) remains a gameplay/catalog decision after both sets exist.
+
+### Headsail retrofit approved by program
+
+- `Attach_Headsail_01` is now part of the `SmallSailer01` Hull contract and is a Validate warning if missing.
+- Starter/fallback ship is delivered with the Headsail slot **empty / no child mesh equipped**.
+- Headsail is independent of `MastRig_01` and can be installed/removed separately.
+- Intended pacing remains an early visible refit around roughly the first ~20 minutes of play.
+- This slice tests the visual/refit workflow only; no Headsail performance Modifier is required yet.
+- Headsail asset naming when produced:
+  - `SM_SmallSailer01_Headsail01_Full`
+  - `SM_SmallSailer01_Headsail01_Half`
+  - `SM_SmallSailer01_Headsail01_Furled`
+
+### Docs synchronized
+
+- `Docs/Ship/ShipAssetContract.md` updated from V0.1 to **V0.1.1**.
+- `Docs/Ship/SmallSailer01.md` no longer marks Headsail as pending; it is **program approved**.
+- Superseded statements saying “first ship does not build Headsail” or “RigType still TBD for production” were removed from current design/contract state.
+
+### Program tooling noted
+
+Program side reports the following tools are now part of the V0.1.1 workflow:
+
+- `Tools/ValidateShipMeshes.py`
+- `Tools/ImportSmallSailer01Meshes.py`
+- `Tools/CreateShipsDataTable.py`
+
+### Next milestone
+
+- Proceed to **Stage 2.7 final Concept Design** for `SmallSailer01`.
+- Final concept must directly support production of both Square and Lateen MastRig variants and preserve the optional Headsail retrofit position.
+
 ## 2026-08-17 — Stage 2.6.1 rig plan update
 
 ### Main-rig production decision
@@ -12,14 +60,12 @@ This log tracks design-contract changes between program and art/resource workflo
 - `Gaff` remains a supported future RigType but is not required in the first production batch.
 - Exact starter/fallback default main RigType (Square vs Lateen) remains a gameplay/catalog choice after both asset variants exist.
 
-### Headsail design decision — pending program interface update
+### Headsail design decision — superseded by V0.1.1 approval above
 
-- Design side approves **one optional Headsail/Jib retrofit** for `SmallSailer01`.
-- The free starter/fallback configuration should ship **without** the Headsail installed.
+- Design side approved one optional Headsail/Jib retrofit for `SmallSailer01`.
+- The free starter/fallback configuration should ship without the Headsail installed.
 - Intended pacing: Headsail can become available as an early upgrade after roughly the first ~20 minutes of play.
-- This is intended to test a visible auxiliary-sail refit path.
-- **Program V0.1 currently excludes Headsail from the first ship.** Therefore `Attach_Headsail_01` and Headsail asset naming/validation are not part of the authoritative contract until `.cursor/rules/ship-system.mdc` is explicitly updated by program authority.
-- Art/design documentation may describe the proposed retrofit, but resource delivery must not silently diverge from the locked program contract.
+- This proposal was subsequently accepted by program V0.1.1; current authoritative state is recorded above.
 
 ### Historical/world framing
 
@@ -32,7 +78,6 @@ This log tracks design-contract changes between program and art/resource workflo
 
 - `.cursor/rules/ship-system.mdc` is the authoritative source for sockets, naming, validation, import behavior and catalog hookup.
 - Resource/art side follows program-defined interfaces for the first workflow ship.
-- Interface changes after first UE hookup should be proposed as **V0.2**, not silently diverge.
 
 ### First workflow ship
 
@@ -70,18 +115,17 @@ This log tracks design-contract changes between program and art/resource workflo
 - `Attach_Flag` is hosted on each active MastRig StaticMesh, not Hull.
 - First ship has one mast-top flag position.
 
-### RigType status
+### RigType status at V0.1
 
 - Original V0.1 contract left Stage 2.6.1 unresolved and used `TBD` filenames.
 - Candidate types were `Square`, `Lateen`, `Gaff`.
-- Program contract remains authoritative for current file/catalog naming until it is updated to reflect the Stage 2.6.1 production decision.
-- First-ship contract originally excluded StaySail, Headsail, MastRig_02 and MastRig_03.
+- This state was superseded by V0.1.1.
 
 ### Modular parts
 
 - Figurehead, Rudder, Anchor and Flag are separate meshes.
 - Figurehead attaches at bow/stem body, not bowsprit tip.
-- Weapon sockets are included; weapon mesh is optional for v0.1 and deferred until cannon-refit flow.
+- Weapon sockets are included; weapon mesh is optional and deferred until cannon-refit flow.
 - Cargo is numeric gameplay data; no dynamic cargo piles are required in 3D.
 - Rigging is simplified visual rigging only and is separate from future boarding/swing rope gameplay assets.
 
@@ -97,9 +141,3 @@ This log tracks design-contract changes between program and art/resource workflo
 - `Docs/Ship/ShipAssetContract.md`
 - `Docs/Ship/SmallSailer01.md`
 - `Docs/Ship/CHANGELOG.md`
-
-### Next milestone
-
-- Program side to decide how/when to update the V0.1 contract for the dual `Square` + `Lateen` production set.
-- Program side to approve or defer the proposed `Attach_Headsail_01` retrofit interface.
-- Proceed to Stage 2.7 final Concept Design once the rig-production naming/interface delta is synchronized.
