@@ -1,10 +1,10 @@
 # SmallSailer01 — Canonical Ship Design
 
-Status: **Stage 2.6 preflight passed; Stage 2.6.1 RigType still TBD**  
+Status: **Stage 2.6.1 main-rig selection substantially locked; Headsail retrofit pending program-interface approval**  
 Working name: **`SmallSailer01`**  
 Catalog mapping: final `ShipTypeId` to be assigned at UE hookup.
 
-This document is the art/design source for the first workflow ship. Program interfaces are governed by `.cursor/rules/ship-system.mdc` and `Docs/Ship/ShipAssetContract.md`.
+This document is the art/design source for the first workflow ship. Program interfaces are governed by `.cursor/rules/ship-system.mdc` and `Docs/Ship/ShipAssetContract.md`. Where this design proposes an interface not yet accepted by program, it is explicitly marked **pending program approval** and must not silently override the locked contract.
 
 ## 1. Gameplay role
 
@@ -24,6 +24,8 @@ Design character:
 > small, inexpensive, plain, reliable and balanced — not a wreck and not a specialized high-performance craft.
 
 Future derivative variants may emphasize cargo, speed/exploration or armament; the base model remains deliberately balanced.
+
+The current development context often uses the English Channel as a practical design/testing environment, but the game is not required to start there and the world is not a strict historical reconstruction. Rig availability is therefore allowed to prioritize gameplay and readable ship differentiation over strict regional chronology.
 
 ## 2. Historical / visual language
 
@@ -131,15 +133,28 @@ The ship asset's standing/running rigging is **visual only**.
 - do not spend modeling time on tiny knots, numerous blocks or dense rope networks;
 - future boarding/swing ropes are a separate gameplay asset family.
 
-## 9. MastRig — Stage 2.6.1 unlock
+## 9. Sail-slot and RigType design — Stage 2.6.1
 
-Current slot:
+### 9.1 Slot model
+
+Current main slot:
 
 ```text
 MastRig_01
 ```
 
-Candidate RigTypes:
+General ship-system design separates **slot position** from **sail/rig type**:
+
+- each mast may own one `MastRig_XX` slot;
+- logical mast roles (`Fore`, `Main`, `Mizzen`) are data roles, not separate socket families;
+- a mizzen is still a MastRig slot, not an independent fourth slot category;
+- upper sails / topsails do not create separate gameplay slots; they are part of the same MastRig package;
+- future `StaySail_*` slots live between masts;
+- future `Headsail_*` slots live in the bow/bowsprit region.
+
+### 9.2 RigTypes supported by the hull design
+
+`SmallSailer01` is designed to be compatible with:
 
 ```text
 Square
@@ -147,21 +162,70 @@ Lateen
 Gaff
 ```
 
-`RigType` is **not yet locked**. Until Stage 2.6.1 is complete, file names use `TBD`.
+These are alternate main-rig configurations for the same `MastRig_01` position. Changing RigType changes the full visible rig package, not merely a texture or numeric stat.
 
-Current design-system rules:
+### 9.3 Phase-one resource production
 
-- every mast has a MastRig slot;
-- logical mast roles (`Fore`, `Main`, `Mizzen`) are data roles, not separate socket families;
-- a mizzen is still a MastRig slot, not an independent fourth slot category;
-- upper sails / topsails do not create separate gameplay slots; they are part of the same MastRig package;
-- future StaySail slots exist between masts;
-- future Headsail slots exist in the bow/bowsprit region;
-- first ship builds neither StaySail nor Headsail.
+**Phase one will produce both:**
 
-### Sail-state presentation
+```text
+Square
+Lateen
+```
 
-First ship uses three complete visual states:
+Each requires its own complete Full / Half / Furled triplet so the first workflow can test **sail refit / MastRig replacement** as well as state switching.
+
+Planned naming after program/catalog paths are updated:
+
+```text
+SM_SmallSailer01_MastRig01_Square_Full
+SM_SmallSailer01_MastRig01_Square_Half
+SM_SmallSailer01_MastRig01_Square_Furled
+
+SM_SmallSailer01_MastRig01_Lateen_Full
+SM_SmallSailer01_MastRig01_Lateen_Half
+SM_SmallSailer01_MastRig01_Lateen_Furled
+```
+
+Until the program-side V0.1 `TBD` naming/catalog rule is explicitly updated, resource working/export files may continue using the contract-approved `TBD` placeholder during intermediate production. Do not silently break the program contract.
+
+`Gaff` remains a supported future RigType but is **not required in the first production batch**.
+
+### 9.4 Starter configuration
+
+The fallback/starter ship is **not required to expose every supported rig or auxiliary sail at game start**. Availability/unlock is gameplay configuration, not a hull-geometry limitation.
+
+The exact default starter main RigType (Square vs Lateen) may be selected in gameplay/catalog configuration after both resource variants exist; it does not block production of either rig set.
+
+### 9.5 Headsail retrofit — design-approved, program interface pending
+
+Design decision:
+
+- `SmallSailer01` may support **one optional Headsail/Jib retrofit**;
+- the free starter/fallback configuration does **not** have the Headsail installed;
+- intended gameplay pacing: player may gain/install the Headsail after roughly the first ~20 minutes of play;
+- this gives the first ship an early, visible upgrade and allows testing the sail-refit workflow beyond swapping the main MastRig.
+
+**Important:** current program V0.1 contract explicitly excludes Headsail on the first ship. Therefore the following remains a **proposal pending program-side approval/rule update**:
+
+```text
+Attach_Headsail_01
+Headsail_01 visual asset/state set
+```
+
+Do not add this socket to the authoritative delivery/Validate list until `.cursor/rules/ship-system.mdc` is updated by the program side.
+
+Recommended resource behavior if/when approved:
+
+- one bow Headsail slot;
+- Jib-style triangular auxiliary sail;
+- independent of `MastRig_01` so it can be absent on the starter configuration and installed later;
+- resource side handles Mesh / pivot / visual state only;
+- gameplay performance modifiers, availability and unlock timing are program/data concerns.
+
+### 9.6 Sail-state presentation
+
+Every produced main MastRig variant uses three complete visual states:
 
 ```text
 Full
@@ -169,7 +233,7 @@ Half
 Furled
 ```
 
-Each state is a whole MastRig package containing mast + main spars/yards + sail + minimal major rigging, with identical pivot / hang transform.
+Each state is a whole MastRig package containing mast + main spars/yards + sail + minimal major rigging, with identical pivot / hang transform within that RigType triplet.
 
 ## 10. Flag
 
@@ -283,7 +347,7 @@ It must preserve the same ship identity as the 3D asset, especially:
 
 - one mast;
 - one deck level;
-- selected final RigType silhouette;
+- currently equipped main RigType silhouette where the UI design chooses to reflect loadout;
 - hull proportion and fullness;
 - bow and stern character;
 - cargo-hold / major-space logic.
@@ -299,8 +363,11 @@ Concept Design
 → Blender cleanup and asset split
 → UV
 → PBR material
-→ MastRig Full/Half/Furled
+→ Square MastRig Full/Half/Furled
+→ Lateen MastRig Full/Half/Furled
+→ main-rig refit test
 → modular attachments
+→ optional Headsail retrofit after program interface approval
 → damage presentation
 → LOD / Collision / Pivot / Scale
 → FBX
