@@ -2,6 +2,30 @@
 
 This log tracks design-contract changes between program and art/resource workflows.
 
+## 2026-08-17 — Stage 2.6.1 rig plan update
+
+### Main-rig production decision
+
+- `SmallSailer01` hull design is intended to support `Square`, `Lateen`, and later `Gaff` main RigTypes.
+- **Phase-one resource production will build both `Square` and `Lateen` MastRig triplets** so the first workflow can test main-rig refit as well as Full/Half/Furled state switching.
+- Each RigType is a complete MastRig package set, not a material-only variation.
+- `Gaff` remains a supported future RigType but is not required in the first production batch.
+- Exact starter/fallback default main RigType (Square vs Lateen) remains a gameplay/catalog choice after both asset variants exist.
+
+### Headsail design decision — pending program interface update
+
+- Design side approves **one optional Headsail/Jib retrofit** for `SmallSailer01`.
+- The free starter/fallback configuration should ship **without** the Headsail installed.
+- Intended pacing: Headsail can become available as an early upgrade after roughly the first ~20 minutes of play.
+- This is intended to test a visible auxiliary-sail refit path.
+- **Program V0.1 currently excludes Headsail from the first ship.** Therefore `Attach_Headsail_01` and Headsail asset naming/validation are not part of the authoritative contract until `.cursor/rules/ship-system.mdc` is explicitly updated by program authority.
+- Art/design documentation may describe the proposed retrofit, but resource delivery must not silently diverge from the locked program contract.
+
+### Historical/world framing
+
+- The English Channel is a current development/testing context, not a mandatory game-start location.
+- The fictional-world design intentionally permits gameplay-driven rig availability rather than enforcing strict historical/regional chronology.
+
 ## 2026-08-17 — V0.1 first-ship contract established
 
 ### Program authority
@@ -48,13 +72,10 @@ This log tracks design-contract changes between program and art/resource workflo
 
 ### RigType status
 
-- Stage 2.6.1 remains unresolved.
-- Candidate types: `Square`, `Lateen`, `Gaff`.
-- Until locked, first-ship MastRig filenames use `TBD`:
-  - `SM_SmallSailer01_MastRig01_TBD_Full`
-  - `SM_SmallSailer01_MastRig01_TBD_Half`
-  - `SM_SmallSailer01_MastRig01_TBD_Furled`
-- First ship does not build StaySail, Headsail, MastRig_02 or MastRig_03.
+- Original V0.1 contract left Stage 2.6.1 unresolved and used `TBD` filenames.
+- Candidate types were `Square`, `Lateen`, `Gaff`.
+- Program contract remains authoritative for current file/catalog naming until it is updated to reflect the Stage 2.6.1 production decision.
+- First-ship contract originally excluded StaySail, Headsail, MastRig_02 and MastRig_03.
 
 ### Modular parts
 
@@ -79,6 +100,6 @@ This log tracks design-contract changes between program and art/resource workflo
 
 ### Next milestone
 
-- Complete **Stage 2.6.1 RigType selection**.
-- Rename MastRig `TBD` triplet as a set after RigType locks.
-- Proceed to Stage 2.7 final Concept Design, which must directly feed mesh production.
+- Program side to decide how/when to update the V0.1 contract for the dual `Square` + `Lateen` production set.
+- Program side to approve or defer the proposed `Attach_Headsail_01` retrofit interface.
+- Proceed to Stage 2.7 final Concept Design once the rig-production naming/interface delta is synchronized.
