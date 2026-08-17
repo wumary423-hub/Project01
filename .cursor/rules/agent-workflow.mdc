@@ -1,0 +1,69 @@
+---
+description: Ruida agent workflow — implement only on explicit keywords
+alwaysApply: true
+---
+
+# Agent workflow (Ruida)
+
+## Default: no implementation
+
+- In this project, **discussion / suggestions / answers do not authorize code or asset changes**.
+- Do **not** edit source, configs, Content, Tools, or `.cursor/rules` unless a keyword below is present in the **current user message** (or that message clearly continues an already-keyword-started implement turn).
+- Design talk, “建议”, “方案”, self-test results, “取消/改成/下次…” without the keyword → **advise only**, or confirm understanding; **no patches**.
+
+## Keywords (exact)
+
+| Keyword | Meaning |
+|---------|---------|
+| **开始实现** | Allowed to implement the task described in that message (and follow-ups that clearly continue the same implement request until done or user stops). |
+| **开始无人开发模式** | Unattended / autonomous development mode for the scoped task — may plan and implement without waiting for per-step 开始实现 until the user ends the mode or the scoped task is done. |
+
+- Without either keyword: **never start coding**, even if the request sounds like an order (“改掉”, “取消”, “加上”).
+- If unclear whether a message is still under an open implement turn, **ask** instead of coding.
+
+## Program ↔ resource AI sync (GitHub `docs-sync`)
+
+**Single source on GitHub branch `docs-sync`** — Cursor (program) and external design GPT read/write the same files.
+
+### Authority
+
+| Layer | Path |
+|-------|------|
+| Program | `.cursor/rules/ship-system.mdc` |
+| Shared contract | `Docs/Ship/ShipAssetContract.md` |
+| Ship design | `Docs/Ship/SmallSailer01.md` |
+| Change log | `Docs/Ship/CHANGELOG.md` |
+
+On conflict: **program rules win** → update Docs to match; do not silently change program interfaces from design docs alone.
+
+### Who commits / pushes
+
+- **Cursor agent** may `git add` / `commit` / `push` to `docs-sync` when Ruida asks or when a **contract/interface milestone** is done (e.g. V0.1.1 lock).
+- **Push requires GitHub auth on Ruida’s machine** (browser login or token). If push fails, Ruida runs `git push` once in terminal.
+- **Large branch `dev/widepath-nav` is not used for GPT sync** — only `docs-sync` (small).
+
+### Notification block (mandatory after interface changes)
+
+After program or design changes **sockets, naming, Validate, catalog, or V0.x contract**, append a copy-paste block for the **other** AI:
+
+**Program → Resource GPT (template):**
+
+```text
+【程序侧同步 — 请读 GitHub docs-sync 最新】
+仓库：wumary423-hub/Project01  分支：docs-sync
+变更：<一句话，如 ship-system.mdc V0.1.1>
+请你：<具体动作，如更新 ShipAssetContract.md 对齐 V0.1.1>
+权威：.cursor/rules/ship-system.mdc > ShipAssetContract.md > SmallSailer01.md
+```
+
+**Resource GPT → Program Cursor (Ruida 转发或 GPT 直接改 docs-sync 后):**
+
+```text
+【资源/设计侧同步 — 请读 GitHub docs-sync 最新】
+仓库：wumary423-hub/Project01  分支：docs-sync
+变更：<Docs/Ship/… 或设计决策>
+请你：<评估是否改 ship-system / Validate / Import；列冲突>
+若无程序接口变更：仅更新 SmallSailer01.md / CHANGELOG，不必动 rules。
+```
+
+Ruida may require **either side** to produce this block whenever Stage 结束 or 接口拍板.
