@@ -142,28 +142,55 @@ Fallback C++ button ids (`CaptainCabin`, `Deck`, `ChartRoom`, `GunDeck`, `Lookou
 
 Diagram: **bow left**, side view + slight top-side perspective; must match 3D on mast count, deck levels, rig silhouette, hull proportion, bow/stern, major spaces. Pixel-perfect optional v0.
 
-## 3D asset pipeline (program ↔ art contract — **V0.1 LOCKED**)
+## 3D asset pipeline (program ↔ art contract — **V0.1.1**)
 
-**Status (2026-08-17):** **Formal first-ship contract.** Resource side **follows program**; do **not** re-open interface structure without explicit Ruida decision + rule update. Iterate only via **V0.2** after first UE hookup if needed.
+**Status (2026-08-17):** **V0.1.1** — Stage **2.6.1 main-rig production locked** (Square + Lateen). Headsail retrofit interface **approved** (socket on hull; starter unequipped). Supersedes V0.1 `TBD` MastRig naming and “no Headsail on first ship” for **SmallSailer01** only.
 
-**Authority:** program defines sockets, naming, Validate, Import; art satisfies the contract.
+**Authority:** `.cursor/rules/ship-system.mdc` > `Docs/Ship/ShipAssetContract.md` > `Docs/Ship/SmallSailer01.md` (design). If Docs lag, **update Docs on `docs-sync`** — do not silently diverge from this file.
 
-**Workflow name vs catalog:** resource working name **`SmallSailer01`** may differ from catalog **`ShipTypeId`** / `DT_Ships` row until mapped — intentional; maintain an explicit mapping at UE hookup.
+**Docs (design detail, not program logic):** `Docs/Ship/SmallSailer01.md`, `Docs/Ship/CHANGELOG.md`, `Docs/Ship/ShipAssetContract.md` on branch **`docs-sync`**.
 
-**RigType (Stage 2.6.1 — only remaining unlock):** until locked, MastRig mesh files use **`TBD`** in the filename triplet, e.g. `SM_SmallSailer01_MastRig01_TBD_Full.fbx`. After rig type locks, **rename all three as a set** (`Square` / `Lateen` / `Gaff`). Do not hardcode rig type in Validate or C++ before lock.
+**Workflow name vs catalog:** working name **`SmallSailer01`**; proposed catalog row **`ShipType_SmallSailer01`** (map at UE hookup). `DT_Ships` temp rows (`ShipType_TempCog` …) stay until hull assets land.
 
-**Stage 2.7:** final Concept Design for SmallSailer01 must **directly feed mesh production** (not exploration-only art).
+### Stage 2.6.1 — Main RigType (locked for phase-one production)
 
-### Locked interface summary (do not re-discuss for first ship)
+| RigType | Phase-one mesh production | Notes |
+|---------|---------------------------|--------|
+| **Square** | **Yes** — Full / Half / Furled triplet | Main-rig refit + sail-state test |
+| **Lateen** | **Yes** — Full / Half / Furled triplet | Same |
+| **Gaff** | **No** (phase one) | Hull/design **compatible**; catalog may reference later |
+
+- **Six** MastRig StaticMeshes for SmallSailer01 phase one (2 RigTypes × 3 states).
+- **Rig change** = swap entire active triplet; **not** material-only.
+- **Starter default main RigType** (Square vs Lateen): **gameplay/catalog TBD** after both asset sets exist — does not block producing both.
+- Deprecated for production: `MastRig01_TBD_*` filenames (intermediate exports only until renamed).
+
+### Headsail retrofit (program-approved V0.1.1)
+
+| Rule | Lock |
+|------|------|
+| Hull support | **`Attach_Headsail_01`** on Hull (**Warning** in Validate for SmallSailer01) |
+| Starter / fallback loadout | **Headsail mesh not equipped** (hidden / no child mesh) |
+| Gameplay pacing | Intended ~**20 min** early upgrade via **改装** (refit slice — not stats yet) |
+| Scope | **Visual + refit workflow test**; no Headsail performance Modifier in this slice |
+| Asset naming (when built) | `SM_SmallSailer01_Headsail01_<State>` with same Full/Half/Furled pattern |
+| Independence | Separate from `MastRig_01`; install/uninstall without swapping main rig triplet |
+
+**Still not first ship:** `StaySail_*`, `MastRig_02/03`, Crew Socket, Gaff meshes.
+
+**Stage 2.7:** final Concept Design for SmallSailer01 must **directly feed mesh production**.
+
+### Locked interface summary (SmallSailer01 — do not re-discuss)
 
 - Hull = `AFleet` root StaticMesh; **`Pontoon_*` ×4 required**
 - **`Attach_Sail_Main` deprecated** → **`Attach_MastRig_01`**
-- MastRig = **scheme A** whole-package StaticMesh ×3 (`Full` / `Half` / `Furled`)
-- **`Attach_Flag` on MastRig** (not Hull)
-- Hull sockets: Figurehead, Rudder, Anchor, FX fire, Broken mast, Weapon (×2) — weapon **mesh** optional v0.1
-- **Not first ship:** StaySail, Headsail, multi-mast slots, Crew Socket
-- Sockets authored in **UE Static Mesh Editor** v0; Validate reads **final UE StaticMesh**
-- 2D diagram: **2048×1024**, transparent, **bow left**, **no baked hotspots**; WBP manual slot placement v0
+- MastRig = **scheme A** whole-package × **3 states** per **active RigType**
+- Phase-one RigTypes on disk: **Square + Lateen** (six MastRig meshes)
+- **`Attach_Flag` on each active MastRig StaticMesh** (not Hull)
+- Hull: Figurehead, Rudder, Anchor, FX fire, Broken mast, Weapon (×2), **`Attach_Headsail_01`**
+- Starter: **no Headsail mesh**; main rig = catalog/default RigType only
+- Sockets in **UE Static Mesh Editor**; Validate reads **final UE StaticMesh**
+- 2D diagram: **2048×1024**, transparent, **bow left**, no baked hotspots
 
 ### First workflow ship (SmallSailer01)
 
@@ -209,8 +236,9 @@ Cargo holds: 3D may show empty hold structure only — **no** dynamic cargo mesh
 | `Attach_FX_Fire_Mast` | Mast fire |
 | `Attach_Weapon_Port_01` | Light gun — **socket required**; mesh optional v0.1 |
 | `Attach_Weapon_Starboard_01` | Same |
+| `Attach_Headsail_01` | Bow/jib retrofit — **socket on hull**; **mesh absent on starter loadout** |
 
-`Attach_MastRig_02/03`, `Attach_StaySail_*`, `Attach_Headsail_*`: **not** on first ship.
+`Attach_MastRig_02/03`, `Attach_StaySail_*`: **not** on SmallSailer01 phase one.
 
 ### Mast Rig packages (scheme A — v0 lock)
 
@@ -222,9 +250,10 @@ SM_<ShipType>_MastRig01_<RigType>_Half
 SM_<ShipType>_MastRig01_<RigType>_Furled
 ```
 
-`<RigType>` = `Square` | `Lateen` | `Gaff` when locked (Stage 2.6.1); until then **`TBD`** for SmallSailer01. **Rig change = swap all three meshes** — not material-only.
+`<RigType>` = **`Square` | `Lateen`** (phase-one production) | **`Gaff`** (compatible, deferred). **Rig change = swap all three meshes** — not material-only.
 
-- Same pivot, transform, hang point; **one visible** at a time.
+- **Active rig:** one RigType triplet visible at a time on `Attach_MastRig_01`.
+- Same pivot, transform, hang point within each triplet; **one state** visible at a time.
 - Topgallants / royals: **no extra gameplay slot** — baked into the same package (Basic vs Advanced rig = different mesh triplets).
 - Logic roles `Fore` / `Main` / `Mizzen` live in **data**, not socket names. Mizzen is still `MastRig_XX`.
 
@@ -246,7 +275,7 @@ Validate: **Warning** if `Attach_Flag` missing on each imported MastRig triplet 
 | 半帆 | `Half` | `_Half` |
 | 满帆 | `Full` | `_Full` |
 
-No gameplay readback. Headsail **v0: not built**; future Headsail = visual mesh only until Modifier designed separately.
+No gameplay readback from sail **presentation** meshes. **Headsail Modifier / stats:** out of this slice. Headsail **visual** follows same Full/Half/Furled when meshed; starter **unequipped**.
 
 ### Damage / fire (presentation)
 
@@ -265,6 +294,21 @@ No gameplay readback. Headsail **v0: not built**; future Headsail = visual mesh 
 | Anchor | Hull `Attach_Anchor` |
 | Weapons | Hull `Attach_Weapon_*` — hidden until installed |
 | Flag | MastRig `Attach_Flag` |
+| Headsail (optional) | Hull `Attach_Headsail_01` — hidden until retrofit equipped |
+
+### Content paths & catalog (SmallSailer01)
+
+| Item | Convention |
+|------|------------|
+| UE content root | `/Game/Ship/SmallSailer01/` |
+| Mesh folder | `/Game/Ship/SmallSailer01/Mesh/` |
+| Disk FBX inbox | `Content/Ship/SmallSailer01/Mesh/*.fbx` |
+| Import tool | `Tools/ImportSmallSailer01Meshes.py` |
+| Validate tool | `Tools/ValidateShipMeshes.py` |
+| Catalog row (proposed) | `ShipType_SmallSailer01` — `FShipDefinition.Mesh` = Hull only |
+| Main rig meshes | **Not** on `FShipDefinition` v0 — presentation BP / future refit table |
+| Starter presentation | One RigType triplet + **no** Headsail child |
+| Default main RigType | TBD in data after Square+Lateen assets land (`Square` or `Lateen`) |
 
 ### Socket authoring (v0)
 
@@ -286,9 +330,15 @@ No gameplay readback. Headsail **v0: not built**; future Headsail = visual mesh 
 
 ```text
 SM_SmallSailer01_Hull.fbx
-SM_SmallSailer01_MastRig01_TBD_Full.fbx
-SM_SmallSailer01_MastRig01_TBD_Half.fbx
-SM_SmallSailer01_MastRig01_TBD_Furled.fbx
+
+SM_SmallSailer01_MastRig01_Square_Full.fbx
+SM_SmallSailer01_MastRig01_Square_Half.fbx
+SM_SmallSailer01_MastRig01_Square_Furled.fbx
+
+SM_SmallSailer01_MastRig01_Lateen_Full.fbx
+SM_SmallSailer01_MastRig01_Lateen_Half.fbx
+SM_SmallSailer01_MastRig01_Lateen_Furled.fbx
+
 SM_SmallSailer01_Flag_Placeholder.fbx
 SM_SmallSailer01_Figurehead_Placeholder.fbx
 SM_SmallSailer01_Rudder.fbx
@@ -297,7 +347,15 @@ SM_SmallSailer01_MastBroken.fbx
 T_SmallSailer01_OutfitDiagram.png
 ```
 
-Optional later: `SM_Weapon_LightCannon01.fbx` when cannon-mount flow is tested.
+Headsail (after retrofit art — not required for starter hookup):
+
+```text
+SM_SmallSailer01_Headsail01_Full.fbx
+SM_SmallSailer01_Headsail01_Half.fbx
+SM_SmallSailer01_Headsail01_Furled.fbx
+```
+
+Gaff triplet: **deferred** (not phase-one Validate). Optional later: `SM_Weapon_LightCannon01.fbx`.
 
 ### Weapon v0.1 (program lock **B→A**)
 
@@ -309,16 +367,17 @@ Optional later: `SM_Weapon_LightCannon01.fbx` when cannon-mount flow is tested.
 | Check | Severity |
 |-------|----------|
 | Hull `Pontoon_*` ×4 | **Error** |
-| Hull `Attach_MastRig_01`, `Attach_Figurehead`, `Attach_Rudder`, `Attach_Anchor`, `Attach_FX_Fire`, `Attach_Mast_Broken` | **Warning** (first-ship set) |
+| Hull `Attach_MastRig_01`, `Attach_Figurehead`, `Attach_Rudder`, `Attach_Anchor`, `Attach_FX_Fire`, `Attach_Mast_Broken`, **`Attach_Headsail_01`** | **Warning** |
 | Hull `Attach_Weapon_*` ×2 | **Warning** |
-| MastRig triplet `Attach_Flag` | **Warning** |
-| `DT_Ships` mesh paths exist | **Error** if flagship hull missing |
+| Each **Square + Lateen** MastRig mesh exists | **Warning** (Error once type marked shippable in catalog) |
+| Each imported MastRig: `Attach_Flag` | **Warning** |
+| `DT_Ships` Hull path for `ShipType_SmallSailer01` when row exists | **Error** if missing asset |
 
-Scale: **centralized later** — FBX provisional size OK.
+Run: `py "E:/newlife/Project01/Tools/ValidateShipMeshes.py"`
 
-### Explicitly not first-ship
+### Explicitly not SmallSailer01 phase one
 
-Crew Socket / 3D crew; StaySail; Headsail; MastRig_02/03; dynamic cargo; full historical rigging; cloth sim; live mast fracture; boarding ropes.
+Crew Socket / 3D crew; StaySail; **Gaff** meshes; MastRig_02/03; dynamic cargo; full historical rigging; cloth sim; live mast fracture; boarding ropes; Headsail **on starter loadout**.
 
 ## Hull mesh interfaces (index)
 
