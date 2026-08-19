@@ -1,0 +1,57 @@
+---
+description: UE C++ and asset naming for Project01
+alwaysApply: true
+---
+
+# Naming
+
+Shared **entity Ids** and **Content prefixes** are canonical in:
+
+`docs/governance/naming-and-versioning.md`
+
+This file keeps **C++ / UPROPERTY** conventions for Cursor. Do not invent a parallel Id scheme here.
+
+## C++ (UE prefixes — required)
+
+| Kind | Prefix | Example |
+|------|--------|---------|
+| Actor | `A` | `ACity`, `ASimCameraPawn` |
+| UObject | `U` | `UCityObject`, `UCityManagerSubsystem` |
+| Struct | `F` | `FCityDefinition` |
+| Enum | `E` | `ESeaRegion` (when added) |
+| Interface | `I` | `IInteractable` (when added) |
+
+- Module/system prefix in the type name: `City*`, `Sim*`, `UI*` / `SimHud*`, `Fleet*`, `Storage*`, `Market*`, `Trade*`, `Company*`, `Character*`, `Facility*`, `NpcAi*`, `Ship*`; planned: `Condition*`.
+- **No Family\*** — Family design removed; do not add `Family_*` Ids or modules.
+- Files: `CityActor.h` may own class `ACity` (short public name OK if unique).
+- Bools: `b` prefix (`bIsValid`). Out-params: `Out*`.
+- UPROPERTY/UFUNCTION `Category`: `"System"` or `"System|Sub"` (e.g. `"City|Storage"`, `"Market"`).
+
+## Entity Ids (`FName`) — cross-system uniqueness
+
+- Prefer **system-prefixed** Ids so names never collide across systems (Fleet / Goods / Character / …).
+- Form: `<System>_<Name>` in PascalCase after the underscore. Examples:
+  - Fleet: `Fleet_<序号>` (runtime serial; player mark is `PlayerCommandedFleetId`, not Id)
+  - Ship: `Ship_<序号>`
+  - Company: `Company_Player`
+  - Goods: `Goods_Grain`
+  - Character: `Char_PlayerLeader`, `Char_Npc_Advisor`
+  - Facility: `Fac_London_Market`
+- Character Id collision: append numeric suffix (`Char_Foo_2`).
+- Do **not** use bare generic tokens (`Player`, `Default`, `Main`) as Ids.
+- **Legacy exception**: existing City / sea-region Ids stay bare (`London`, `EuropeNW`, …). Do not rename without a migration plan. New systems must use prefixed Ids; do not introduce new bare Ids that could collide with cities or other systems.
+
+## Content assets
+
+| Asset | Prefix | Path |
+|-------|--------|------|
+| Blueprint | `BP_` | `Content/Blueprint/<System>/` (e.g. `Sim/BP_StrategicMapWaterBody`, `GameMode/BP_SimGameMode`) |
+| Widget Blueprint | `WBP_` | `Content/UI/` or `Content/Blueprint/UI/` (e.g. `WBP_SimHud`, `Content/UI/City/WBP_CityPanel`; C++ parent under `Source/.../UI/`) |
+| DataTable | `DT_` | `Content/<System>/` |
+| Static mesh | `SM_` | domain folder |
+| Material | `M_` | `Content/Materials/` |
+| Texture | `T_` | domain folder; UI temp skins `T_UI_*` under `Content/Temp/UI/` |
+| Map | `Map_` | `Content/Maps/Map_<SeaRegion>` |
+
+- Temporary imports only under `Content/Temp/` — never treat as shipping content.
+- Do not rename established Ids (`CityId`, `SeaRegionId`, established goods ids) without a migration plan.

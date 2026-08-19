@@ -1,0 +1,310 @@
+schema_version: 1
+contract_version: 0.1.1
+
+asset:
+  asset_id: ShipType_SmallSailer01
+  asset_type: ship
+  title_zh: 小型单桅沿岸商船
+  working_name: SmallSailer01
+  former_starter_id: SHIP-0001
+  status: REVIEW
+  design_spec: docs/specs/assets/ships/ShipType_SmallSailer01/design.md
+  system_spec: docs/specs/systems/ship-system/ship-system.md
+  catalog_row: ShipType_SmallSailer01
+  catalog_table: /Game/Ship/DT_Ships
+
+visual_master:
+  revision: "0.8"
+  status: LOCKED
+  path: assets/ships/ShipType_SmallSailer01/concept/ShipType_SmallSailer01_concept-master_r0.8.png
+  sha256: 0c848da018e5c4ebe1edc65611d9b46a2e6633a09430aba8af80ccbf01bfe44d
+
+dimensions:
+  length_m:
+    value: 15
+    status: PROVISIONAL
+    note: concept only; no program hard-check
+  beam_m:
+    value: null
+    status: UNSET
+  draft_m:
+    value: null
+    status: UNSET
+  height_without_mast_m:
+    value: null
+    status: UNSET
+
+coordinate_system:
+  ue_forward_axis:
+    value: X
+    status: REVIEW
+  ue_up_axis:
+    value: Z
+    status: REVIEW
+  unit:
+    value: centimeter
+    status: REVIEW
+  blender_forward: "+X"
+  blender_apply_rotation_and_scale: true
+  pivot_definition:
+    value: null
+    status: UNSET
+
+modules:
+  hull:
+    required: true
+    separate_mesh: true
+    role: AFleet_root_static_mesh
+    catalog_field: FShipDefinition.Mesh
+    filename: SM_SmallSailer01_Hull.fbx
+  stern_superstructure:
+    required: true
+    separate_mesh: false
+    note: welded to hull for v0; low two-level wooden stern
+  mast_rig_01:
+    required: true
+    separate_mesh: true
+    scheme: A
+    whole_package: true
+    contains:
+      - mast
+      - yards
+      - sail
+      - minimal_rigging
+    not_separate_ue_meshes:
+      - Mast_Main
+      - Yard_Main
+      - Sail_Main
+    meshy_may_block_out_parts_separately: true
+    blender_must_deliver_as_package: true
+    hang_socket: Attach_MastRig_01
+    hang_host: Hull
+    centerline_required: true
+    rig_types_phase_one:
+      - Square
+      - Lateen
+    rig_types_compatible_deferred:
+      - Gaff
+    states:
+      - Full
+      - Half
+      - Furled
+    filename_pattern: SM_SmallSailer01_MastRig01_<RigType>_<State>
+    active_one_rigtype_at_a_time: true
+    starter_default_rigtype:
+      value: null
+      status: UNSET
+    flag_socket_on_this_mesh: Attach_Flag
+  headsail_01:
+    hull_socket_required: true
+    hull_socket_name: Attach_Headsail_01
+    separate_mesh: true
+    mesh_on_starter_loadout: false
+    filename_pattern: SM_SmallSailer01_Headsail01_<State>
+    states:
+      - Full
+      - Half
+      - Furled
+  bowsprit:
+    required: true
+    separate_mesh: false
+    note: hull structure; do not delete
+  rudder:
+    required: true
+    separate_mesh: true
+    mounting: stern_centerline
+    hang_socket: Attach_Rudder
+    hang_host: Hull
+    filename: SM_SmallSailer01_Rudder.fbx
+  flag:
+    required: true
+    separate_mesh: true
+    replaceable: true
+    hang_socket: Attach_Flag
+    hang_host: MastRig
+    hide_when_rig_hidden_or_mast_broken: true
+    filename: SM_SmallSailer01_Flag_Placeholder.fbx
+  figurehead:
+    actual_asset_required: false
+    separate_mesh: true
+    replaceable: true
+    hang_socket: Attach_Figurehead
+    hang_host: Hull
+    filename: SM_SmallSailer01_Figurehead_Placeholder.fbx
+  anchor:
+    required: true
+    separate_mesh: true
+    hang_socket: Attach_Anchor
+    hang_host: Hull
+    filename: SM_SmallSailer01_Anchor.fbx
+  mast_broken:
+    required: true
+    separate_mesh: true
+    hang_socket: Attach_Mast_Broken
+    hang_host: Hull
+    filename: SM_SmallSailer01_MastBroken.fbx
+
+interfaces:
+  pontoon_bow:
+    required: true
+    name: Pontoon_Bow
+    host: Hull
+    missing_severity: Error
+  pontoon_stern:
+    required: true
+    name: Pontoon_Stern
+    host: Hull
+    missing_severity: Error
+  pontoon_port:
+    required: true
+    name: Pontoon_Port
+    host: Hull
+    missing_severity: Error
+  pontoon_starboard:
+    required: true
+    name: Pontoon_Starboard
+    host: Hull
+    missing_severity: Error
+  mast_mount:
+    required: true
+    name: Attach_MastRig_01
+    host: Hull
+    centerline_required: true
+    deprecated_alias: Attach_Sail_Main
+  flag_socket:
+    required: true
+    name: Attach_Flag
+    host: MastRig
+    status: REVIEW
+  figurehead_socket:
+    required: true
+    name: Attach_Figurehead
+    host: Hull
+    status: REVIEW
+  rudder_mount:
+    required: true
+    name: Attach_Rudder
+    host: Hull
+    stern_centerline_required: true
+  anchor_socket:
+    required: true
+    name: Attach_Anchor
+    host: Hull
+  fx_fire:
+    required: true
+    name: Attach_FX_Fire
+    host: Hull
+  mast_broken_socket:
+    required: true
+    name: Attach_Mast_Broken
+    host: Hull
+  headsail_socket:
+    required: true
+    name: Attach_Headsail_01
+    host: Hull
+  weapon_port_01:
+    required: true
+    name: Attach_Weapon_Port_01
+    host: Hull
+    mesh_optional_v0: true
+  weapon_starboard_01:
+    required: true
+    name: Attach_Weapon_Starboard_01
+    host: Hull
+    mesh_optional_v0: true
+  crew_sockets:
+    allowed: false
+
+deck:
+  main_cargo_hatch:
+    count: 1
+    cover_panels_allowed: true
+  stairs_to_stern_platform:
+    required: true
+  decorative_barrels:
+    allowed_in_base_asset: false
+  loose_clutter:
+    allowed_in_base_asset: false
+
+visual_constraints:
+  preserve_v0_8_bow_midship_transition: true
+  preserve_v0_8_midship_stern_transition: true
+  stern_canvas_canopy_allowed: false
+  low_two_level_wooden_stern_structure_required: true
+  small_functional_windows_required: true
+  dark_external_bands_must_read_as_wood: true
+  expanded_sail_allowed_in_hull_concept: false
+
+view_and_detail:
+  typical_gameplay_distance_m: [50, 200]
+  extreme_minimum_readable_distance_m: 10
+  note: 50-200m is normal strategic view; 10m is extreme close, not a conflict
+
+cargo_visualization:
+  generate_by_commodity_type: false
+  generate_by_quantity: false
+
+job_layout_2d:
+  required: true
+  view: perspective_side
+  bow_direction: left
+  size: 2048x1024
+  transparent: true
+  margin_percent: [8, 10]
+  baked_hotspots_allowed: false
+  strict_structural_match_to_3d: true
+  filename: T_SmallSailer01_OutfitDiagram.png
+  asset_path: Content/UI/Ship/ or Content/Ship/UI/
+  status: REVIEW
+  slot_ids:
+    - OutfitSlot_CaptainCabin
+    - OutfitSlot_Deck
+    - OutfitSlot_GunDeck
+    - OutfitSlot_ChartRoom
+    - OutfitSlot_Lookout
+    - OutfitSlot_Sails
+    - OutfitSlot_CannonRefit
+
+meshy:
+  generation_target: hull_base
+  remove_expanded_sails: true
+  simplify_rigging: true
+  remove_loose_deck_props: true
+  preserve_locked_silhouette: true
+  expected_output_path: assets/ships/ShipType_SmallSailer01/meshy/
+
+blender:
+  symmetry_check_required: true
+  topology_cleanup_required: true
+  modularization_required: true
+  uv_required: true
+  material_slots_required: true
+  lod_required: true
+  collision_required: true
+  output_path: assets/ships/ShipType_SmallSailer01/blender/
+  one_fbx_per_asset: true
+
+ue5:
+  destination_path: /Game/Ships/ShipType_SmallSailer01/
+  mesh_folder: /Game/Ships/ShipType_SmallSailer01/Mesh/
+  disk_fbx_inbox: Content/Ships/ShipType_SmallSailer01/Mesh/
+  sockets_authored_in: UE Static Mesh Editor
+  validate_reads: final UE StaticMesh
+  lod_required: true
+  collision_required: true
+  nanite:
+    enabled: null
+    status: UNSET
+  output_path: assets/ships/ShipType_SmallSailer01/ue5/
+  import_tool: Tools/ImportSmallSailer01Meshes.py
+  validate_tool: Tools/ValidateShipMeshes.py
+
+forbidden:
+  - invent_unapproved_dimensions
+  - add_crew_sockets
+  - generate_cargo_by_type_or_quantity
+  - flatten_locked_hull_transitions
+  - treat_tool_adapter_as_canonical
+  - deliver_mast_yard_sail_as_separate_ue_meshes_for_phase_one
+  - put_Attach_Flag_on_Hull
+  - attach_character_meshes_to_Attach_sockets

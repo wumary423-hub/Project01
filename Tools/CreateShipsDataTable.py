@@ -20,9 +20,9 @@ ASSET_NAME = "DT_Ships"
 ASSET_PATH = f"{ASSET_DIR}/{ASSET_NAME}"
 ROW_STRUCT_PATH = "/Script/Project01.ShipDefinition"
 
-# SmallSailer01 (V0.1.1): when Hull lands at /Game/Ship/SmallSailer01/Mesh/SM_SmallSailer01_Hull,
+# SmallSailer01: when Hull lands at /Game/Ships/ShipType_SmallSailer01/Mesh/SM_SmallSailer01_Hull,
 # add row ShipType_SmallSailer01 with Mesh = that Hull. MastRig Square/Lateen meshes are
-# presentation/refit assets — not FShipDefinition.Mesh (see ship-system.mdc).
+# presentation/refit assets — not FShipDefinition.Mesh (see ship-program.md / integration.yaml).
 
 MESH_COG = "/Game/Temp/Ship1/Ship_1_tmp.Ship_1_tmp"
 MESH_CARAVEL = "/Game/Temp/Ship2/Ship_2_tmp.Ship_2_tmp"

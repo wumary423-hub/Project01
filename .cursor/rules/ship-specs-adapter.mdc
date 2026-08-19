@@ -1,0 +1,21 @@
+---
+description: Adapter for ship-related code and asset integration
+globs:
+  - "Source/**/*Ship*"
+  - "Content/Ship/**"
+  - "Content/Ships/**"
+  - "docs/specs/systems/ship-system/**"
+  - "docs/specs/assets/ships/**"
+alwaysApply: false
+---
+
+For ship-related work, read in order:
+
+- `docs/specs/systems/ship-system/ship-system.md`
+- `docs/specs/systems/ship-system/ship-system.yaml`
+- `docs/specs/systems/ship-system/ship-program.md`
+- `docs/specs/assets/ships/index.yaml`
+- the target ship's `design.md`
+- the target ship's `integration.yaml`
+
+`.cursor/rules/ship-system.mdc` is an adapter entry only. Canonical facts are under `docs/specs`.

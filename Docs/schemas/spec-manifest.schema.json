@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/spec-manifest.schema.json",
+  "title": "Game Spec Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "authority",
+    "systems",
+    "assets"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "project": {
+      "type": "object",
+      "required": [
+        "project_id",
+        "repository_role"
+      ],
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repository_role": {
+          "const": "canonical_source"
+        }
+      },
+      "additionalProperties": true
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "policy",
+        "canonical_root",
+        "asset_root"
+      ],
+      "additionalProperties": true
+    },
+    "systems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "system_id",
+          "canonical_spec",
+          "status"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "asset_id",
+          "design_spec",
+          "integration_contract",
+          "status"
+        ],
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

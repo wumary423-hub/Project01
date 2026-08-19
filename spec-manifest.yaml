@@ -1,0 +1,63 @@
+schema_version: 1
+
+project:
+  project_id: GAME-PROJECT
+  title_zh: 航海游戏项目
+  engine: UE5
+  repository_role: canonical_source
+  default_language: zh-CN
+
+authority:
+  policy: docs/governance/source-of-truth.md
+  canonical_root: docs/specs
+  schema_root: docs/schemas
+  asset_root: assets
+  generated_exports_root: exports
+
+governance:
+  naming_and_versioning: docs/governance/naming-and-versioning.md
+  change_control: docs/governance/change-control.md
+  tool_context_protocol: docs/governance/tool-context-protocol.md
+
+systems:
+  - system_id: SYS-SHIP
+    title_zh: 船只系统
+    canonical_spec: docs/specs/systems/ship-system/ship-system.md
+    program_spec: docs/specs/systems/ship-system/ship-program.md
+    machine_contract: docs/specs/systems/ship-system/ship-system.yaml
+    changelog: docs/specs/systems/ship-system/changelog.md
+    status: LOCKED
+    migration:
+      state: MIGRATED
+      legacy_path: .cursor/rules/ship-system.mdc
+      legacy_version: "0.1.1"
+      legacy_status: ADAPTER
+      authority_until_approved: canonical_spec
+
+assets:
+  - asset_id: ShipType_SmallSailer01
+    asset_type: ship
+    title_zh: 小型单桅沿岸商船
+    former_starter_id: SHIP-0001
+    design_spec: docs/specs/assets/ships/ShipType_SmallSailer01/design.md
+    integration_contract: docs/specs/assets/ships/ShipType_SmallSailer01/integration.yaml
+    changelog: docs/specs/assets/ships/ShipType_SmallSailer01/changelog.md
+    visual_master:
+      revision: "0.8"
+      status: LOCKED
+      path: assets/ships/ShipType_SmallSailer01/concept/ShipType_SmallSailer01_concept-master_r0.8.png
+      sha256: 0c848da018e5c4ebe1edc65611d9b46a2e6633a09430aba8af80ccbf01bfe44d
+    status: REVIEW
+
+tool_adapters:
+  cursor:
+    governance_rule: .cursor/rules/spec-governance.mdc
+    ship_rule: .cursor/rules/ship-specs-adapter.mdc
+  chatgpt:
+    guide: docs/tool-guides/chatgpt.md
+  meshy:
+    guide: docs/tool-guides/meshy.md
+  blender:
+    guide: docs/tool-guides/blender.md
+  ue5:
+    guide: docs/tool-guides/ue5.md

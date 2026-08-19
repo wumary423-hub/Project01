@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/ship-asset.schema.json",
+  "title": "Ship Asset Integration Contract",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "contract_version",
+    "asset",
+    "visual_master",
+    "dimensions",
+    "modules",
+    "interfaces",
+    "job_layout_2d",
+    "meshy",
+    "blender",
+    "ue5"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "contract_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "asset": {
+      "type": "object",
+      "required": [
+        "asset_id",
+        "asset_type",
+        "status",
+        "design_spec",
+        "system_spec"
+      ],
+      "properties": {
+        "asset_id": {
+          "type": "string",
+          "pattern": "^ShipType_[A-Za-z][A-Za-z0-9]*$"
+        },
+        "asset_type": {
+          "const": "ship"
+        },
+        "status": {
+          "enum": [
+            "DRAFT",
+            "REVIEW",
+            "LOCKED",
+            "SUPERSEDED",
+            "DEPRECATED"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "visual_master": {
+      "type": "object",
+      "required": [
+        "revision",
+        "status",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "DRAFT",
+            "REVIEW",
+            "LOCKED",
+            "SUPERSEDED",
+            "DEPRECATED"
+          ]
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": true
+    },
+    "dimensions": {
+      "type": "object"
+    },
+    "coordinate_system": {
+      "type": "object"
+    },
+    "modules": {
+      "type": "object",
+      "required": [
+        "hull",
+        "mast_rig_01",
+        "rudder",
+        "flag",
+        "figurehead"
+      ],
+      "additionalProperties": true
+    },
+    "interfaces": {
+      "type": "object",
+      "required": [
+        "flag_socket",
+        "figurehead_socket",
+        "crew_sockets"
+      ],
+      "properties": {
+        "crew_sockets": {
+          "type": "object",
+          "required": [
+            "allowed"
+          ],
+          "properties": {
+            "allowed": {
+              "const": false
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "job_layout_2d": {
+      "type": "object",
+      "required": [
+        "required",
+        "view",
+        "bow_direction",
+        "strict_structural_match_to_3d"
+      ],
+      "properties": {
+        "required": {
+          "const": true
+        },
+        "view": {
+          "const": "perspective_side"
+        },
+        "bow_direction": {
+          "const": "left"
+        },
+        "strict_structural_match_to_3d": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "meshy": {
+      "type": "object"
+    },
+    "blender": {
+      "type": "object"
+    },
+    "ue5": {
+      "type": "object"
+    },
+    "forbidden": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

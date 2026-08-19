@@ -1,0 +1,19 @@
+﻿Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+Saved/
+FileOpenOrder/
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.tmp
+*.log
+Thumbs.db
+Desktop.ini
+
+# Spec starter unpack directory (not canonical; do not commit)
+Docs/ProjectRule/game-spec-system-starter-v0.1.0/
+

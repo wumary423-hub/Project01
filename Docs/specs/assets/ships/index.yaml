@@ -1,0 +1,14 @@
+schema_version: 1
+asset_type: ship
+
+assets:
+  - asset_id: ShipType_SmallSailer01
+    title_zh: 小型单桅沿岸商船
+    status: REVIEW
+    former_starter_id: SHIP-0001
+    design_spec: docs/specs/assets/ships/ShipType_SmallSailer01/design.md
+    integration_contract: docs/specs/assets/ships/ShipType_SmallSailer01/integration.yaml
+    concept_master:
+      revision: "0.8"
+      status: LOCKED
+      path: assets/ships/ShipType_SmallSailer01/concept/ShipType_SmallSailer01_concept-master_r0.8.png

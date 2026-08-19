@@ -4,7 +4,7 @@ Validate SmallSailer01 (and DT_Ships hull) StaticMesh sockets + expected mesh pa
 Run in editor:
   py "E:/newlife/Project01/Tools/ValidateShipMeshes.py"
 
-Authority: .cursor/rules/ship-system.mdc V0.1.1
+Authority: docs/specs/systems/ship-system (LOCKED) + ShipType_SmallSailer01/integration.yaml
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ except ImportError:
     from EditorPyRunBanner import run_main
 
 WORKFLOW = "SmallSailer01"
-MESH_ROOT = "/Game/Ship/SmallSailer01/Mesh"
+MESH_ROOT = "/Game/Ships/ShipType_SmallSailer01/Mesh"
 HULL_ASSET = f"{MESH_ROOT}/SM_{WORKFLOW}_Hull"
 DT_SHIPS = "/Game/Ship/DT_Ships"
 CATALOG_TYPE_ID = "ShipType_SmallSailer01"
@@ -178,7 +178,7 @@ def validate_dt_ships_hull() -> int:
     names = {str(n) for n in row_names}
     if CATALOG_TYPE_ID not in names:
         _log_warn(
-            f"DT_Ships has no row {CATALOG_TYPE_ID} yet — add when Hull lands (see ship-system.mdc)"
+            f"DT_Ships has no row {CATALOG_TYPE_ID} yet — add when Hull lands (see ship-program.md)"
         )
         return 0
 
@@ -197,7 +197,7 @@ def main() -> None:
     total_errors = 0
     total_warnings = 0
 
-    unreal.log("[ValidateShipMeshes] --- SmallSailer01 V0.1.1 ---")
+    unreal.log("[ValidateShipMeshes] --- ShipType_SmallSailer01 ---")
 
     e, w = validate_hull()
     total_errors += e

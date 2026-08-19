@@ -1,0 +1,17 @@
+---
+description: Canonical specification governance for the entire game repository
+alwaysApply: true
+---
+
+The Git repository is the canonical source of truth.
+
+Before making changes that affect systems, assets, UI, Blender exports, UE5 integration, or tool workflows:
+
+1. Read `spec-manifest.yaml`.
+2. Read `docs/governance/source-of-truth.md`.
+3. Read `docs/governance/naming-and-versioning.md` before inventing Ids or asset filenames.
+4. Read the relevant canonical system and asset specs.
+5. Report missing, inaccessible, REVIEW, UNSET, or conflicting inputs.
+6. Never treat chat history, model memory, or `.cursor/rules` as a replacement for canonical specs.
+7. Do not change LOCKED facts without explicit user approval, a recorded diff, and a version update.
+8. Candidate changes may be written as DRAFT/REVIEW, but must not overwrite LOCKED originals.

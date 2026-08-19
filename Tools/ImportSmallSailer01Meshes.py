@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-Import SmallSailer01 FBX files from Content/Ship/SmallSailer01/Mesh into UE StaticMeshes.
+Import SmallSailer01 FBX files from Content/Ships/ShipType_SmallSailer01/Mesh into UE StaticMeshes.
 Run in editor:
   py "E:/newlife/Project01/Tools/ImportSmallSailer01Meshes.py"
 
-Expected disk layout (one FBX per asset — see ship-system.mdc V0.1.1):
-  Content/Ship/SmallSailer01/Mesh/SM_SmallSailer01_Hull.fbx
-  Content/Ship/SmallSailer01/Mesh/SM_SmallSailer01_MastRig01_Square_Full.fbx
+Expected disk layout (one FBX per asset — see Docs/specs ship-system LOCKED):
+  Content/Ships/ShipType_SmallSailer01/Mesh/SM_SmallSailer01_Hull.fbx
+  Content/Ships/ShipType_SmallSailer01/Mesh/SM_SmallSailer01_MastRig01_Square_Full.fbx
   ...
 
 Destination:
-  /Game/Ship/SmallSailer01/Mesh/<asset_name>
+  /Game/Ships/ShipType_SmallSailer01/Mesh/<asset_name>
 """
 
 from __future__ import annotations
@@ -27,8 +27,9 @@ except ImportError:
     from EditorPyRunBanner import run_main
 
 WORKFLOW = "SmallSailer01"
-DISK_SUBDIR = f"Ship/{WORKFLOW}/Mesh"
-UE_DEST = f"/Game/Ship/{WORKFLOW}/Mesh"
+TYPE_FOLDER = "ShipType_SmallSailer01"
+DISK_SUBDIR = f"Ships/{TYPE_FOLDER}/Mesh"
+UE_DEST = f"/Game/Ships/{TYPE_FOLDER}/Mesh"
 
 # Phase-one required + modular parts. Headsail optional (retrofit).
 FBX_NAMES = [
