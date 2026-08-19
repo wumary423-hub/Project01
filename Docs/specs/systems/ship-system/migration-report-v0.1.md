@@ -1,6 +1,18 @@
-# Ship System V0.1 Migration Report
+# Ship System V0.1 Migration Report — SUPERSEDED
 
-Status: **ROUND 1 — REVIEW only. Not submitted. Old `.mdc` still authoritative.**  
+**状态：SUPERSEDED。** 迁移已完成。本文是 2026-08-19 第一轮对照快照，**不是现行规范**。
+
+- **不要**再执行本文的迁移步骤或「建议差异」。
+- **不要**把文中的 `SHIP-0001`、`/Game/Ships/SHIP-0001/`、或「旧 `.mdc` 仍权威」当成现行规则。
+- 现行主键：`ShipType_SmallSailer01`（`SHIP-0001` 仅 `former_starter_id`）。
+- 现行权威：`ship-system.md` / `ship-program.md` / `ship-system.yaml`（LOCKED）+ 单船 `integration.yaml` / `design.md`。
+- 命名：`Docs/governance/naming-and-versioning.md`。
+
+下文原样保留，仅供核对历史。若与 LOCKED 文件冲突，以 LOCKED 文件为准。
+
+---
+
+Status at time of writing: **ROUND 1 — REVIEW only. Not submitted. Old `.mdc` still authoritative.**  
 Date: 2026-08-19  
 Reporter: Cursor (working tree; HEAD = `docs-sync`)
 

@@ -23,6 +23,10 @@
 - 纳入程序命名到 `naming-and-versioning.md`；
 - Import/Validate 路径改为 `/Game/Ships/ShipType_SmallSailer01/`。
 
+## 0.2.1 — 2026-08-19 — 澄清
+
+- 将 `migration-from-cursor.md` 与 `migration-report-v0.1.md` 标为 SUPERSEDED，避免再按旧主键 `SHIP-0001` 执行迁移。
+
 
 
 ## 0.1.0+migration — 2026-08-19 — REVIEW

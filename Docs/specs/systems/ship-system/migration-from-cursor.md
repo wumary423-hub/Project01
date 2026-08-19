@@ -1,4 +1,15 @@
-# 从 `.cursor/rules/ship-system.mdc V0.1 LOCKED` 迁移
+# 从 `.cursor/rules/ship-system.mdc V0.1 LOCKED` 迁移 — SUPERSEDED
+
+**状态：SUPERSEDED。** 船只系统迁移已完成（2026-08-19，规范 v0.2.0 LOCKED）。
+
+- **不要**再按本文步骤做新一轮迁移。
+- **不要**再生成新的 `migration-report`，也不要把旧 `.mdc` 当权威。
+- 现行权威：`ship-system.md` / `ship-program.md` / `ship-system.yaml` + `ShipType_SmallSailer01` 的 `design.md` / `integration.yaml`。
+- Cursor 入口：`.cursor/rules/ship-system.mdc`（适配层）。
+
+下文是当时的操作清单，仅供历史核对。
+
+---
 
 ## 禁止事项
 
