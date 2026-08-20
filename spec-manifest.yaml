@@ -22,9 +22,11 @@ governance:
 production_rules:
   ship_assets:
     spec: Docs/specs/assets/ships/production-rules.md
+    version: "1.1.0"
     status: LOCKED
     scope: all_ship_assets
     decision_record: Docs/specs/assets/ships/decisions/ADR-0001-production-context-and-generation.md
+    latest_decision_record: Docs/specs/assets/ships/decisions/ADR-0002-target-scoped-regeneration.md
 
 systems:
   - system_id: SYS-SHIP
