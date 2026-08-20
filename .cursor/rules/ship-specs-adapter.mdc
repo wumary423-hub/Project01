@@ -11,11 +11,19 @@ alwaysApply: false
 
 For ship-related work, read in order:
 
+- `spec-manifest.yaml`
+- `Docs/governance/source-of-truth.md`
 - `docs/specs/systems/ship-system/ship-system.md`
+- `Docs/specs/assets/ships/production-rules.md`
 - `docs/specs/systems/ship-system/ship-system.yaml`
 - `docs/specs/systems/ship-system/ship-program.md`
-- `docs/specs/assets/ships/index.yaml`
+- `Docs/specs/assets/ships/index.yaml`
 - the target ship's `design.md`
+- the target ship's bound/specified material card when visual production is involved
 - the target ship's `integration.yaml`
 
-`.cursor/rules/ship-system.mdc` is an adapter entry only. Canonical facts are under `docs/specs`.
+For visual work, apply `Docs/specs/assets/ships/production-rules.md` before loading any visual master. In clean-slate “重新/重出” work, do not use the previous concept/master image as generation input. For direct image editing, use the user-designated image as the edit base.
+
+Do not trigger image production merely because the final asset pipeline is visual; analyze the user's text first and only generate when the user explicitly requests a visual deliverable.
+
+`.cursor/rules/ship-system.mdc` is an adapter entry only. Canonical facts are under `Docs/specs` / `docs/specs`; do not maintain a second conflicting rule set here.
