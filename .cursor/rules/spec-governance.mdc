@@ -15,3 +15,13 @@ Before making changes that affect systems, assets, UI, Blender exports, UE5 inte
 6. Never treat chat history, model memory, or `.cursor/rules` as a replacement for canonical specs.
 7. Do not change LOCKED facts without explicit user approval, a recorded diff, and a version update.
 8. Candidate changes may be written as DRAFT/REVIEW, but must not overwrite LOCKED originals.
+
+## Single Developer Mode (Git archive)
+
+This is a solo project. GitHub `docs-sync` is public read and public write.
+
+Allowed without PR, branch approval, or extra ACL: create files, modify non-LOCKED specs, add asset archives.
+
+Still forbidden without explicit Ruida approval: deleting existing specs; overwriting LOCKED design; changing published visual masters / published asset contracts.
+
+Concept material cards (`Docs/specs/assets/materials/MAT-*`) are concept-art look references only. Do not bind them to UE `M_` / mesh materials.

@@ -1,9 +1,9 @@
 ---
 document_type: governance_policy
-document_version: 0.1.0
+document_version: 0.1.1
 status: REVIEW
 authority: canonical
-last_updated: 2026-08-19
+last_updated: 2026-08-20
 ---
 
 # 规范变更控制
@@ -67,11 +67,29 @@ last_updated: 2026-08-19
 - 明确哪些字段仍为 `UNSET`；
 - 不把猜测写成确定事实。
 
-## 6. 单人项目的简化流程
+## 6. Single Developer Mode
 
-本项目由单人开发，可以不强制使用正式 Pull Request；但每次关键锁定仍应：
+本项目为单人独立开发。Git 仓库默认：
 
-1. 保留清晰 diff；
-2. 运行校验；
-3. 使用明确 commit；
-4. 记录用户批准。
+| 项 | 默认 |
+|----|------|
+| 读权限 | public |
+| 写权限 | public |
+| 创建文件 | Allowed |
+| 修改文件 | Allowed |
+| 新增资产档案 | Allowed |
+
+不需要：
+
+- Pull Request 流程；
+- 分支审批；
+- 额外的人工权限确认 / 多人 ACL。
+
+仍必须：
+
+- **不删除**已有规范；
+- **不覆盖** `LOCKED` 设计内容（改 LOCKED 仍需用户明确批准 + ADR + 版本）；
+- **不修改**已发布资产版本（已引用且 LOCKED 的视觉母版 / 已发布合同），除非用户明确要求；
+- 不把猜测写成程序接口或精确尺寸。
+
+关键锁定仍应保留清晰 diff、校验、明确 commit，以及用户对 LOCKED 变更的批准记录。

@@ -1,0 +1,33 @@
+schema_version: 1
+contract_version: 0.1.0
+
+asset:
+  asset_id: MAT-001
+  asset_type: concept_material_card
+  title_zh: 船只概念材质卡
+  status: REVIEW
+  scope: concept_art_look_card
+  design_spec: docs/specs/assets/materials/MAT-001/design.md
+  not_a_ue_mesh_material: true
+  note: Concept-art look card only. Program, UE, Meshy, and Blender mesh delivery must ignore this file for SM_* / AFleet materials.
+
+ue:
+  material_path:
+    value: null
+    status: UNSET
+    applicable: false
+    note: Not a game mesh material. Do not create or bind Content/Materials from this card.
+  material_instance_path:
+    value: null
+    status: UNSET
+    applicable: false
+  textures: []
+
+used_by:
+  - asset_id: ShipType_SmallSailer01
+    role: concept_look_reference
+    binds_to_ue_mesh: false
+    visual_master:
+      revision: "0.8"
+      status: LOCKED
+      path: assets/ships/ShipType_SmallSailer01/concept/ShipType_SmallSailer01_concept-master_r0.8.png

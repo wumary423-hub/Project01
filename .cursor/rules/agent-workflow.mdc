@@ -23,7 +23,16 @@ alwaysApply: true
 
 ## Program ↔ resource AI sync (GitHub `docs-sync`)
 
-**Single source on GitHub branch `docs-sync`** — Cursor（程序）与外部设计 AI（ChatGPT、Google AI Studio / Gemini / Nano Banana）读写同一套文件。单人项目：Ruida 授权这些工具按任务读写，不另设权限门禁。
+**Single source on GitHub branch `docs-sync`** — Cursor（程序）与外部设计 AI（ChatGPT、Google AI Studio / Gemini / Nano Banana）读写同一套文件。
+
+### Single Developer Mode
+
+- Git 读 / 写：public
+- Create / Modify / Add Assets：Allowed
+- 不需要 PR、分支审批、额外人工 ACL
+- 不删除已有规范；不覆盖 LOCKED；不擅自改已发布资产版本
+- 明确的档案工作单（列出要创建/修改的 `Docs/specs` 路径）视为对该档案范围的实现许可
+- 概念材质卡 `MAT-*` 只给概念图；程序不要拿它改游戏 3D mesh 材质
 
 ### Authority
 

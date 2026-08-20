@@ -1,0 +1,39 @@
+---
+description: No implementation without Ruida's explicit approval (except 无人模式)
+alwaysApply: true
+---
+
+# Implementation approval (Ruida)
+
+Designer **Ruida** owns go/no-go on all implementation in this project.
+
+## Exception: spec / asset archive work orders
+
+When Ruida issues an explicit archive work order (named files under `Docs/specs`, `Docs/governance`, or `Docs/tool-guides`), that message is approval for that archive scope. Single Developer Mode: create / modify / add allowed; no PR. Still do not overwrite LOCKED or published visual masters.
+
+## Exception: 无人模式
+
+When Ruida enables **无人模式** with a dev goal + acceptance criteria, that message **is** approval for that scope. Follow `.cursor/rules/unattended-mode.mdc`. Do not wait for a separate「可以开始实现」.
+
+## Mandatory gate (default — not in 无人模式)
+
+- **Do not start implementing** (edit code, configs, Content via tools, scripts that mutate the project, or “quick fixes”) until Ruida **explicitly agrees** to a discussed plan.
+- Discuss first: cause hypotheses, options, trade-offs. Wait for a clear go-ahead (e.g. “按方案1改”, “可以开始实现”, “同意”).
+- Uncertain cause → **analyze and discuss only**; do not “try a fix” in the repo.
+- Reverts of the agent’s own unapproved changes from the same turn/session are allowed when Ruida rejects or corrects overreach.
+
+## What counts as approval
+
+- Explicit consent to a **named approach** or checklist.
+- “先改 / 可以做 / 实现吧” after options were presented.
+
+## What does **not** count
+
+- Describing symptoms, agreeing with a diagnosis, or asking “是不是 X”.
+- Silence, “嗯”, or continuing the topic without a go-ahead.
+- The agent deciding a fix is “obvious” or “small”.
+
+## After approval
+
+- Implement only the agreed scope; if scope creeps, **stop and ask again**.
+- Prefer Chinese for design discussion with Ruida unless they write in English.

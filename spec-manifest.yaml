@@ -58,6 +58,16 @@ assets:
       path: assets/ships/ShipType_SmallSailer01/concept/ShipType_SmallSailer01_concept-master_r0.8.png
       sha256: 0c848da018e5c4ebe1edc65611d9b46a2e6633a09430aba8af80ccbf01bfe44d
     status: REVIEW
+  - asset_id: MAT-001
+    asset_type: concept_material_card
+    title_zh: 船只概念材质卡
+    design_spec: docs/specs/assets/materials/MAT-001/design.md
+    integration_contract: docs/specs/assets/materials/MAT-001/integration.yaml
+    changelog: docs/specs/assets/materials/MAT-001/changelog.md
+    scope: concept_art_look_card
+    related_assets:
+      - ShipType_SmallSailer01
+    status: REVIEW
 
 tool_adapters:
   cursor:

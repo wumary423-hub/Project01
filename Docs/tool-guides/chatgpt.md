@@ -2,6 +2,8 @@
 
 与 Google AI Studio 共用 Git 分支 `docs-sync`。Studio 适配见 `docs/tool-guides/google-ai-studio.md`。
 
+Single Developer Mode：仓库 public 读/写；允许创建、修改、新增资产档案。不需要 PR。不得删规范、不得覆盖 LOCKED、不得改已发布视觉母版。概念材质卡 `MAT-*` 只用于出图，不绑定 UE 网格材质。
+
 ## 推荐方式
 
 优先通过 GitHub连接读取指定仓库和 commit。

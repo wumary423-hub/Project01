@@ -1,6 +1,6 @@
 ---
 document_type: governance_policy
-document_version: 0.1.1
+document_version: 0.1.2
 status: REVIEW
 authority: canonical
 last_updated: 2026-08-20
@@ -60,5 +60,12 @@ snapshot_date: YYYY-MM-DD
 - 以模型记忆替代文件；
 - 声称读取未访问的文件；
 - 私自修改 LOCKED 内容；
+- 删除已有规范；
 - 在工具私有规则中复制并长期维护第二套权威事实；
 - 通过“看起来合理”填补程序接口或尺寸字段。
+
+## 6. Git 档案写入（Single Developer Mode）
+
+默认允许：创建文件、修改非 LOCKED 文件、新增资产档案。  
+不需要 PR、分支审批或额外 ACL。  
+改 `LOCKED` 或已发布视觉母版仍须用户明确批准。

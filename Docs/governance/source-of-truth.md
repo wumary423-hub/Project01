@@ -1,6 +1,6 @@
 ---
 document_type: governance_policy
-document_version: 0.1.1
+document_version: 0.1.2
 status: REVIEW
 authority: canonical
 last_updated: 2026-08-20
@@ -67,7 +67,15 @@ last_updated: 2026-08-20
 4. 提出候选解决方式；
 5. 等待用户批准后再修改权威规范。
 
-## 7. Cursor 船只规则
+## 7. Git 读写（Single Developer Mode）
+
+仓库默认 public 读 / public 写。规范与资产档案允许创建、修改、新增。不采用多人团队权限模型（无强制 PR、无分支审批）。
+
+不得删除已有规范；不得覆盖 `LOCKED` 原文；不得在未要求时改已发布资产定义。
+
+概念材质卡（`MAT-*`）只服务概念图，不是 UE 网格材质权威。
+
+## 8. Cursor 船只规则
 
 `.cursor/rules/ship-system.mdc` 是适配入口。权威正文：
 
