@@ -19,8 +19,11 @@ Read in order:
 8. Target ship `design.md`
 9. Bound/specified material card for visual production
 10. Target ship `integration.yaml`
+11. Approved upstream artifacts required by the current production stage
 
-For visual work, follow `Docs/specs/assets/ships/production-rules.md`: analyze text before generating, do not auto-generate for ordinary discussion, distinguish direct image edit from clean-slate “重新/重出”, and treat material-card colors/constraints as hard requirements.
+For visual work, follow `Docs/specs/assets/ships/production-rules.md`: analyze text before generating, do not auto-generate for ordinary discussion, distinguish direct image edit from target-scoped “重新/重出”, and treat material-card colors/constraints as hard requirements.
+
+For “重新/重出”, identify the artifact being redone. Do not use that artifact's previous version as the basis, but do continue to use every upstream source required by the canonical workflow. “重新” resets the target artifact, not the whole dependency chain.
 
 Former V0.1.1 lock text was migrated on 2026-08-19. Git history of this path still has the old full text.
 
