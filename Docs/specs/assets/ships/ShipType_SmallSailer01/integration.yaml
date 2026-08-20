@@ -1,5 +1,5 @@
 schema_version: 1
-contract_version: 0.1.2
+contract_version: 0.1.3
 
 asset:
   asset_id: ShipType_SmallSailer01
@@ -12,6 +12,10 @@ asset:
   system_spec: docs/specs/systems/ship-system/ship-system.md
   catalog_row: ShipType_SmallSailer01
   catalog_table: /Game/Ship/DT_Ships
+  historical_prototype:
+    value: "Cog (ship)"
+    role: historical_prototype
+    strict_reconstruction_required: false
 
 visual_master:
   revision: "0.8"
@@ -33,6 +37,10 @@ dimensions:
   height_without_mast_m:
     value: null
     status: UNSET
+  main_mast_length_relative_to_ship_length:
+    relation: greater_than
+    ship_length_ratio_min_exclusive: 1.0
+    note: Main mast length must be strictly greater than ship length; do not derive a locked absolute mast length from provisional 15m ship length.
 
 coordinate_system:
   ue_forward_axis:
@@ -80,6 +88,8 @@ modules:
     hang_socket: Attach_MastRig_01
     hang_host: Hull
     centerline_required: true
+    length_must_exceed_ship_length: true
+    length_to_ship_length_ratio_min_exclusive: 1.0
     rig_types_phase_one:
       - Square
       - Lateen
@@ -221,16 +231,29 @@ hull_openings:
     total_count: 4
     port_count: 2
     starboard_count: 2
-    bilateral_correspondence_required: true
+    mirror_axis: longitudinal_centerline
+    bilateral_mirror_required: true
+    deck_level: top_deck
+    other_deck_levels_allowed: false
     note: Structural hull openings only; does not define installed weapon count or require one weapon socket per gunport.
 
 deck:
   main_cargo_hatch:
     count: 1
     cover_panels_allowed: true
+    overlap_with_main_mast_or_mast_step_allowed: false
+    must_clear_main_mast_footprint: true
   stairs_to_stern_platform:
     required: true
     count: 1
+    placement: adjacent_to_ship_side
+    centerline_allowed: false
+    side:
+      value: null
+      status: UNSET
+      allowed_values:
+        - port
+        - starboard
     double_symmetric_stairs_allowed: false
   decorative_barrels:
     allowed_in_base_asset: false
@@ -319,3 +342,6 @@ forbidden:
   - deliver_mast_yard_sail_as_separate_ue_meshes_for_phase_one
   - put_Attach_Flag_on_Hull
   - attach_character_meshes_to_Attach_sockets
+  - place_stern_stairs_on_centerline
+  - overlap_main_cargo_hatch_with_main_mast
+  - place_gunports_below_top_deck
