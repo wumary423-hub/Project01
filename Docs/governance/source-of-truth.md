@@ -1,6 +1,6 @@
 ---
 document_type: governance_policy
-document_version: 0.1.2
+document_version: 0.1.3
 status: REVIEW
 authority: canonical
 last_updated: 2026-08-20
@@ -26,6 +26,8 @@ last_updated: 2026-08-20
 
 工具适配规则、聊天记录和模型记忆不得单独修改项目事实。
 
+**船只资产制作额外服从** `Docs/specs/assets/ships/production-rules.md`。该文件为 `LOCKED` 的全局制作规则，适用于所有船只资产的文字分析、出图触发、直接改图、重新生成、材质卡执行与视觉上下文隔离。
+
 ## 3. 用户的即时指令
 
 用户在当前工作会话中的最新明确指令可以创建一个候选变更，并暂时覆盖旧要求以完成本次工作。但是，该变更只有在以下步骤完成后才成为跨工具的正式项目事实：
@@ -36,7 +38,7 @@ last_updated: 2026-08-20
 4. 提交 Git；
 5. 对 `LOCKED` 内容的修改必须获得用户明确批准。
 
-## 4. 视觉权威
+## 4. 视觉权威与生成输入不是同一概念
 
 视觉资源只有在设计规范中被明确引用，并带有版本、状态、路径和校验值时，才属于正式视觉母版。
 
@@ -45,6 +47,13 @@ last_updated: 2026-08-20
 - `ShipType_SmallSailer01` 的 V0.8 Concept Master 为 `LOCKED`；
 - 被否决的生成图不得放入活跃规范路径；
 - 新图在用户批准前只能标记为 `DRAFT` 或 `REVIEW`。
+
+但“视觉母版是正式版本记录”**不代表所有后续生成都必须读取它作为图片输入**。船只资产任务必须先按 `production-rules.md` 判定操作模式：
+
+- 用户要求直接在已有图片上修改，或明确要求参考母版时，指定视觉母版/图片可以作为编辑或参考输入；
+- 用户要求“重新 / 重出 / 从头做 / 推翻上一版”时，属于 clean-slate regeneration，旧概念图和旧视觉母版图片本身必须从本次生成输入中排除；
+- 已经正式转写进当前文字规范的结构事实仍然有效；
+- 普通文字讨论不因存在视觉母版而自动加载图片或触发出图。
 
 ## 5. 不可访问来源
 
@@ -81,6 +90,7 @@ last_updated: 2026-08-20
 
 - `docs/specs/systems/ship-system/ship-system.md`（LOCKED）
 - `docs/specs/systems/ship-system/ship-program.md`（LOCKED）
+- `Docs/specs/assets/ships/production-rules.md`（LOCKED，所有船只资产制作）
 - 单船 `integration.yaml` / `design.md`
 
 旧全文保留在该 `.mdc` 的 Git 历史中。
