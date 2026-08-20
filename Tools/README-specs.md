@@ -24,6 +24,7 @@ python tools/validate_specs.py --strict
 
 ```bash
 python tools/export_context.py ShipType_SmallSailer01 --target chatgpt
+python tools/export_context.py ShipType_SmallSailer01 --target google-ai-studio
 python tools/export_context.py ShipType_SmallSailer01 --target cursor
 python tools/export_context.py ShipType_SmallSailer01 --target meshy
 python tools/export_context.py ShipType_SmallSailer01 --target blender

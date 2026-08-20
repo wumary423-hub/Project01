@@ -1,9 +1,9 @@
 ---
 document_type: governance_policy
-document_version: 0.1.0
+document_version: 0.1.1
 status: REVIEW
 authority: canonical
-last_updated: 2026-08-19
+last_updated: 2026-08-20
 ---
 
 # 工具上下文协议
@@ -33,11 +33,11 @@ last_updated: 2026-08-19
 
 ## 3. 上下文快照
 
-ChatGPT 或外部工具使用上传文件时，应记录：
+ChatGPT、Google AI Studio 或其他外部工具使用上传文件时，应记录：
 
 ```yaml
-source_repository: owner/repository
-source_branch: main
+source_repository: wumary423-hub/Project01
+source_branch: docs-sync
 source_commit: <commit>
 snapshot_date: YYYY-MM-DD
 ```

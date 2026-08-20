@@ -55,6 +55,8 @@ tool_adapters:
     ship_rule: .cursor/rules/ship-specs-adapter.mdc
   chatgpt:
     guide: docs/tool-guides/chatgpt.md
+  google_ai_studio:
+    guide: docs/tool-guides/google-ai-studio.md
   meshy:
     guide: docs/tool-guides/meshy.md
   blender:

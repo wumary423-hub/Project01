@@ -23,47 +23,54 @@ alwaysApply: true
 
 ## Program ↔ resource AI sync (GitHub `docs-sync`)
 
-**Single source on GitHub branch `docs-sync`** — Cursor (program) and external design GPT read/write the same files.
+**Single source on GitHub branch `docs-sync`** — Cursor（程序）与外部设计 AI（ChatGPT、Google AI Studio / Gemini / Nano Banana）读写同一套文件。单人项目：Ruida 授权这些工具按任务读写，不另设权限门禁。
 
 ### Authority
 
 | Layer | Path |
 |-------|------|
-| Program | `.cursor/rules/ship-system.mdc` |
-| Shared contract | `Docs/Ship/ShipAssetContract.md` |
-| Ship design | `Docs/Ship/SmallSailer01.md` |
-| Change log | `Docs/Ship/CHANGELOG.md` |
+| 入口清单 | `spec-manifest.yaml` |
+| 系统规范 | `Docs/specs/systems/ship-system/ship-system.md` |
+| 程序运行时 | `Docs/specs/systems/ship-system/ship-program.md` |
+| 本船设计 | `Docs/specs/assets/ships/ShipType_SmallSailer01/design.md` |
+| 本船接口 | `Docs/specs/assets/ships/ShipType_SmallSailer01/integration.yaml` |
+| Cursor 适配 | `.cursor/rules/ship-system.mdc`（不得另写一套事实） |
+| ChatGPT 适配 | `Docs/tool-guides/chatgpt.md` |
+| Google AI Studio 适配 | `Docs/tool-guides/google-ai-studio.md` |
 
-On conflict: **program rules win** → update Docs to match; do not silently change program interfaces from design docs alone.
+`Docs/Ship/SmallSailer01.md` 与 `Docs/Ship/ShipAssetContract.md` 为 SUPERSEDED。  
+On conflict: **canonical `Docs/specs` wins** over chat memory and tool adapters; do not silently change program interfaces from design docs alone.
 
 ### Who commits / pushes
 
-- **Cursor agent** may `git add` / `commit` / `push` to `docs-sync` when Ruida asks or when a **contract/interface milestone** is done (e.g. V0.1.1 lock).
+- **Cursor agent** may `git add` / `commit` / `push` to `docs-sync` when Ruida asks or when a **contract/interface milestone** is done.
+- ChatGPT / Google AI Studio 产出候选稿；Playground 通常不能 `git push`，由 Cursor 代提交。
 - **Push requires GitHub auth on Ruida’s machine** (browser login or token). If push fails, Ruida runs `git push` once in terminal.
-- **Large branch `dev/widepath-nav` is not used for GPT sync** — only `docs-sync` (small).
+- **Large branch `dev/widepath-nav` is not used for design-AI sync** — only `docs-sync`.
+- Do **not** use Google AI Studio **Build → Import GitHub** on this Unreal repo.
 
 ### Notification block (mandatory after interface changes)
 
 After program or design changes **sockets, naming, Validate, catalog, or V0.x contract**, append a copy-paste block for the **other** AI:
 
-**Program → Resource GPT (template):**
+**Program → Resource AI (ChatGPT / Gemini):**
 
 ```text
 【程序侧同步 — 请读 GitHub docs-sync 最新】
 仓库：wumary423-hub/Project01  分支：docs-sync
-变更：<一句话，如 ship-system.mdc V0.1.1>
-请你：<具体动作，如更新 ShipAssetContract.md 对齐 V0.1.1>
-权威：.cursor/rules/ship-system.mdc > ShipAssetContract.md > SmallSailer01.md
+变更：<一句话，如 ship-system 观察距离或 MastRig 合同>
+请你：<具体动作，如对照 design.md 更新概念图或候选稿>
+权威：spec-manifest.yaml → Docs/specs/systems/ship-system/ → 本船 design.md / integration.yaml
 ```
 
-**Resource GPT → Program Cursor (Ruida 转发或 GPT 直接改 docs-sync 后):**
+**Resource AI → Program Cursor (Ruida 转发或设计侧改 docs-sync 后):**
 
 ```text
 【资源/设计侧同步 — 请读 GitHub docs-sync 最新】
 仓库：wumary423-hub/Project01  分支：docs-sync
-变更：<Docs/Ship/… 或设计决策>
-请你：<评估是否改 ship-system / Validate / Import；列冲突>
-若无程序接口变更：仅更新 SmallSailer01.md / CHANGELOG，不必动 rules。
+变更：<Docs/specs/… 或概念图修订>
+请你：<评估是否改 ship-program / integration.yaml / Validate；列冲突>
+若无程序接口变更：只更新 design.md / ADR / changelog，不必动 C++。
 ```
 
 Ruida may require **either side** to produce this block whenever Stage 结束 or 接口拍板.

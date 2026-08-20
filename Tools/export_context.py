@@ -9,6 +9,7 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
+GITHUB_RAW_DOCS_SYNC = "https://raw.githubusercontent.com/wumary423-hub/Project01/docs-sync"
 
 
 def load_yaml(path: Path):
@@ -29,7 +30,7 @@ def main() -> int:
     parser.add_argument(
         "--target",
         required=True,
-        choices=["chatgpt", "cursor", "meshy", "blender", "ue5"],
+        choices=["chatgpt", "google-ai-studio", "cursor", "meshy", "blender", "ue5"],
     )
     parser.add_argument("--output", help="Optional output file path")
     args = parser.parse_args()
@@ -56,11 +57,30 @@ def main() -> int:
             "",
         ]
 
-        if args.target in {"chatgpt", "cursor"}:
+        if args.target == "google-ai-studio":
+            visual = asset.get("visual_master") or {}
+            visual_path = visual.get("path", "")
+            parts += [
+                "## GitHub refresh (preferred over this snapshot)",
+                "",
+                f"Branch: `docs-sync`. Raw root: `{GITHUB_RAW_DOCS_SYNC}/`",
+                "",
+                f"- {GITHUB_RAW_DOCS_SYNC}/spec-manifest.yaml",
+                f"- {GITHUB_RAW_DOCS_SYNC}/Docs/governance/source-of-truth.md",
+                f"- {GITHUB_RAW_DOCS_SYNC}/Docs/tool-guides/google-ai-studio.md",
+                f"- {GITHUB_RAW_DOCS_SYNC}/{system['canonical_spec'].replace('docs/', 'Docs/', 1)}",
+                f"- {GITHUB_RAW_DOCS_SYNC}/{asset['design_spec'].replace('docs/', 'Docs/', 1)}",
+                f"- {GITHUB_RAW_DOCS_SYNC}/{asset['integration_contract'].replace('docs/', 'Docs/', 1)}",
+            ]
+            if visual_path:
+                parts.append(f"- {GITHUB_RAW_DOCS_SYNC}/{visual_path}")
+            parts += ["", "If URL context can fetch these, prefer them over the bundled copy below.", ""]
+
+        if args.target in {"chatgpt", "google-ai-studio", "cursor"}:
             parts += ["## Source-of-Truth Policy", governance, ""]
-        if args.target in {"chatgpt", "cursor", "blender"}:
+        if args.target in {"chatgpt", "google-ai-studio", "cursor", "blender"}:
             parts += ["## Ship System", system_spec, ""]
-        if args.target in {"chatgpt", "meshy", "blender"}:
+        if args.target in {"chatgpt", "google-ai-studio", "meshy", "blender"}:
             parts += ["## Asset Design", design, ""]
         parts += ["## Integration Contract", fenced_yaml(integration), ""]
         output_text = "\n".join(parts)

@@ -1,5 +1,7 @@
 # ChatGPT 项目使用指南
 
+与 Google AI Studio 共用 Git 分支 `docs-sync`。Studio 适配见 `docs/tool-guides/google-ai-studio.md`。
+
 ## 推荐方式
 
 优先通过 GitHub连接读取指定仓库和 commit。

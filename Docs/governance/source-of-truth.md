@@ -1,16 +1,16 @@
 ---
 document_type: governance_policy
-document_version: 0.1.0
+document_version: 0.1.1
 status: REVIEW
 authority: canonical
-last_updated: 2026-08-19
+last_updated: 2026-08-20
 ---
 
 # 项目权威来源规则
 
 ## 1. 目的
 
-本规则用于确保 Cursor、ChatGPT、Meshy、Blender、UE5 以及未来加入的工具读取同一套项目事实，避免聊天记忆、工具私有规则和重复文件互相冲突。
+本规则用于确保 Cursor、ChatGPT、Google AI Studio、Meshy、Blender、UE5 以及未来加入的工具读取同一套项目事实，避免聊天记忆、工具私有规则和重复文件互相冲突。
 
 ## 2. 权威层级
 
@@ -21,7 +21,7 @@ last_updated: 2026-08-19
 3. 被规范明确引用且状态为 `LOCKED` 的视觉母版、模型或数据文件；
 4. 机器可读合同；
 5. 工具适配规则；
-6. ChatGPT 项目中上传的快照；
+6. ChatGPT / Google AI Studio 上传或导出的快照；
 7. 聊天记录、摘要、模型记忆和临时提示词。
 
 工具适配规则、聊天记录和模型记忆不得单独修改项目事实。
