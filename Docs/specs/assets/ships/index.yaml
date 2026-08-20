@@ -1,6 +1,11 @@
 schema_version: 1
 asset_type: ship
 
+production_rules:
+  spec: Docs/specs/assets/ships/production-rules.md
+  status: LOCKED
+  scope: all_ship_assets
+
 material_cards:
   default: MAT-001
   registry: Docs/specs/assets/ships/material-cards/index.yaml
