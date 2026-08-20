@@ -1,5 +1,13 @@
 # ShipType_SmallSailer01 Changelog
 
+## Design Spec 0.1.5 — 2026-08-21 — REVIEW
+
+- 船长由概念暂定值正式锁定为 **15m**。
+- 主桅长度由相对约束 `mast_length > ship_length` 改为固定 **18m**（桅脚至桅顶）。
+- `18m / 15m = 1.2` 仅作为派生比例，不再替代绝对尺寸规则。
+- `integration.yaml` 同步升级至 0.1.4，并将船长与主桅长度标记为 `LOCKED`。
+- 决策记录于 `decisions/ADR-0005-fixed-length-and-main-mast.md`。
+
 ## Design Spec 0.1.4 — 2026-08-21 — REVIEW
 
 - 历史原型锁定为 **Cog (ship)**；允许架空化调整，不要求一比一复原具体历史实船。
