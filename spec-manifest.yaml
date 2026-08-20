@@ -19,12 +19,20 @@ governance:
   change_control: docs/governance/change-control.md
   tool_context_protocol: docs/governance/tool-context-protocol.md
 
+production_rules:
+  ship_assets:
+    spec: Docs/specs/assets/ships/production-rules.md
+    status: LOCKED
+    scope: all_ship_assets
+    decision_record: Docs/specs/assets/ships/decisions/ADR-0001-production-context-and-generation.md
+
 systems:
   - system_id: SYS-SHIP
     title_zh: 船只系统
     canonical_spec: docs/specs/systems/ship-system/ship-system.md
     program_spec: docs/specs/systems/ship-system/ship-program.md
     machine_contract: docs/specs/systems/ship-system/ship-system.yaml
+    asset_production_rules: Docs/specs/assets/ships/production-rules.md
     changelog: docs/specs/systems/ship-system/changelog.md
     status: LOCKED
     migration:
