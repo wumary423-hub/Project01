@@ -1,7 +1,7 @@
 ---
 document_type: ship_asset_production_rules
 schema_version: 1
-document_version: 1.1.0
+document_version: 1.2.0
 status: LOCKED
 authority: canonical
 scope: all_ship_assets
@@ -9,6 +9,7 @@ last_updated: 2026-08-21
 decision_records:
   - Docs/specs/assets/ships/decisions/ADR-0001-production-context-and-generation.md
   - Docs/specs/assets/ships/decisions/ADR-0002-target-scoped-regeneration.md
+  - Docs/specs/assets/ships/decisions/ADR-0003-concept-image-no-text.md
 ---
 
 # 船只资产制作全局规则
@@ -92,8 +93,10 @@ decision_records:
 1. `[概念图]` 默认是一张用于**定调**的关键概念图，不默认制作多视图。
 2. 它负责确定整体设计调子，例如：主体轮廓、体量与比例关系、结构视觉重点、材质与颜色关系、整体表现语言。
 3. 除非用户明确要求，不得把 `[概念图]` 自行扩展成：侧/前/后/顶等多视图板、材质球板、零件拆解板、细节特写集合或 UI 式 concept sheet。
-4. 多视图属于后续明确命名的多视图阶段或用户单独要求，不应混入“概念图定调”任务。
-5. 概念图在用户批准前只是候选稿；未批准图不得进入活跃权威路径。
+4. `[概念图]` 默认输出**纯画面**。除非用户明确要求图内文字，否则不得在画面内加入标题、说明文字、规则列表、材质名称、HEX 色号、参数、标签、注释、图例或其他文字排版；提示词中的规则与色值只用于约束生成，不得被渲染进画面。
+5. 对概念图的文字说明、设计理由、材质参数或规则解释应放在图片之外的对话或设计文档中。
+6. 多视图属于后续明确命名的多视图阶段或用户单独要求，不应混入“概念图定调”任务。
+7. 概念图在用户批准前只是候选稿；未批准图不得进入活跃权威路径。
 
 ## 5. 材质卡是硬约束，不是灵感参考
 
