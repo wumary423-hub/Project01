@@ -34,6 +34,15 @@ systems:
       legacy_status: ADAPTER
       authority_until_approved: canonical_spec
 
+material_cards:
+  - material_card_id: MAT-001
+    title_zh: 写实历史木帆船基础材质
+    scope: ship_project_default
+    status: LOCKED
+    spec: Docs/specs/assets/ships/material-cards/MAT-001/material-card.md
+    machine_card: Docs/specs/assets/ships/material-cards/MAT-001/material-card.json
+    reference: assets/ships/material-cards/MAT-001/reference.jpg
+
 assets:
   - asset_id: ShipType_SmallSailer01
     asset_type: ship
@@ -42,6 +51,7 @@ assets:
     design_spec: docs/specs/assets/ships/ShipType_SmallSailer01/design.md
     integration_contract: docs/specs/assets/ships/ShipType_SmallSailer01/integration.yaml
     changelog: docs/specs/assets/ships/ShipType_SmallSailer01/changelog.md
+    material_card: MAT-001
     visual_master:
       revision: "0.8"
       status: LOCKED

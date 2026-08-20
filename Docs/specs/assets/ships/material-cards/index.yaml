@@ -1,0 +1,12 @@
+schema_version: 1
+registry_type: ship_material_cards
+default_material_card: MAT-001
+
+cards:
+  - material_card_id: MAT-001
+    title_zh: 写实历史木帆船基础材质
+    status: LOCKED
+    scope: project_default
+    spec: Docs/specs/assets/ships/material-cards/MAT-001/material-card.md
+    machine_card: Docs/specs/assets/ships/material-cards/MAT-001/material-card.json
+    reference: assets/ships/material-cards/MAT-001/reference.jpg
