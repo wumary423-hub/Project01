@@ -6,10 +6,10 @@ title_zh: 小型单桅沿岸商船
 title_en: Small Single-Mast Coastal Trader
 working_name: SmallSailer01
 former_starter_id: SHIP-0001
-document_version: 0.1.1
+document_version: 0.1.2
 status: REVIEW
 authority: canonical
-last_updated: 2026-08-19
+last_updated: 2026-08-20
 visual_master:
   revision: "0.8"
   status: LOCKED
@@ -55,7 +55,7 @@ SHA-256（文件内容，改名后不变）：
 0c848da018e5c4ebe1edc65611d9b46a2e6633a09430aba8af80ccbf01bfe44d
 ```
 
-锁定内容：单桅大横帆身份；短宽厚实比例；船艏—中段与中段—船尾的个性过渡；左前 3/4；木质船体与旧帆布材质方向。不得把船首船尾修平。
+锁定内容：单桅大横帆身份；短宽厚实比例；船艏—中段与中段—船尾的个性过渡；左前 3/4；木质船体与低饱和灰白帆布材质方向。不得把船首船尾修平。
 
 ## 4. 观察距离（不冲突）
 
