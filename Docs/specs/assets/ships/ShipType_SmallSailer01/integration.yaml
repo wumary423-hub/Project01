@@ -1,5 +1,5 @@
 schema_version: 1
-contract_version: 0.1.1
+contract_version: 0.1.2
 
 asset:
   asset_id: ShipType_SmallSailer01
@@ -215,12 +215,23 @@ interfaces:
   crew_sockets:
     allowed: false
 
+hull_openings:
+  gunports:
+    structural_feature: true
+    total_count: 4
+    port_count: 2
+    starboard_count: 2
+    bilateral_correspondence_required: true
+    note: Structural hull openings only; does not define installed weapon count or require one weapon socket per gunport.
+
 deck:
   main_cargo_hatch:
     count: 1
     cover_panels_allowed: true
   stairs_to_stern_platform:
     required: true
+    count: 1
+    double_symmetric_stairs_allowed: false
   decorative_barrels:
     allowed_in_base_asset: false
   loose_clutter:
