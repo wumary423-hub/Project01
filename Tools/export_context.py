@@ -12,6 +12,26 @@ ROOT = Path(__file__).resolve().parents[1]
 GITHUB_RAW_DOCS_SYNC = "https://raw.githubusercontent.com/wumary423-hub/Project01/docs-sync"
 
 
+def repo_file(rel: str) -> Path:
+    rel = rel.replace("\\", "/")
+    candidates = [ROOT / rel]
+    if rel.startswith("Docs/"):
+        candidates.append(ROOT / ("docs/" + rel[5:]))
+    elif rel.startswith("docs/"):
+        candidates.append(ROOT / ("Docs/" + rel[5:]))
+    for path in candidates:
+        if path.exists():
+            return path
+    return candidates[0]
+
+
+def raw_url(rel: str) -> str:
+    rel = rel.replace("\\", "/")
+    if rel.startswith("docs/"):
+        rel = "Docs/" + rel[5:]
+    return f"{GITHUB_RAW_DOCS_SYNC}/{rel}"
+
+
 def load_yaml(path: Path):
     return yaml.safe_load(path.read_text(encoding="utf-8"))
 
@@ -60,20 +80,29 @@ def main() -> int:
         if args.target == "google-ai-studio":
             visual = asset.get("visual_master") or {}
             visual_path = visual.get("path", "")
+            material_id = asset.get("material_card")
+            card = next(
+                (item for item in (manifest.get("material_cards") or []) if item.get("material_card_id") == material_id),
+                None,
+            )
             parts += [
                 "## GitHub refresh (preferred over this snapshot)",
                 "",
                 f"Branch: `docs-sync`. Raw root: `{GITHUB_RAW_DOCS_SYNC}/`",
                 "",
-                f"- {GITHUB_RAW_DOCS_SYNC}/spec-manifest.yaml",
-                f"- {GITHUB_RAW_DOCS_SYNC}/Docs/governance/source-of-truth.md",
-                f"- {GITHUB_RAW_DOCS_SYNC}/Docs/tool-guides/google-ai-studio.md",
-                f"- {GITHUB_RAW_DOCS_SYNC}/{system['canonical_spec'].replace('docs/', 'Docs/', 1)}",
-                f"- {GITHUB_RAW_DOCS_SYNC}/{asset['design_spec'].replace('docs/', 'Docs/', 1)}",
-                f"- {GITHUB_RAW_DOCS_SYNC}/{asset['integration_contract'].replace('docs/', 'Docs/', 1)}",
+                f"- {raw_url('spec-manifest.yaml')}",
+                f"- {raw_url('Docs/governance/source-of-truth.md')}",
+                f"- {raw_url('Docs/tool-guides/google-ai-studio.md')}",
+                f"- {raw_url(system['canonical_spec'])}",
+                f"- {raw_url(asset['design_spec'])}",
+                f"- {raw_url(asset['integration_contract'])}",
             ]
             if visual_path:
-                parts.append(f"- {GITHUB_RAW_DOCS_SYNC}/{visual_path}")
+                parts.append(f"- {raw_url(visual_path)}")
+            if card:
+                for key in ("spec", "machine_card", "reference"):
+                    if card.get(key):
+                        parts.append(f"- {raw_url(card[key])}")
             parts += ["", "If URL context can fetch these, prefer them over the bundled copy below.", ""]
 
         if args.target in {"chatgpt", "google-ai-studio", "cursor"}:
@@ -82,6 +111,16 @@ def main() -> int:
             parts += ["## Ship System", system_spec, ""]
         if args.target in {"chatgpt", "google-ai-studio", "meshy", "blender"}:
             parts += ["## Asset Design", design, ""]
+        material_id = asset.get("material_card")
+        if material_id and args.target in {"chatgpt", "google-ai-studio"}:
+            card = next(
+                (item for item in (manifest.get("material_cards") or []) if item.get("material_card_id") == material_id),
+                None,
+            )
+            if card and card.get("spec"):
+                card_path = repo_file(card["spec"])
+                if card_path.exists():
+                    parts += ["## Material Card", read(card_path), ""]
         parts += ["## Integration Contract", fenced_yaml(integration), ""]
         output_text = "\n".join(parts)
         default_suffix = "md"

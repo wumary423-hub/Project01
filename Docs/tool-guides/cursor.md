@@ -32,3 +32,5 @@ Cursor不是独立规范数据库。
 - Cursor行为提示只写入 `.cursor/rules`；
 - 任何猜测字段写成 `UNSET`，不得自动决定；
 - LOCKED变更必须提供 diff 和批准记录。
+- 概念材质卡 `MAT-*` 在 `docs/specs/assets/ships/material-cards/`；不要映射到 UE `M_` / 网格材质槽。
+- 外部设计端适配：`docs/tool-guides/chatgpt.md`、`docs/tool-guides/google-ai-studio.md`。

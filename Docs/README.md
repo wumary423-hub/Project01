@@ -12,6 +12,9 @@
 | 项目背景 | `Docs/specs/project/game-project-overview.md` |
 | 船只系统（LOCKED） | `Docs/specs/systems/ship-system/` |
 | 第一艘船 | `Docs/specs/assets/ships/ShipType_SmallSailer01/README.md` |
+| 默认概念材质卡 | `Docs/specs/assets/ships/material-cards/MAT-001/` |
+| ChatGPT 适配 | `Docs/tool-guides/chatgpt.md` |
+| Google AI Studio 适配 | `Docs/tool-guides/google-ai-studio.md` |
 
 `Docs/Ship/` 是旧路径桩（SUPERSEDED），不要当正文。  
 Cursor 的 `.cursor/rules/ship-system.mdc` 是入口，不是权威正文。

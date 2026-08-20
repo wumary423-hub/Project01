@@ -43,6 +43,7 @@ alwaysApply: true
 | 程序运行时 | `Docs/specs/systems/ship-system/ship-program.md` |
 | 本船设计 | `Docs/specs/assets/ships/ShipType_SmallSailer01/design.md` |
 | 本船接口 | `Docs/specs/assets/ships/ShipType_SmallSailer01/integration.yaml` |
+| 默认材质卡 | `Docs/specs/assets/ships/material-cards/MAT-001/` |
 | Cursor 适配 | `.cursor/rules/ship-system.mdc`（不得另写一套事实） |
 | ChatGPT 适配 | `Docs/tool-guides/chatgpt.md` |
 | Google AI Studio 适配 | `Docs/tool-guides/google-ai-studio.md` |

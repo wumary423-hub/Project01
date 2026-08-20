@@ -85,7 +85,12 @@ https://raw.githubusercontent.com/wumary423-hub/Project01/docs-sync/Docs/specs/a
 https://raw.githubusercontent.com/wumary423-hub/Project01/docs-sync/Docs/specs/assets/ships/ShipType_SmallSailer01/README.md
 https://raw.githubusercontent.com/wumary423-hub/Project01/docs-sync/Docs/specs/assets/ships/ShipType_SmallSailer01/integration.yaml
 https://raw.githubusercontent.com/wumary423-hub/Project01/docs-sync/Docs/specs/assets/ships/material-cards/MAT-001/material-card.md
+https://raw.githubusercontent.com/wumary423-hub/Project01/docs-sync/Docs/specs/assets/ships/material-cards/index.yaml
+https://raw.githubusercontent.com/wumary423-hub/Project01/docs-sync/Docs/specs/assets/ships/material-cards/MAT-001/material-card.json
+https://raw.githubusercontent.com/wumary423-hub/Project01/docs-sync/assets/ships/material-cards/MAT-001/reference.jpg
 ```
+
+`Docs/specs/assets/materials/` 只是指路牌，不是 MAT-001 正文。
 
 然后根据**本次目标产物 T 的依赖关系**追加上游视觉文件：
 
@@ -109,9 +114,37 @@ https://raw.githubusercontent.com/wumary423-hub/Project01/docs-sync/Docs/specs/s
 https://raw.githubusercontent.com/wumary423-hub/Project01/docs-sync/Docs/specs/systems/ship-system/ship-system.yaml
 ```
 
+## 同步通知（复制）
+
+Cursor → Studio：
+
+```text
+【程序侧同步 — 请读 GitHub docs-sync 最新】
+仓库：wumary423-hub/Project01  分支：docs-sync
+适配：Docs/tool-guides/google-ai-studio.md
+请你：开 URL context，先做文字分析，先不要出图。读不到的文件写「无法访问」。
+权威：spec-manifest.yaml → production-rules.md → 本船 design.md → MAT-001
+```
+
+Studio → Cursor：
+
+```text
+【资源/设计侧同步 — 请读 GitHub docs-sync 最新】
+仓库：wumary423-hub/Project01  分支：docs-sync
+变更：<文件或图>
+请你：评估是否改 ship-program / integration.yaml / Validate。无程序接口则不必动 C++。
+MAT-001 不要写入 UE M_ 或 SM_* 材质槽。
+```
+
 ## 退路：上传快照
 
-URL 拉不到时，可上传上下文快照。视觉文件同样按目标 T 的依赖关系上传：排除旧 T，保留 T 的合法上游来源。
+URL 拉不到时：
+
+```bash
+python tools/export_context.py ShipType_SmallSailer01 --target google-ai-studio
+```
+
+上传 `exports/context/ShipType_SmallSailer01_google-ai-studio_context.md`。视觉文件按目标 T 的依赖关系上传：排除旧 T，保留 T 的合法上游来源。快照不是新的权威分支。
 
 ## 出图工作
 
@@ -125,3 +158,5 @@ URL 拉不到时，可上传上下文快照。视觉文件同样按目标 T 的�
 - 未通过的图片不得进入活跃权威路径。
 
 本指南只做 Google AI Studio 适配；船只资产制作事实以 `Docs/specs/assets/ships/production-rules.md` 为权威。
+
+Cursor 入库：Ruida 确认后 commit，并立刻 push 到 `docs-sync`。禁止 Build 整库导入或双向 Sync。

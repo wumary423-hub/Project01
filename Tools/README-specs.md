@@ -31,4 +31,5 @@ python tools/export_context.py ShipType_SmallSailer01 --target blender
 python tools/export_context.py ShipType_SmallSailer01 --target ue5
 ```
 
-导出文件位于 `exports/context/`。导出物是工具输入快照，不是权威源。
+导出文件位于 `exports/context/`。导出物是工具输入快照，不是权威源。  
+`--target google-ai-studio` / `chatgpt` 会附带本船 `material_card`（当前 MAT-001）正文。
