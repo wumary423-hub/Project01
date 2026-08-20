@@ -24,4 +24,4 @@ Allowed without PR, branch approval, or extra ACL: create files, modify non-LOCK
 
 Still forbidden without explicit Ruida approval: deleting existing specs; overwriting LOCKED design; changing published visual masters / published asset contracts.
 
-Concept material cards (`Docs/specs/assets/materials/MAT-*`) are concept-art look references only. Do not bind them to UE `M_` / mesh materials.
+Concept material cards (`Docs/specs/assets/ships/material-cards/MAT-*`) are concept-art look references only. Do not bind them to UE `M_` / mesh materials.

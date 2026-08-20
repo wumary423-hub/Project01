@@ -1,15 +1,8 @@
 schema_version: 1
 asset_type: concept_material_card
 
-# Concept-art look cards only. Not UE M_ materials. Not program FName.
-# Do not bind these files to SM_* / AFleet mesh materials.
+# Canonical MAT-* archives live with ship concept assets.
+# Do not keep a second MAT-001 tree here.
 
-assets:
-  - asset_id: MAT-001
-    title_zh: 船只概念材质卡
-    status: REVIEW
-    scope: concept_art_look_card
-    design_spec: docs/specs/assets/materials/MAT-001/design.md
-    integration_contract: docs/specs/assets/materials/MAT-001/integration.yaml
-    related_assets:
-      - ShipType_SmallSailer01
+canonical_registry: docs/specs/assets/ships/material-cards/index.yaml
+default_material_card: MAT-001
