@@ -10,12 +10,17 @@ alwaysApply: true
 Read in order:
 
 1. `spec-manifest.yaml`
-2. `docs/governance/source-of-truth.md`
-3. `docs/governance/naming-and-versioning.md`
+2. `Docs/governance/source-of-truth.md`
+3. `Docs/governance/naming-and-versioning.md`
 4. `docs/specs/systems/ship-system/ship-system.md` (LOCKED — 3D/2D)
-5. `docs/specs/systems/ship-system/ship-system.yaml`
-6. `docs/specs/systems/ship-system/ship-program.md` (LOCKED — runtime)
-7. Target ship `design.md` + `integration.yaml`
+5. `Docs/specs/assets/ships/production-rules.md` (LOCKED — all ship asset production)
+6. `docs/specs/systems/ship-system/ship-system.yaml`
+7. `docs/specs/systems/ship-system/ship-program.md` (LOCKED — runtime)
+8. Target ship `design.md`
+9. Bound/specified material card for visual production
+10. Target ship `integration.yaml`
+
+For visual work, follow `Docs/specs/assets/ships/production-rules.md`: analyze text before generating, do not auto-generate for ordinary discussion, distinguish direct image edit from clean-slate “重新/重出”, and treat material-card colors/constraints as hard requirements.
 
 Former V0.1.1 lock text was migrated on 2026-08-19. Git history of this path still has the old full text.
 
