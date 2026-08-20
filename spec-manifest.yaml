@@ -22,11 +22,11 @@ governance:
 production_rules:
   ship_assets:
     spec: Docs/specs/assets/ships/production-rules.md
-    version: "1.2.0"
+    version: "1.3.0"
     status: LOCKED
     scope: all_ship_assets
     decision_record: Docs/specs/assets/ships/decisions/ADR-0001-production-context-and-generation.md
-    latest_decision_record: Docs/specs/assets/ships/decisions/ADR-0003-concept-image-no-text.md
+    latest_decision_record: Docs/specs/assets/ships/decisions/ADR-0004-concept-image-full-mast-framing.md
 
 systems:
   - system_id: SYS-SHIP
@@ -59,11 +59,11 @@ assets:
     title_zh: 小型单桅沿岸商船
     former_starter_id: SHIP-0001
     design_spec: docs/specs/assets/ships/ShipType_SmallSailer01/design.md
-    design_version: "0.1.3"
+    design_version: "0.1.5"
     integration_contract: docs/specs/assets/ships/ShipType_SmallSailer01/integration.yaml
-    integration_contract_version: "0.1.2"
+    integration_contract_version: "0.1.4"
     changelog: docs/specs/assets/ships/ShipType_SmallSailer01/changelog.md
-    latest_decision_record: Docs/specs/assets/ships/ShipType_SmallSailer01/decisions/ADR-0003-stair-and-gunports.md
+    latest_decision_record: Docs/specs/assets/ships/ShipType_SmallSailer01/decisions/ADR-0005-fixed-length-and-main-mast.md
     material_card: MAT-001
     visual_master:
       revision: "0.8"
