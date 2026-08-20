@@ -1,5 +1,15 @@
 # ShipType_SmallSailer01 Changelog
 
+## Design Spec 0.1.4 — 2026-08-21 — REVIEW
+
+- 历史原型锁定为 **Cog (ship)**；允许架空化调整，不要求一比一复原具体历史实船。
+- 艉楼楼梯仍为单楼梯，并新增位置约束：必须靠边贴一侧船舷、不得居中；具体左/右舷保持 UNSET。
+- 炮窗仍为全船 4 个、每舷 2 个；新增沿船体纵向中心线两舷镜像分布约束，并锁定在顶层甲板对应的舷侧区域。
+- 主桅新增相对尺寸约束：`mast_length > ship_length`；不由当前约 15m 的概念船长推导绝对主桅长度。
+- 货舱口明确只允许 1 个，且不得与主桅/桅座位置重叠。
+- `integration.yaml` 同步升级至 0.1.3。
+- 决策记录于 `decisions/ADR-0004-cog-and-layout-constraints.md`。
+
 ## Design Spec 0.1.3 — 2026-08-21 — REVIEW
 
 - 主甲板至艉楼平台的楼梯锁定为一套木质楼梯；禁止左右对称双楼梯。
