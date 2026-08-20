@@ -1,5 +1,10 @@
 # ShipType_SmallSailer01 Changelog
 
+## Design Spec 0.1.2 — 2026-08-20 — REVIEW
+
+- 按 MAT-001 v0.2.0 / MAT-001-ADR-0001，同步删除会触发视觉做旧的“旧帆布”措辞。
+- 材质方向改为“木质船体与低饱和灰白帆布”，不改变船体结构、比例、帆装身份或程序合同。
+
 ## 2026-08-19 — archive entry
 
 - 增加本船 `README.md` 与 `references/` 索引；不改设计事实，不复制概念图。
