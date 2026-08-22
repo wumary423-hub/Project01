@@ -59,17 +59,26 @@ assets:
     title_zh: 小型单桅沿岸商船
     former_starter_id: SHIP-0001
     design_spec: docs/specs/assets/ships/ShipType_SmallSailer01/design.md
-    design_version: "0.1.5"
+    design_version: "0.1.6"
     integration_contract: docs/specs/assets/ships/ShipType_SmallSailer01/integration.yaml
-    integration_contract_version: "0.1.4"
+    integration_contract_version: "0.1.5"
     changelog: docs/specs/assets/ships/ShipType_SmallSailer01/changelog.md
-    latest_decision_record: Docs/specs/assets/ships/ShipType_SmallSailer01/decisions/ADR-0005-fixed-length-and-main-mast.md
+    latest_decision_record: Docs/specs/assets/ships/ShipType_SmallSailer01/decisions/ADR-0006-reference-master-r1.md
     material_card: MAT-001
     visual_master:
       revision: "0.8"
       status: LOCKED
       path: assets/ships/ShipType_SmallSailer01/concept/ShipType_SmallSailer01_concept-master_r0.8.png
       sha256: 0c848da018e5c4ebe1edc65611d9b46a2e6633a09430aba8af80ccbf01bfe44d
+    reference_master:
+      revision: "1"
+      status: LOCKED
+      role: hull_deck_stern_structural_reference
+      intended_path: assets/ships/ShipType_SmallSailer01/reference/ShipType_SmallSailer01_reference-master_r1.png
+      source_session_filename: 木制帆船结构技术插画.png
+      source_dimensions_px: [1449, 1086]
+      source_sha256: 327d646918cfb43a3a8c6347151da0944e8c1187018f3090fa6279f19f44456b
+      binary_repository_status: PENDING_IMPORT
     status: REVIEW
 
 tool_adapters:
