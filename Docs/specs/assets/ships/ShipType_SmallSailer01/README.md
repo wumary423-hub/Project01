@@ -10,18 +10,35 @@
 | 项 | 状态 |
 |----|------|
 | V0.8 Concept Master | LOCKED |
+| Reference Master R1 | LOCKED identity / PNG `PENDING_IMPORT` |
 | `design.md` | REVIEW |
-| 当前阶段 | Concept Design |
+| 当前阶段 | Concept Design / Structural Reference |
 | 下一阶段 | V1 Hull-Focused Concept |
+
+## 当前 Reference Master R1
+
+目标路径：
+
+```text
+assets/ships/ShipType_SmallSailer01/reference/ShipType_SmallSailer01_reference-master_r1.png
+```
+
+源 PNG SHA-256：
+
+```text
+327d646918cfb43a3a8c6347151da0944e8c1187018f3090fa6279f19f44456b
+```
+
+当前连接器不能直接上传 PNG，因此二进制仍为 `PENDING_IMPORT`。正式身份与结构范围见 `references/README.md` 和 `decisions/ADR-0006-reference-master-r1.md`。
 
 ## 先读这些（本船）
 
 | 文件 | 用途 |
 |------|------|
-| `design.md` | 设计意图、V1 要改什么 |
-| `integration.yaml` | UE 路径、模块、socket、文件名 |
+| `design.md` | 设计意图、当前结构约束、参考母版 |
+| `integration.yaml` | UE 路径、模块、socket、结构机器合同 |
 | `changelog.md` | 本船变更 |
-| `references/` | 概念图入口（图文件不在本目录） |
+| `references/` | Concept Master / Reference Master 索引 |
 | `decisions/` | 已拍板的 ADR |
 
 系统级（LOCKED，不要在本船文件夹另写一套）：
