@@ -1,5 +1,18 @@
 # ShipType_SmallSailer01 Changelog
 
+## Design Spec 0.1.6 — 2026-08-22 — REVIEW
+
+- 用户批准 `木制帆船结构技术插画.png` 作为 **Reference Master R1**；源图 `1449×1086`，原始 PNG SHA-256：`327d646918cfb43a3a8c6347151da0944e8c1187018f3090fa6279f19f44456b`。
+- 目标仓库路径登记为 `assets/ships/ShipType_SmallSailer01/reference/ShipType_SmallSailer01_reference-master_r1.png`；由于当前 GitHub 连接器不能直接上传 PNG 二进制，二进制状态为 `PENDING_IMPORT`，不得假称已上传或用其他图替代。
+- 艉楼改为单层木质艉楼；艉楼地板与主甲板同层，屋顶为可上人平台并设栏杆。
+- 艉楼楼梯锁定为船体内部单楼梯：贴一侧船舷，下端在主甲板，上端到艉楼屋顶平台；不得放到船体外侧或中轴线上。
+- 货舱口仍只允许 1 个，并缩小为紧凑尺度，不得占满/主导主甲板，且不得与主桅/桅座重叠。
+- 四个炮窗保持每舷两个、沿纵向中心线镜像，并新增**尺寸统一**约束。
+- 艉楼木材与船体使用同一材质/色彩体系。
+- Reference Master R1 为结构阅读省略索具与帆，保留主桅、帆桁与瞭望塔；该省略不等于最终资产禁止索具/帆。
+- `integration.yaml` 同步升级至 0.1.5。
+- 决策记录于 `decisions/ADR-0006-reference-master-r1.md`。
+
 ## Design Spec 0.1.5 — 2026-08-21 — REVIEW
 
 - 船长由概念暂定值正式锁定为 **15m**。
