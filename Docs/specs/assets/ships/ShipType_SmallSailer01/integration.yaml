@@ -1,5 +1,5 @@
 schema_version: 1
-contract_version: 0.1.4
+contract_version: 0.1.5
 
 asset:
   asset_id: ShipType_SmallSailer01
@@ -22,6 +22,20 @@ visual_master:
   status: LOCKED
   path: assets/ships/ShipType_SmallSailer01/concept/ShipType_SmallSailer01_concept-master_r0.8.png
   sha256: 0c848da018e5c4ebe1edc65611d9b46a2e6633a09430aba8af80ccbf01bfe44d
+
+reference_master:
+  revision: "1"
+  status: LOCKED
+  role: hull_deck_stern_structural_reference
+  intended_path: assets/ships/ShipType_SmallSailer01/reference/ShipType_SmallSailer01_reference-master_r1.png
+  source_session_filename: 木制帆船结构技术插画.png
+  source_dimensions_px: [1449, 1086]
+  source_sha256: 327d646918cfb43a3a8c6347151da0944e8c1187018f3090fa6279f19f44456b
+  binary_repository_status: PENDING_IMPORT
+  decision_record: Docs/specs/assets/ships/ShipType_SmallSailer01/decisions/ADR-0006-reference-master-r1.md
+  rigging_and_sails_intentionally_omitted_for_structure_readability: true
+  yard_and_crows_nest_retained: true
+  omission_does_not_forbid_final_rigging_or_sails: true
 
 dimensions:
   length_m:
@@ -72,7 +86,7 @@ modules:
   stern_superstructure:
     required: true
     separate_mesh: false
-    note: welded to hull for v0; low two-level wooden stern
+    note: welded to hull for v0; low one-level wooden sternhouse, floor at main-deck level, walkable roof platform with railing
   mast_rig_01:
     required: true
     separate_mesh: true
@@ -238,6 +252,7 @@ hull_openings:
     starboard_count: 2
     mirror_axis: longitudinal_centerline
     bilateral_mirror_required: true
+    uniform_size_required: true
     deck_level: top_deck
     other_deck_levels_allowed: false
     note: Structural hull openings only; does not define installed weapon count or require one weapon socket per gunport.
@@ -246,13 +261,18 @@ deck:
   main_cargo_hatch:
     count: 1
     cover_panels_allowed: true
+    relative_size: compact
+    must_not_dominate_main_deck: true
     overlap_with_main_mast_or_mast_step_allowed: false
     must_clear_main_mast_footprint: true
   stairs_to_stern_platform:
     required: true
     count: 1
     placement: adjacent_to_ship_side
+    inside_hull_required: true
     centerline_allowed: false
+    lower_endpoint: main_deck
+    upper_endpoint: sternhouse_roof_platform
     side:
       value: null
       status: UNSET
@@ -269,8 +289,12 @@ visual_constraints:
   preserve_v0_8_bow_midship_transition: true
   preserve_v0_8_midship_stern_transition: true
   stern_canvas_canopy_allowed: false
-  low_two_level_wooden_stern_structure_required: true
+  low_one_level_wooden_sternhouse_required: true
+  sternhouse_floor_same_level_as_main_deck: true
+  sternhouse_roof_walkable_platform_required: true
+  sternhouse_roof_railing_required: true
   small_functional_windows_required: true
+  sternhouse_wood_same_material_system_as_hull: true
   dark_external_bands_must_read_as_wood: true
   expanded_sail_allowed_in_hull_concept: false
 
@@ -348,6 +372,10 @@ forbidden:
   - put_Attach_Flag_on_Hull
   - attach_character_meshes_to_Attach_sockets
   - place_stern_stairs_on_centerline
+  - place_stern_stairs_outside_hull
   - overlap_main_cargo_hatch_with_main_mast
+  - oversize_main_cargo_hatch_to_dominate_main_deck
   - place_gunports_below_top_deck
+  - use_nonuniform_gunport_sizes
+  - make_sternhouse_two_levels
   - change_locked_ship_length_or_main_mast_length_without_approved_rule_change
