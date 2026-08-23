@@ -1,5 +1,12 @@
 # ShipType_SmallSailer01 Changelog
 
+## Design Spec 0.1.9 — 2026-08-23 — REVIEW
+
+- 用户确认 `[线稿多视图]` Work R2 **APPROVED**；五张线稿成为 `[概念多视图]` 的结构上游权威输入。
+- Work R1 保持 **REJECTED**。不得改白模、正交相机或已批准线稿。
+- `[概念多视图]` 登记为 **NOT STARTED**。合法上游：V0.8 Concept Master + Work R2 + `MAT-001`。
+- `integration.yaml` 同步至 0.1.8。
+
 ## Design Spec 0.1.8 — 2026-08-23 — REVIEW
 
 - Shared Geometry Blockout 标记为 **APPROVED**：`assets/ships/ShipType_SmallSailer01/blender/ShipType_SmallSailer01_blockout.blend`，SHA-256 `7ef92e5dcbf32ba4592731495ba6acb27e476b4f0011898c00f3b8fa47d113a4`。

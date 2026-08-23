@@ -6,7 +6,7 @@ title_zh: 小型单桅沿岸商船
 title_en: Small Single-Mast Coastal Trader
 working_name: SmallSailer01
 former_starter_id: SHIP-0001
-document_version: 0.1.8
+document_version: 0.1.9
 status: REVIEW
 authority: canonical
 last_updated: 2026-08-23
@@ -121,15 +121,35 @@ SHA-256：
 
 正交相机与取景基准随 docs-sync commit `395dba69a46ac050fb2a612203e3341458b8748c` 批准：顶 / 左舷 / 右舷 / 船首 / 船尾，统一 `ortho_scale = 48.50`。不得分别缩放单视图。该白模用于结构审核与辅助作图；不是 UE mesh。
 
-### 3.4 `[线稿多视图]` Work R2 — DRAFT
+### 3.4 `[线稿多视图]` Work R2 — APPROVED
 
-候选路径：
+用户确认定稿。五张图成为 `[概念多视图]` 的结构上游权威输入。Work R1 保持 `REJECTED`，不得复用。不得改白模、正交相机或这五张线稿。
+
+路径：
 
 ```text
 assets/ships/ShipType_SmallSailer01/line-multiview/candidates/work-r2/
 ```
 
-五张图由同一份已批准 `.blend` 与批准正交相机机械渲染（`--line-ortho`），不是五次独立生图。Work R1 已整体 `REJECTED`，不得复用。Work R2 在用户确认前不得成为下游权威输入。
+| 文件 | SHA-256 |
+|------|---------|
+| `..._top.png` | `38d6f0a372bb3cc142d576538077759980d0c8065feb5dec7996e2b333f3624b` |
+| `..._port.png` | `3b7e5d6db7c56c2761ee867b4c0748f751150b52a3d1a3dc265622ae688ccbae` |
+| `..._starboard.png` | `cab66001e1f0fa3db0aaf9adef94fd01172a6d533feff88666fd7447d2d7b2c9` |
+| `..._bow.png` | `d282152114a9b6e5927beeb1ca7e6596ed8685601b0fd1c9768309464236bb25` |
+| `..._stern.png` | `2f2b11658216b9879d73ded5acfea28e58616605cdd5d0631dc41b64c085b841` |
+
+来源：同一份已批准 `.blend` + 批准正交相机，`--line-ortho` 机械渲染。登记 commit：`0e0044f2b3e73cfc201ad16c82dd22d14d826150`。
+
+### 3.5 `[概念多视图]` — NOT STARTED
+
+下一阶段。合法上游：
+
+- `[概念图]` V0.8 Concept Master（LOCKED）
+- `[线稿多视图]` Work R2（APPROVED）
+- 材质卡 `MAT-001`
+
+不得参考已否决的线稿 Work R1。尚未产出候选图。不得导出 Tripo 3D / FBX / Socket / MastRig / UE。
 
 ## 4. 观察距离（不冲突）
 

@@ -58,9 +58,14 @@ SHA-256：`7ef92e5dcbf32ba4592731495ba6acb27e476b4f0011898c00f3b8fa47d113a4`
 ## `[线稿多视图]`
 
 - Work R1：`REJECTED`
-- Work R2：`DRAFT`（`assets/ships/ShipType_SmallSailer01/line-multiview/candidates/work-r2/`）
+- Work R2：`APPROVED`（`assets/ships/ShipType_SmallSailer01/line-multiview/candidates/work-r2/`）
 
-确认前不得作为下游权威输入。
+五张线稿是 `[概念多视图]` 的结构上游权威输入。不得修改。
+
+## `[概念多视图]`
+
+- 状态：`NOT STARTED`
+- 上游：V0.8 Concept Master + Work R2 + `MAT-001`
 
 ## 归档约束
 

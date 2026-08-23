@@ -59,9 +59,9 @@ assets:
     title_zh: 小型单桅沿岸商船
     former_starter_id: SHIP-0001
     design_spec: docs/specs/assets/ships/ShipType_SmallSailer01/design.md
-    design_version: "0.1.8"
+    design_version: "0.1.9"
     integration_contract: docs/specs/assets/ships/ShipType_SmallSailer01/integration.yaml
-    integration_contract_version: "0.1.7"
+    integration_contract_version: "0.1.8"
     changelog: docs/specs/assets/ships/ShipType_SmallSailer01/changelog.md
     latest_decision_record: Docs/specs/assets/ships/ShipType_SmallSailer01/decisions/ADR-0006-reference-master-r1.md
     material_card: MAT-001

@@ -1,5 +1,5 @@
 schema_version: 1
-contract_version: 0.1.7
+contract_version: 0.1.8
 
 asset:
   asset_id: ShipType_SmallSailer01
@@ -367,17 +367,37 @@ line_multiview:
     status: REJECTED
     note: whole work rejected; do not reuse as input
   work_r2:
-    status: DRAFT
+    status: APPROVED
     renderer: blender_freestyle_line_ortho
     source_blend: assets/ships/ShipType_SmallSailer01/blender/ShipType_SmallSailer01_blockout.blend
     path: assets/ships/ShipType_SmallSailer01/line-multiview/candidates/work-r2/
+    registered_commit: 0e0044f2b3e73cfc201ad16c82dd22d14d826150
     files:
-      - ShipType_SmallSailer01_line-multiview_work-r2_top.png
-      - ShipType_SmallSailer01_line-multiview_work-r2_port.png
-      - ShipType_SmallSailer01_line-multiview_work-r2_starboard.png
-      - ShipType_SmallSailer01_line-multiview_work-r2_bow.png
-      - ShipType_SmallSailer01_line-multiview_work-r2_stern.png
-    not_downstream_authority_until_approved: true
+      top:
+        name: ShipType_SmallSailer01_line-multiview_work-r2_top.png
+        sha256: 38d6f0a372bb3cc142d576538077759980d0c8065feb5dec7996e2b333f3624b
+      port:
+        name: ShipType_SmallSailer01_line-multiview_work-r2_port.png
+        sha256: 3b7e5d6db7c56c2761ee867b4c0748f751150b52a3d1a3dc265622ae688ccbae
+      starboard:
+        name: ShipType_SmallSailer01_line-multiview_work-r2_starboard.png
+        sha256: cab66001e1f0fa3db0aaf9adef94fd01172a6d533feff88666fd7447d2d7b2c9
+      bow:
+        name: ShipType_SmallSailer01_line-multiview_work-r2_bow.png
+        sha256: d282152114a9b6e5927beeb1ca7e6596ed8685601b0fd1c9768309464236bb25
+      stern:
+        name: ShipType_SmallSailer01_line-multiview_work-r2_stern.png
+        sha256: 2f2b11658216b9879d73ded5acfea28e58616605cdd5d0631dc41b64c085b841
+    downstream_authority: true
+    do_not_modify_approved_files: true
+
+concept_multiview:
+  status: NOT_STARTED
+  upstream:
+    - visual_master_v0.8
+    - line_multiview.work_r2
+    - MAT-001
+  note: do not start candidates until design-AI work order; do not export UE
 
 ue5:
   destination_path: /Game/Ships/ShipType_SmallSailer01/

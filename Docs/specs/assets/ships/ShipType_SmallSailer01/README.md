@@ -14,10 +14,11 @@
 | Shared Geometry Blockout | APPROVED |
 | 正交相机与取景 | APPROVED（commit `395dba6`） |
 | `[线稿多视图]` Work R1 | REJECTED |
-| `[线稿多视图]` Work R2 | DRAFT（待审核） |
-| `design.md` | REVIEW 0.1.8 |
-| 当前阶段 | Line Multiview Work R2 |
-| 下一阶段 | 等 Work R2 确认；不要进入 `[概念多视图]` |
+| `[线稿多视图]` Work R2 | APPROVED |
+| `[概念多视图]` | NOT STARTED |
+| `design.md` | REVIEW 0.1.9 |
+| 当前阶段 | Concept Multiview（待出候选） |
+| 下一阶段 | `[概念多视图]`；不要导出 Tripo / UE |
 
 ## 当前 Reference Master R1
 
