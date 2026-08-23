@@ -316,23 +316,23 @@ def world_bounds(objects: list[bpy.types.Object]) -> tuple[Vector, Vector]:
 
 def hull_stations() -> list[dict[str, float]]:
     xs = (
-        -7.50, -7.25, -6.85, -6.30, -5.55, -4.50, -3.20, -1.70,
-        0.00, 1.60, 3.10, 4.40, 5.40, 6.15, 6.75, 7.20, 7.50,
+        -7.50, -7.35, -7.10, -6.70, -6.15, -5.40, -4.40, -3.20, -1.80,
+        -0.40, 0.90, 2.20, 3.40, 4.50, 5.40, 6.10, 6.60, 6.95, 7.25, 7.50,
     )
     out: list[dict[str, float]] = []
     for x in xs:
         u = x / 7.50
         abs_u = abs(u)
         hy = BEAM_M * 0.5
-        if abs_u > 0.20:
-            s = (abs_u - 0.20) / 0.80
-            hy *= 1.0 - (s ** 1.45) * 0.88
-        if u > 0.52:
-            hy *= max(0.07, 1.0 - ((u - 0.52) / 0.48) ** 1.55 * 0.82)
-        if u < -0.50:
-            hy *= max(0.16, 1.0 - ((-u - 0.50) / 0.50) ** 1.25 * 0.62)
-        keel = -DRAFT_M + 0.85 * (u ** 2) + 1.55 * max(u, 0.0) ** 2.15
-        deck = DECK_Z + 0.48 * (u ** 2) + 0.32 * max(u, 0.0) ** 2
+        if abs_u > 0.16:
+            s = (abs_u - 0.16) / 0.84
+            hy *= 1.0 - (s ** 1.55) * 0.90
+        if u > 0.48:
+            hy *= max(0.06, 1.0 - ((u - 0.48) / 0.52) ** 1.45 * 0.86)
+        if u < -0.42:
+            hy *= max(0.13, 1.0 - ((-u - 0.42) / 0.58) ** 1.18 * 0.70)
+        keel = -DRAFT_M + 1.10 * (u ** 2) + 1.90 * max(u, 0.0) ** 2.05
+        deck = DECK_Z + 0.68 * (u ** 2) + 0.52 * max(u, 0.0) ** 1.80
         out.append({"x": x, "hy": max(hy, 0.07), "keel": keel, "deck": deck})
     return out
 
@@ -369,13 +369,13 @@ def section_ring(x: float, hy: float, keel: float, deck: float) -> list[tuple[fl
     # Rounded cog section: full belly, soft bilge, slight tumblehome. Not a box.
     profile = (
         (0.00, 0.00),
-        (0.18, 0.06),
-        (0.42, 0.16),
-        (0.68, 0.30),
-        (0.88, 0.48),
-        (0.99, 0.68),
-        (1.00, 0.84),
-        (0.96, 1.00),
+        (0.22, 0.04),
+        (0.48, 0.12),
+        (0.74, 0.24),
+        (0.92, 0.40),
+        (1.00, 0.60),
+        (0.99, 0.80),
+        (0.94, 1.00),
     )
     span = deck - keel
     starboard = [(x, -hy * yf, keel + span * zf) for yf, zf in profile]
@@ -411,8 +411,8 @@ def build_hull(collection: bpy.types.Collection) -> bpy.types.Object:
     bpy.context.view_layer.objects.active = hull
     hull.select_set(True)
     sub = hull.modifiers.new("HullSmooth", "SUBSURF")
-    sub.levels = 1
-    sub.render_levels = 1
+    sub.levels = 2
+    sub.render_levels = 2
     bpy.ops.object.modifier_apply(modifier=sub.name)
     return hull
 
@@ -688,7 +688,7 @@ def add_camera(
     if ortho:
         data.ortho_scale = ortho_scale
     else:
-        data.lens = 32.0
+        data.lens = 30.0
     obj = bpy.data.objects.new(name, data)
     obj.location = location
     look_at(obj, target)
@@ -703,13 +703,17 @@ def setup_cameras(
 ) -> dict[str, bpy.types.Object]:
     mins, maxs = world_bounds(ship_objects)
     size = maxs - mins
-    # Starboard-bow 3/4 from above, depression 20°. See deck + hatch + stairs + keel silhouette.
-    target = Vector((-1.70, -0.55, 2.55))
+    # Starboard-bow 3/4, depression 18°. Camera stays above the masthead so
+    # crow's nest, hatch, starboard stairs, keel and rudder share one frame.
+    mast_top_z = DECK_Z + MAST_LENGTH_M + 0.40
+    target = Vector((-1.25, -0.38, 5.10))
     margin = 1.24
-    depress = math.radians(20.0)
-    horiz = Vector((0.55, -1.18, 0.0)).normalized()
+    depress = math.radians(18.0)
+    horiz = Vector((0.60, -1.14, 0.0)).normalized()
     persp_dir = Vector((horiz.x, horiz.y, math.tan(depress))).normalized()
-    persp_dist = max(size.length * 1.34, 28.0)
+    min_cam_z = mast_top_z + 1.20
+    min_dist_for_mast = (min_cam_z - target.z) / max(math.sin(depress), 0.05)
+    persp_dist = max(size.length * 1.18, min_dist_for_mast, 40.0)
     persp_loc = target + persp_dir * persp_dist
     persp = add_camera(
         CAMERA_NAMES["perspective"],
