@@ -82,7 +82,7 @@ HATCH_WID = 1.15
 # Stern cabin: X0 = aft wall, X1 = bow-facing front wall.
 STERN_CABIN_X0 = -6.90
 STERN_CABIN_X1 = -4.15
-STERN_CABIN_HEIGHT = 1.28
+STERN_CABIN_HEIGHT = 2.18
 STAIR_Y = -1.95
 
 HULL_COLOR = (0.74, 0.73, 0.70, 1.0)
@@ -295,7 +295,8 @@ def iter_mesh_objects(collections: list[bpy.types.Collection]) -> list[bpy.types
 
 
 def all_mesh_objects() -> list[bpy.types.Object]:
-    return [obj for obj in bpy.data.objects if obj.type == "MESH" and obj.name != "ReviewWaterPlane"]
+    skip = {"ReviewWaterPlane", "ReviewBackdrop"}
+    return [obj for obj in bpy.data.objects if obj.type == "MESH" and obj.name not in skip]
 
 
 def world_bounds(objects: list[bpy.types.Object]) -> tuple[Vector, Vector]:
@@ -314,20 +315,26 @@ def world_bounds(objects: list[bpy.types.Object]) -> tuple[Vector, Vector]:
 
 
 def hull_stations() -> list[dict[str, float]]:
-    half_beam = BEAM_M * 0.5
-    return [
-        {"x": -7.50, "hy": 0.20, "keel": -1.20, "deck": 1.92},
-        {"x": -7.15, "hy": 1.25, "keel": -1.55, "deck": 1.78},
-        {"x": -6.35, "hy": 2.10, "keel": -1.90, "deck": 1.62},
-        {"x": -5.10, "hy": 2.52, "keel": -2.08, "deck": 1.52},
-        {"x": -2.80, "hy": 2.76, "keel": -2.15, "deck": 1.47},
-        {"x": 0.00, "hy": half_beam, "keel": -DRAFT_M, "deck": DECK_Z},
-        {"x": 2.30, "hy": 2.72, "keel": -2.12, "deck": 1.48},
-        {"x": 4.20, "hy": 2.28, "keel": -1.82, "deck": 1.60},
-        {"x": 5.70, "hy": 1.48, "keel": -1.22, "deck": 1.82},
-        {"x": 6.85, "hy": 0.58, "keel": -0.48, "deck": 2.08},
-        {"x": 7.50, "hy": 0.08, "keel": 0.18, "deck": 2.28},
-    ]
+    xs = (
+        -7.50, -7.25, -6.85, -6.30, -5.55, -4.50, -3.20, -1.70,
+        0.00, 1.60, 3.10, 4.40, 5.40, 6.15, 6.75, 7.20, 7.50,
+    )
+    out: list[dict[str, float]] = []
+    for x in xs:
+        u = x / 7.50
+        abs_u = abs(u)
+        hy = BEAM_M * 0.5
+        if abs_u > 0.20:
+            s = (abs_u - 0.20) / 0.80
+            hy *= 1.0 - (s ** 1.45) * 0.88
+        if u > 0.52:
+            hy *= max(0.07, 1.0 - ((u - 0.52) / 0.48) ** 1.55 * 0.82)
+        if u < -0.50:
+            hy *= max(0.16, 1.0 - ((-u - 0.50) / 0.50) ** 1.25 * 0.62)
+        keel = -DRAFT_M + 0.85 * (u ** 2) + 1.55 * max(u, 0.0) ** 2.15
+        deck = DECK_Z + 0.48 * (u ** 2) + 0.32 * max(u, 0.0) ** 2
+        out.append({"x": x, "hy": max(hy, 0.07), "keel": keel, "deck": deck})
+    return out
 
 
 def half_beam_at(x: float) -> float:
@@ -359,19 +366,21 @@ def deck_z_at(x: float) -> float:
 
 
 def section_ring(x: float, hy: float, keel: float, deck: float) -> list[tuple[float, float, float]]:
-    mid_z = keel + (deck - keel) * 0.38
-    return [
-        (x, 0.0, keel),
-        (x, -hy * 0.28, keel + 0.22),
-        (x, -hy * 0.78, keel + 0.85),
-        (x, -hy * 1.04, mid_z),
-        (x, -hy * 0.99, deck),
-        (x, 0.0, deck + 0.04),
-        (x, hy * 0.99, deck),
-        (x, hy * 1.04, mid_z),
-        (x, hy * 0.78, keel + 0.85),
-        (x, hy * 0.28, keel + 0.22),
-    ]
+    # Rounded cog section: full belly, soft bilge, slight tumblehome. Not a box.
+    profile = (
+        (0.00, 0.00),
+        (0.18, 0.06),
+        (0.42, 0.16),
+        (0.68, 0.30),
+        (0.88, 0.48),
+        (0.99, 0.68),
+        (1.00, 0.84),
+        (0.96, 1.00),
+    )
+    span = deck - keel
+    starboard = [(x, -hy * yf, keel + span * zf) for yf, zf in profile]
+    port = [(x, hy * yf, keel + span * zf) for yf, zf in reversed(profile) if yf > 0.0]
+    return starboard + [(x, 0.0, deck + 0.03)] + port
 
 
 def loft_from_rings(name: str, rings: list[list[tuple[float, float, float]]], collection, color) -> bpy.types.Object:
@@ -398,7 +407,14 @@ def loft_from_rings(name: str, rings: list[list[tuple[float, float, float]]], co
 def build_hull(collection: bpy.types.Collection) -> bpy.types.Object:
     stations = hull_stations()
     rings = [section_ring(s["x"], s["hy"], s["keel"], s["deck"]) for s in stations]
-    return loft_from_rings("Hull", rings, collection, HULL_COLOR)
+    hull = loft_from_rings("Hull", rings, collection, HULL_COLOR)
+    bpy.context.view_layer.objects.active = hull
+    hull.select_set(True)
+    sub = hull.modifiers.new("HullSmooth", "SUBSURF")
+    sub.levels = 1
+    sub.render_levels = 1
+    bpy.ops.object.modifier_apply(modifier=sub.name)
+    return hull
 
 
 def apply_boolean_cut(hull: bpy.types.Object, cutter: bpy.types.Object) -> None:
@@ -597,11 +613,11 @@ def build_stern(collection: bpy.types.Collection) -> None:
 
 def build_stairs(collection: bpy.types.Collection) -> None:
     # In-hull starboard, forward of the cabin front wall. Never inside the solid cabin.
-    step_count = 7
-    step_l = 0.32
+    step_count = 10
+    step_l = 0.30
     step_h = (stern_roof_z() - DECK_Z) / step_count
     step_w = 0.70
-    start_x = STERN_CABIN_X1 + 2.15
+    start_x = STERN_CABIN_X1 + 2.55
     for i in range(step_count):
         z = DECK_Z + step_h * (i + 0.5)
         x = start_x - i * 0.28
@@ -619,7 +635,7 @@ def build_mast(collection: bpy.types.Collection) -> None:
     mast_z = DECK_Z + MAST_LENGTH_M * 0.5
     add_cylinder("Mast_Main", 0.16, MAST_LENGTH_M, (MAST_X, 0.0, mast_z), (0.0, 0.0, 0.0), collection, MAST_COLOR, 20)
     yard_z = DECK_Z + 12.2
-    add_cylinder("Yard_Main", 0.12, 9.4, (MAST_X, 0.0, yard_z), (math.pi * 0.5, 0.0, 0.0), collection, STRAKE_COLOR, 16)
+    add_cylinder("Yard_Main", 0.20, 12.2, (MAST_X, 0.0, yard_z), (math.pi * 0.5, 0.0, 0.0), collection, STRAKE_COLOR, 16)
     nest_z = DECK_Z + 15.5
     add_cylinder("CrowsNest", 0.72, 0.18, (MAST_X, 0.0, nest_z), (0.0, 0.0, 0.0), collection, STRAKE_COLOR, 16)
     add_cylinder("CrowsNestRail", 0.74, 0.36, (MAST_X, 0.0, nest_z + 0.24), (0.0, 0.0, 0.0), collection, HATCH_COLOR, 16)
@@ -672,7 +688,7 @@ def add_camera(
     if ortho:
         data.ortho_scale = ortho_scale
     else:
-        data.lens = 21.0
+        data.lens = 32.0
     obj = bpy.data.objects.new(name, data)
     obj.location = location
     look_at(obj, target)
@@ -687,19 +703,23 @@ def setup_cameras(
 ) -> dict[str, bpy.types.Object]:
     mins, maxs = world_bounds(ship_objects)
     size = maxs - mins
-    target = Vector((-0.35, 0.0, 0.55))
+    # Starboard-bow 3/4 from above, depression 20°. See deck + hatch + stairs + keel silhouette.
+    target = Vector((-1.70, -0.55, 2.55))
     margin = 1.24
-    # Starboard-bow, low enough to show keel/rudder, wide enough to keep the masthead.
-    persp_dir = Vector((0.78, -1.32, 0.26)).normalized()
-    persp_dist = max(size.length * 1.75, 42.0)
+    depress = math.radians(20.0)
+    horiz = Vector((0.55, -1.18, 0.0)).normalized()
+    persp_dir = Vector((horiz.x, horiz.y, math.tan(depress))).normalized()
+    persp_dist = max(size.length * 1.34, 28.0)
+    persp_loc = target + persp_dir * persp_dist
     persp = add_camera(
         CAMERA_NAMES["perspective"],
-        target + persp_dir * persp_dist,
+        persp_loc,
         target,
         collection,
         ortho=False,
         ortho_scale=1.0,
     )
+    _log(f"persp camera loc={tuple(round(c, 2) for c in persp_loc)} target={tuple(round(c, 2) for c in target)} dist={persp_dist:.1f}")
 
     far = 48.0
     side_z = DECK_Z + 0.05
@@ -781,14 +801,18 @@ def setup_workbench(scene: bpy.types.Scene, line_style: bool) -> None:
     scene.view_settings.look = "None"
     shading = scene.display.shading
     shading.light = "STUDIO"
-    shading.studio_light = "Default"
+    shading.studio_light = "outdoor.sl"
     shading.show_shadows = False
     shading.show_cavity = True
     shading.cavity_type = "BOTH"
     shading.curvature_ridge_factor = 1.0
     shading.curvature_valley_factor = 1.0
     shading.show_object_outline = True
-    shading.object_outline_color = (0.08, 0.08, 0.08)
+    shading.object_outline_color = (0.10, 0.10, 0.10)
+    if hasattr(shading, "background_type"):
+        shading.background_type = "VIEWPORT"
+    if hasattr(shading, "background_color"):
+        shading.background_color = (0.93, 0.93, 0.93)
     if line_style:
         shading.color_type = "SINGLE"
         shading.single_color = (0.92, 0.91, 0.88)
@@ -797,14 +821,17 @@ def setup_workbench(scene: bpy.types.Scene, line_style: bool) -> None:
 
     world = bpy.data.worlds.get("World") or bpy.data.worlds.new("World")
     scene.world = world
-    bg_color = (0.91, 0.92, 0.93, 1.0) if not line_style else (0.93, 0.93, 0.91, 1.0)
+    bg_color = (0.94, 0.94, 0.94, 1.0)
     tree = world.node_tree
     if tree is not None:
-        background = tree.nodes.get("Background")
-        if background is not None and background.inputs:
-            background.inputs[0].default_value = bg_color
+        for node in tree.nodes:
+            if node.type == "BACKGROUND" and node.inputs:
+                node.inputs[0].default_value = bg_color
+                if len(node.inputs) > 1:
+                    node.inputs[1].default_value = 1.6
     else:
         world.color = bg_color[:3]
+    scene.view_settings.exposure = 0.35
 
 
 def set_water_visible(visible: bool) -> None:
