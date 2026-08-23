@@ -1,5 +1,5 @@
 schema_version: 1
-contract_version: 0.1.5
+contract_version: 0.1.6
 
 asset:
   asset_id: ShipType_SmallSailer01
@@ -274,11 +274,13 @@ deck:
     lower_endpoint: main_deck
     upper_endpoint: sternhouse_roof_platform
     side:
-      value: null
-      status: UNSET
+      value: starboard
+      status: LOCKED
       allowed_values:
         - port
         - starboard
+    forward_of_stern_cabin_required: true
+    buried_inside_solid_cabin_allowed: false
     double_symmetric_stairs_allowed: false
   decorative_barrels:
     allowed_in_base_asset: false

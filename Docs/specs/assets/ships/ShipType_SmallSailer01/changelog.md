@@ -1,5 +1,10 @@
 # ShipType_SmallSailer01 Changelog
 
+## Design Spec 0.1.7 — 2026-08-23 — REVIEW
+
+- 艉楼楼梯侧别由 UNSET 锁定为**右舷**；楼梯在船体内部、艉楼前方，不得居中、不得埋入实体艉楼。
+- `integration.yaml` 同步至 0.1.6：`stairs_to_stern_platform.side = starboard` / `LOCKED`。
+
 ## Design Spec 0.1.6 — 2026-08-22 — REVIEW
 
 - 用户批准 `木制帆船结构技术插画.png` 作为 **Reference Master R1**；源图 `1449×1086`，原始 PNG SHA-256：`327d646918cfb43a3a8c6347151da0944e8c1187018f3090fa6279f19f44456b`。
