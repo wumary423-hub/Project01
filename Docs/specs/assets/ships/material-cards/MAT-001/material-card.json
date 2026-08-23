@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "document_version": "0.2.0",
+  "document_version": "0.3.0",
   "document_type": "ship_material_card",
   "project": "游戏船只资产",
   "material_card_id": "MAT-001",
@@ -8,7 +8,7 @@
   "status": "LOCKED",
   "scope": "project_default",
   "authority": "canonical",
-  "last_updated": "2026-08-20",
+  "last_updated": "2026-08-23",
   "reference": {
     "file": "assets/ships/material-cards/MAT-001/reference.jpg",
     "archived_sha256": "5cb8df57c400869dbb6c1655b9df1f533c05b9b507ab947fa62ffa5b6bedff3c",
@@ -76,8 +76,8 @@
     "材质卡未规定的颜色不得自行添加；新增颜色必须先修改材质卡。"
   ],
   "pipeline_usage": {
-    "concept_art": "锁定主材质色相、帆布灰白、索具深浅关系与表面材质质感。",
-    "concept_multiview": "所有视角保持一致的材质分区、色值体系和表面状态。",
-    "final_multiview": "减少戏剧性光照，强化PBR可读性；MAT-001负责材质与颜色，线稿多视图负责结构。"
+    "full_effect_concept": "锁定主材质色相、帆布灰白、索具深浅关系与表面材质质感。",
+    "component_design": "同一组件的必要视图保持一致的材质分区、色值体系和表面状态。",
+    "blender_ue": "按本卡建立PBR材质；组件结构由单船合同负责。"
   }
 }

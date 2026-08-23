@@ -50,7 +50,7 @@ def main() -> int:
     parser.add_argument(
         "--target",
         required=True,
-        choices=["chatgpt", "google-ai-studio", "cursor", "meshy", "blender", "ue5"],
+        choices=["chatgpt", "google-ai-studio", "cursor", "tripo3d", "meshy", "blender", "ue5"],
     )
     parser.add_argument("--output", help="Optional output file path")
     args = parser.parse_args()
@@ -63,6 +63,7 @@ def main() -> int:
     system = manifest["systems"][0]
     governance = read(ROOT / manifest["authority"]["policy"])
     system_spec = read(ROOT / system["canonical_spec"])
+    production_rules = read(ROOT / system["asset_production_rules"])
     design = read(ROOT / asset["design_spec"])
     integration = load_yaml(ROOT / asset["integration_contract"])
 
@@ -78,8 +79,8 @@ def main() -> int:
         ]
 
         if args.target == "google-ai-studio":
-            visual = asset.get("visual_master") or {}
-            visual_path = visual.get("path", "")
+            visual = asset.get("full_effect_concept") or {}
+            visual_path = visual.get("path") or ""
             material_id = asset.get("material_card")
             card = next(
                 (item for item in (manifest.get("material_cards") or []) if item.get("material_card_id") == material_id),
@@ -94,6 +95,7 @@ def main() -> int:
                 f"- {raw_url('Docs/governance/source-of-truth.md')}",
                 f"- {raw_url('Docs/tool-guides/google-ai-studio.md')}",
                 f"- {raw_url(system['canonical_spec'])}",
+                f"- {raw_url(system['asset_production_rules'])}",
                 f"- {raw_url(asset['design_spec'])}",
                 f"- {raw_url(asset['integration_contract'])}",
             ]
@@ -109,7 +111,8 @@ def main() -> int:
             parts += ["## Source-of-Truth Policy", governance, ""]
         if args.target in {"chatgpt", "google-ai-studio", "cursor", "blender"}:
             parts += ["## Ship System", system_spec, ""]
-        if args.target in {"chatgpt", "google-ai-studio", "meshy", "blender"}:
+            parts += ["## Ship Asset Production Rules", production_rules, ""]
+        if args.target in {"chatgpt", "google-ai-studio", "tripo3d", "meshy", "blender"}:
             parts += ["## Asset Design", design, ""]
         material_id = asset.get("material_card")
         if material_id and args.target in {"chatgpt", "google-ai-studio"}:
@@ -134,7 +137,10 @@ def main() -> int:
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(output_text, encoding="utf-8")
-    print(output_path.relative_to(ROOT))
+    try:
+        print(output_path.relative_to(ROOT))
+    except ValueError:
+        print(output_path)
     return 0
 
 

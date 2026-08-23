@@ -1,30 +1,16 @@
 ---
-description: Adapter for ship-related code and asset integration
+description: Adapter for ship-related code and component asset integration
 globs:
   - "Source/**/*Ship*"
   - "Content/Ship/**"
   - "Content/Ships/**"
-  - "docs/specs/systems/ship-system/**"
-  - "docs/specs/assets/ships/**"
+  - "Docs/specs/systems/ship-system/**"
+  - "Docs/specs/assets/ships/**"
 alwaysApply: false
 ---
 
-For ship-related work, read in order:
+Read `spec-manifest.yaml`, governance, ship-system, `production-rules.md`, target `design.md`, material card, and `integration.yaml` in that order.
 
-- `spec-manifest.yaml`
-- `Docs/governance/source-of-truth.md`
-- `docs/specs/systems/ship-system/ship-system.md`
-- `Docs/specs/assets/ships/production-rules.md`
-- `docs/specs/systems/ship-system/ship-system.yaml`
-- `docs/specs/systems/ship-system/ship-program.md`
-- `Docs/specs/assets/ships/index.yaml`
-- the target ship's `design.md`
-- the target ship's bound/specified material card when visual production is involved
-- the target ship's `integration.yaml`
-- the approved upstream artifacts required by the current production stage
+The active workflow is component-first: full-effect concept, component breakdown, per-component production/reuse, Blender assembly, UE5. Never load retired whole-ship line/multiview/blockout artifacts as current inputs.
 
-For visual work, apply `Docs/specs/assets/ships/production-rules.md` before loading existing artifacts. In “重新/重出” work, identify the target artifact T: exclude previous versions of T, but continue to load all approved upstream artifacts required to produce T. Do not interpret “重新” as “ignore every existing image.” For direct image editing, use the user-designated image as the edit base.
-
-Do not trigger image production merely because the final asset pipeline is visual; analyze the user's text first and only generate when the user explicitly requests a visual deliverable.
-
-`.cursor/rules/ship-system.mdc` is an adapter entry only. Canonical facts are under `Docs/specs` / `docs/specs`; do not maintain a second conflicting rule set here.
+For `ShipType_SmallSailer01`, current validation is Hull plus a simple separate scalable Deck. Hull must not contain gunports or attachments. Gunports are later independent logical modules.

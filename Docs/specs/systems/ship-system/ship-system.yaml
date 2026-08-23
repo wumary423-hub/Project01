@@ -1,15 +1,7 @@
 schema_version: 1
 system_id: SYS-SHIP
-contract_version: 0.2.0
+contract_version: 0.4.0
 status: LOCKED
-
-migration:
-  state: MIGRATED
-  legacy_path: .cursor/rules/ship-system.mdc
-  legacy_version: "0.1.1"
-  legacy_status: ADAPTER
-  legacy_remains_authoritative_for_existing_program_logic: false
-  program_spec: docs/specs/systems/ship-system/ship-program.md
 
 asset_pair:
   ship_3d_required: true
@@ -19,68 +11,36 @@ asset_pair:
 view_and_detail:
   typical_gameplay_distance_m: [50, 200]
   extreme_minimum_readable_distance_m: 10
-  prioritize_large_silhouette: true
-  avoid_nonfunctional_micro_geometry: true
-  priority_order:
-    - mast_count
-    - deck_levels
-    - rig_silhouette
-    - hull_outline
-    - major_parts
-    - small_decor
+  priority_order: [hull_outline, deck_and_superstructure, rig_silhouette, functional_parts, small_decor]
 
-required_interfaces:
-  flag:
-    required: true
-    replaceable: true
-    socket_name: Attach_Flag
-    socket_host: MastRig
-  figurehead:
-    installation_interface_required: true
-    socket_name: Attach_Figurehead
-    socket_host: Hull
-    actual_asset_optional: true
-    replaceable: true
-  crew_sockets:
-    allowed: false
-
-mastrig:
-  scheme: A
-  whole_package: true
-  hang_socket: Attach_MastRig_01
-  hang_host: Hull
-  deprecated_hang_alias: Attach_Sail_Main
-  phase_one_rig_types: [Square, Lateen]
-  deferred_rig_types: [Gaff]
-  states: [Full, Half, Furled]
-  not_separate_ue_meshes: [Mast_Main, Yard_Main, Sail_Main]
-
-cargo:
-  visualize_by_commodity_type: false
-  visualize_by_quantity: false
-
-job_layout_2d:
-  view: perspective_side
-  bow_direction: left
-  size: 2048x1024
-  baked_hotspots_allowed: false
-  strict_match_to_3d: true
+component_production:
+  component_first: true
+  reuse_before_new_generation: true
+  blender_assembly_authority: true
+  hull:
+    separate_mesh: true
+    gunports_built_in: false
+  deck:
+    separate_mesh: true
+    simple_scalable_first_pass: true
+  gunport:
+    separate_module: true
+    boolean_cutter_supported: true
+    cannon_anchor_required: true
 
 workflow:
   - stage: 1
-    name: Reference / Research
+    name: Full-Effect Concept
   - stage: 2
-    name: Concept Design & Structural Lock
-  - stage: 2.5
-    name: Meshy Reference Pack
+    name: Component Breakdown and Reuse Check
   - stage: 3
-    name: Meshy Base Mesh
+    name: Primary Component Production and Validation
   - stage: 4
-    name: Blender Reconstruction
+    name: Other Component Production or Reuse
   - stage: 5
-    name: UE5 Game Asset
+    name: Blender Ship Assembly
   - stage: 6
-    name: 2D Job-layout / UI Asset
+    name: UE5 Game Asset
 
 program:
   status: LOCKED
@@ -95,4 +55,4 @@ program:
   save_schema: v7
   first_ship_asset_id: ShipType_SmallSailer01
   ue_content_root: /Game/Ships/ShipType_SmallSailer01/
-  program_spec: docs/specs/systems/ship-system/ship-program.md
+  program_spec: Docs/specs/systems/ship-system/ship-program.md

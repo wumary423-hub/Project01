@@ -7,113 +7,64 @@
     "schema_version",
     "contract_version",
     "asset",
-    "visual_master",
+    "full_effect_concept",
+    "production_workflow",
     "dimensions",
     "modules",
     "interfaces",
     "job_layout_2d",
-    "meshy",
+    "ai_3d",
     "blender",
     "ue5"
   ],
   "properties": {
-    "schema_version": {
-      "type": "integer",
-      "const": 1
-    },
-    "contract_version": {
-      "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
-    },
+    "schema_version": {"type": "integer", "const": 3},
+    "contract_version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
     "asset": {
       "type": "object",
-      "required": [
-        "asset_id",
-        "asset_type",
-        "status",
-        "design_spec",
-        "system_spec"
-      ],
+      "required": ["asset_id", "asset_type", "status", "design_spec", "system_spec"],
       "properties": {
-        "asset_id": {
-          "type": "string",
-          "pattern": "^ShipType_[A-Za-z][A-Za-z0-9]*$"
-        },
-        "asset_type": {
-          "const": "ship"
-        },
-        "status": {
-          "enum": [
-            "DRAFT",
-            "REVIEW",
-            "LOCKED",
-            "SUPERSEDED",
-            "DEPRECATED"
-          ]
-        }
+        "asset_id": {"type": "string", "pattern": "^ShipType_[A-Za-z][A-Za-z0-9]*$"},
+        "asset_type": {"const": "ship"},
+        "status": {"enum": ["DRAFT", "REVIEW", "LOCKED", "SUPERSEDED", "DEPRECATED"]}
       },
       "additionalProperties": true
     },
-    "visual_master": {
+    "full_effect_concept": {
       "type": "object",
-      "required": [
-        "revision",
-        "status",
-        "path",
-        "sha256"
-      ],
+      "required": ["status", "revision", "path"],
       "properties": {
-        "status": {
-          "enum": [
-            "DRAFT",
-            "REVIEW",
-            "LOCKED",
-            "SUPERSEDED",
-            "DEPRECATED"
-          ]
-        },
-        "sha256": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{64}$"
-        }
+        "status": {"enum": ["PENDING", "DRAFT", "REVIEW", "LOCKED", "SUPERSEDED", "DEPRECATED"]},
+        "revision": {"type": ["string", "null"]},
+        "path": {"type": ["string", "null"]},
+        "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
       },
       "additionalProperties": true
     },
-    "dimensions": {
-      "type": "object"
+    "production_workflow": {
+      "type": "object",
+      "required": ["version", "current_stage"],
+      "properties": {
+        "version": {"const": "component_first_v1"},
+        "current_stage": {"const": "full_effect_concept"}
+      },
+      "additionalProperties": true
     },
-    "coordinate_system": {
-      "type": "object"
-    },
+    "dimensions": {"type": "object"},
+    "coordinate_system": {"type": "object"},
     "modules": {
       "type": "object",
-      "required": [
-        "hull",
-        "mast_rig_01",
-        "rudder",
-        "flag",
-        "figurehead"
-      ],
+      "required": ["hull", "deck", "gunport", "mast_rig_01", "rudder", "flag", "figurehead"],
       "additionalProperties": true
     },
     "interfaces": {
       "type": "object",
-      "required": [
-        "flag_socket",
-        "figurehead_socket",
-        "crew_sockets"
-      ],
+      "required": ["flag_socket", "figurehead_socket", "crew_sockets"],
       "properties": {
         "crew_sockets": {
           "type": "object",
-          "required": [
-            "allowed"
-          ],
-          "properties": {
-            "allowed": {
-              "const": false
-            }
-          },
+          "required": ["allowed"],
+          "properties": {"allowed": {"const": false}},
           "additionalProperties": true
         }
       },
@@ -121,43 +72,27 @@
     },
     "job_layout_2d": {
       "type": "object",
-      "required": [
-        "required",
-        "view",
-        "bow_direction",
-        "strict_structural_match_to_3d"
-      ],
+      "required": ["required", "view", "bow_direction", "strict_structural_match_to_3d"],
       "properties": {
-        "required": {
-          "const": true
-        },
-        "view": {
-          "const": "perspective_side"
-        },
-        "bow_direction": {
-          "const": "left"
-        },
-        "strict_structural_match_to_3d": {
-          "const": true
-        }
+        "required": {"const": true},
+        "view": {"const": "perspective_side"},
+        "bow_direction": {"const": "left"},
+        "strict_structural_match_to_3d": {"const": true}
       },
       "additionalProperties": true
     },
-    "meshy": {
-      "type": "object"
+    "ai_3d": {
+      "type": "object",
+      "required": ["primary_tool", "generation_target", "expected_output_path"],
+      "properties": {
+        "primary_tool": {"const": "tripo_3d"},
+        "generation_target": {"const": "hull_only"}
+      },
+      "additionalProperties": true
     },
-    "blender": {
-      "type": "object"
-    },
-    "ue5": {
-      "type": "object"
-    },
-    "forbidden": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    }
+    "blender": {"type": "object"},
+    "ue5": {"type": "object"},
+    "forbidden": {"type": "array", "items": {"type": "string"}}
   },
   "additionalProperties": true
 }

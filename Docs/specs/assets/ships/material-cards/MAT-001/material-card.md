@@ -1,13 +1,13 @@
 ---
 document_type: ship_material_card
 schema_version: 1
-document_version: 0.2.0
+document_version: 0.3.0
 material_card_id: MAT-001
 title_zh: 写实历史木帆船基础材质
 status: LOCKED
 scope: project_default
 authority: canonical
-last_updated: 2026-08-20
+last_updated: 2026-08-23
 reference:
   file: assets/ships/material-cards/MAT-001/reference.jpg
   archived_sha256: 5cb8df57c400869dbb6c1655b9df1f533c05b9b507ab947fa62ffa5b6bedff3c
@@ -17,7 +17,7 @@ reference:
 
 # MAT-001｜写实历史木帆船基础材质
 
-本卡是“游戏船只资产”的默认木质帆船材质基准。除非某艘船明确指定专属材质卡，否则概念图、概念多视图与最终多视图均应使用 MAT-001。
+本卡是“游戏船只资产”的默认木质帆船材质基准。除非某艘船明确指定专属材质卡，否则完整效果概念图、组件设计图与最终 3D 材质均应使用 MAT-001。
 
 > 本卡只约束材质、色彩、粗糙度和表面质感，不得修改船型结构、桅杆数量、炮窗数量、甲板层级、船楼、舵、货舱口等结构设计。
 
@@ -93,9 +93,9 @@ reference:
 
 ## 9. 在资产流程中的使用
 
-- **[概念图]：** 锁定整体木材色相、帆布灰白、索具深浅关系和表面材质质感。
-- **[概念多视图]：** 所有视角保持同一材质分区、同一色值体系和同一表面状态。
-- **[最终多视图]：** 减少戏剧性光照，强化 PBR 材质可读性；由 MAT-001 约束材质与颜色，由线稿多视图约束结构。
+- **完整效果概念图：** 锁定整体木材色相、帆布灰白、索具深浅关系和表面材质质感。
+- **组件设计与参考图：** 同一组件的所有必要视图保持一致的材质分区、色值体系和表面状态。
+- **Blender / UE5：** 按本卡建立可运行的 PBR 材质；组件结构由单船合同负责，本卡不改变几何。
 
 ## 10. 参考图
 

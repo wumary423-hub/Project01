@@ -3,6 +3,7 @@ asset_type: ship
 
 production_rules:
   spec: Docs/specs/assets/ships/production-rules.md
+  version: "2.0.0"
   status: LOCKED
   scope: all_ship_assets
 
@@ -15,10 +16,16 @@ assets:
     title_zh: 小型单桅沿岸商船
     status: REVIEW
     former_starter_id: SHIP-0001
-    design_spec: docs/specs/assets/ships/ShipType_SmallSailer01/design.md
-    integration_contract: docs/specs/assets/ships/ShipType_SmallSailer01/integration.yaml
+    design_spec: Docs/specs/assets/ships/ShipType_SmallSailer01/design.md
+    integration_contract: Docs/specs/assets/ships/ShipType_SmallSailer01/integration.yaml
     material_card: MAT-001
-    concept_master:
-      revision: "0.8"
-      status: LOCKED
-      path: assets/ships/ShipType_SmallSailer01/concept/ShipType_SmallSailer01_concept-master_r0.8.png
+    production_workflow: component_first_v1
+    current_stage: full_effect_concept
+    full_effect_concept:
+      status: PENDING
+      revision: null
+      path: null
+    current_validation:
+      primary_component: hull
+      companion_component: deck
+      hull_built_in_gunports: false

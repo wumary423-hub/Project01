@@ -3,104 +3,60 @@ document_type: system_spec
 schema_version: 1
 system_id: SYS-SHIP
 title_zh: 船只系统
-document_version: 0.2.0
+document_version: 0.4.0
 status: LOCKED
 migration_status: MIGRATED
-legacy_source:
-  path: .cursor/rules/ship-system.mdc
-  version: "0.1.1"
-  status: ADAPTER
-last_updated: 2026-08-19
+last_updated: 2026-08-23
 ---
 
 # 船只系统规范
 
-跨 Cursor、ChatGPT、Meshy、Blender、UE5 的船只系统规范。**状态：LOCKED。**
+跨 Cursor、ChatGPT、Tripo 3D、Blender、UE5 的船只系统规范。程序运行时见 `ship-program.md`，美术生产规则见 `Docs/specs/assets/ships/production-rules.md`。
 
-- 跨工具与 3D/2D 接口：本文件 + `ship-system.yaml`
-- 程序运行时：`ship-program.md`
-- 第一艘船：`docs/specs/assets/ships/ShipType_SmallSailer01/`
-- 命名：`docs/governance/naming-and-versioning.md`
-- Cursor 入口：`.cursor/rules/ship-system.mdc`（适配层，不得另写一套事实）
+第一艘船主键为 `ShipType_SmallSailer01`；旧 ID `SHIP-0001` 已废止。UE 目录为 `/Game/Ships/ShipType_SmallSailer01/`。
 
-第一艘船主键：**`ShipType_SmallSailer01`**（废止 `SHIP-0001`）。  
-UE 网格：`/Game/Ships/ShipType_SmallSailer01/`。目录表仍为 `/Game/Ship/DT_Ships`。
+## 1. 观察距离与细节
 
-`Docs/Ship/*` 为 SUPERSEDED 指向。
+- 常规观察距离：50–200m；极限近距约 10m。
+- 优先级：船体轮廓 > 甲板与上层建筑 > 桅帆轮廓 > 主要功能部件 > 小装饰。
+- 避免默认制作无逻辑意义的微型装饰和松散杂物。
 
-## 2. 每艘船的必备资产
+## 2. 部件化资产
 
-必须同时具备 3D 船资产与 2D 岗位布局，并在船体比例、船艏方向、桅数与位置、甲板层级、艉楼、货舱/主要功能区、可交互大模块上一致。
+船只首先由独立部件制作，再在 Blender 中组装。最小体系包括：
 
-## 3. 观察距离与细节原则
+- `Hull`：船身核心；
+- `Deck`：独立甲板；
+- `Gunport`：独立炮窗模块，可带布尔 Cutter 与火炮锚点；
+- 艉楼/前楼及其可继续拆分的子部件；
+- `MastRig`、舵及其他具有运行时逻辑的模块。
 
-两档距离，不冲突：
+部件可以进入跨船复用库。复用前只调整尺寸、材质、Pivot、Socket 和兼容标签。
 
-| 档 | 距离 | 用途 |
-|----|------|------|
-| 常规 | **50–200m** | 战略地图默认观察；决定什么必须做成可读几何 |
-| 极限近距 | **约 10m** | 仍应能认船、比例正确；不是常规镜头 |
+## 3. 炮窗与火炮接口
 
-优先级：桅数 > 甲板层 > 帆装轮廓 > 船体轮廓 > 大件 > 小装饰。
+炮窗不是 Hull 的预制开口。炮窗模块在 Blender 组装时定位并切割船舷，炮窗锚点负责绑定火炮和朝向。炮窗数量与布局由单船设计锁定。
 
-优先：船体轮廓、艏艉、甲板、桅/桁/帆（以 MastRig 整包呈现）、艉楼、大货舱口、舵、旗与船首像接口。
+## 4. 现行工作流
 
-避免默认：微型绳结、铆钉、小滑轮、无功能小桶杂物。
+1. 完整效果概念图；
+2. 根据概念图拆解部件并检查复用；
+3. 制作主零件并验证流程，当前首先验证船身；
+4. 制作或复用其他零件；
+5. Blender 组装整船；
+6. 进入 UE5。
 
-## 4. 模块化要求
+旧整船线稿和整船多视图生产链已废止。多视图仅在具体零件需要时制作。
 
-### 4.1 UE 最终模块（功能导向）
+## 5. 当前船身验证交付
 
-- Hull（`AFleet` 根网格）
-- MastRig 整包（桅+桁+帆+少量索具；换 RigType = 换整套三状态网格，不是材质开关）
-- 舵、旗、船首像、锚、断桅、可选艏帆
-- 艉楼 v0 焊在 Hull 上
+`ShipType_SmallSailer01` 的首次验证只交付：
 
-**禁止**把一期 UE 交付拆成独立的 `Mast_Main` / `Yard_Main` / `Sail_Main` 三件网格。Meshy 可分件出毛坯；Blender 打成 MastRig 包。
+- 连续、无炮窗、无附件的 `Hull`；
+- 一块可在 Blender 中手动缩放和定位的简单 `Deck`。
 
-一期 RigType：**Square + Lateen**（各 Full/Half/Furled）。Gaff 仅兼容、一期不产。
+Tripo 3D 只生成船身核心；Deck 可以在 Blender 中直接建立。装饰、锚、灯、绞盘、艉楼、桅杆、舵和炮窗均不进入该次验证。
 
-### 4.2 旗帜
+## 6. UE5交付
 
-- 必备、可更换
-- Socket **`Attach_Flag` 在活动 MastRig 网格上**，不在 Hull 上
-- 桅隐藏或断桅时隐藏旗
-
-### 4.3 船首像
-
-- Hull `Attach_Figurehead`；实际网格可占位或空
-
-### 4.4 船员接口
-
-- 不设置 Crew Socket
-- 岗位用 2D 改装图 + 头像，不把角色网格挂到 `Attach_*`
-
-## 5. 货舱表现
-
-只表示舱室是否为货舱。不按货物种类或数量生成货物模型。
-
-## 6. 2D岗位布局
-
-有透视的侧视图；船头朝左；2048×1024；透明；8–10% 边距；无烘焙热区；槽位 `OutfitSlot_*`。不得画出 3D 没有的结构。
-
-## 7. 标准工作流
-
-1. Reference / Research  
-2. Concept Design & Structural Lock  
-2.5 Meshy Reference Pack  
-3. Meshy Base Mesh  
-4. Blender Reconstruction  
-5. UE5 Game Asset  
-6. 2D Job-layout / UI Asset  
-
-未经用户确认不得跨越结构锁定。
-
-## 8. 概念母版与生成输入分离
-
-Concept Master 锁身份。Meshy 包可去掉展开帆和杂物。不得为 Meshy 改锁定船体性格。
-
-## 9. UE5交付
-
-单船 `integration.yaml` 记录：单位与坐标、模块、Pivot、Socket、材质槽、UV、LOD、Collision、Nanite、导出路径、2D 图路径。
-
-程序类与存档见 `ship-program.md`。Socket 名以 `integration.yaml` 为准（来自原 `.mdc` V0.1.1）。
+单船 `integration.yaml` 记录单位、坐标、模块、Pivot、Socket、材质槽、UV、LOD、Collision、导出路径和 2D 布局。最终是否合并网格由运行时逻辑决定，不得在制作阶段丢失炮窗、火炮等关键锚点。

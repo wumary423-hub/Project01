@@ -1,5 +1,5 @@
-schema_version: 1
-contract_version: 0.1.8
+schema_version: 3
+contract_version: 1.0.0
 
 asset:
   asset_id: ShipType_SmallSailer01
@@ -8,426 +8,181 @@ asset:
   working_name: SmallSailer01
   former_starter_id: SHIP-0001
   status: REVIEW
-  design_spec: docs/specs/assets/ships/ShipType_SmallSailer01/design.md
-  system_spec: docs/specs/systems/ship-system/ship-system.md
+  design_spec: Docs/specs/assets/ships/ShipType_SmallSailer01/design.md
+  system_spec: Docs/specs/systems/ship-system/ship-system.md
   catalog_row: ShipType_SmallSailer01
   catalog_table: /Game/Ship/DT_Ships
-  historical_prototype:
-    value: "Cog (ship)"
-    role: historical_prototype
-    strict_reconstruction_required: false
+  material_card: MAT-001
 
-visual_master:
-  revision: "0.8"
-  status: LOCKED
-  path: assets/ships/ShipType_SmallSailer01/concept/ShipType_SmallSailer01_concept-master_r0.8.png
-  sha256: 0c848da018e5c4ebe1edc65611d9b46a2e6633a09430aba8af80ccbf01bfe44d
+full_effect_concept:
+  status: PENDING
+  revision: null
+  path: null
+  role: style_and_whole_ship_identity
+  user_approval_required: true
 
-reference_master:
-  revision: "1"
-  status: LOCKED
-  role: hull_deck_stern_structural_reference
-  intended_path: assets/ships/ShipType_SmallSailer01/reference/ShipType_SmallSailer01_reference-master_r1.png
-  source_session_filename: 木制帆船结构技术插画.png
-  source_dimensions_px: [1449, 1086]
-  source_sha256: 327d646918cfb43a3a8c6347151da0944e8c1187018f3090fa6279f19f44456b
-  binary_repository_status: PENDING_IMPORT
-  decision_record: Docs/specs/assets/ships/ShipType_SmallSailer01/decisions/ADR-0006-reference-master-r1.md
-  rigging_and_sails_intentionally_omitted_for_structure_readability: true
-  yard_and_crows_nest_retained: true
-  omission_does_not_forbid_final_rigging_or_sails: true
+production_workflow:
+  version: component_first_v1
+  current_stage: full_effect_concept
+  deprecated_whole_ship_multiview_pipeline_allowed: false
+  stages:
+    - full_effect_concept
+    - component_breakdown_and_reuse_check
+    - primary_component_production_and_validation
+    - other_component_production_or_reuse
+    - blender_ship_assembly
+    - ue5_game_asset
 
 dimensions:
-  length_m:
-    value: 15
-    status: LOCKED
-    note: fixed ship design length
-  beam_m:
-    value: null
-    status: UNSET
-  draft_m:
-    value: null
-    status: UNSET
-  height_without_mast_m:
-    value: null
-    status: UNSET
+  length_m: {value: 15, status: LOCKED}
+  beam_m: {value: null, status: UNSET}
+  draft_m: {value: null, status: UNSET}
   main_mast_length_m:
     value: 18
     status: LOCKED
     measurement: mast_step_to_masthead
-  main_mast_length_to_ship_length_ratio:
-    value: 1.2
-    derived: true
-    note: derived from locked 18m mast length / locked 15m ship length
 
 coordinate_system:
-  ue_forward_axis:
-    value: X
-    status: REVIEW
-  ue_up_axis:
-    value: Z
-    status: REVIEW
-  unit:
-    value: centimeter
-    status: REVIEW
   blender_forward: "+X"
-  blender_apply_rotation_and_scale: true
-  pivot_definition:
-    value: null
-    status: UNSET
+  blender_starboard: "+Y"
+  blender_up: "+Z"
+  blender_unit: meter
+  ue_forward_axis: {value: X, status: REVIEW}
+  ue_up_axis: {value: Z, status: REVIEW}
+  ue_unit: centimeter
+  pivot_definition: {value: null, status: UNSET}
 
 modules:
   hull:
     required: true
     separate_mesh: true
-    role: AFleet_root_static_mesh
-    catalog_field: FShipDefinition.Mesh
+    current_validation_target: true
     filename: SM_SmallSailer01_Hull.fbx
+    built_in_gunports_allowed: false
+    excludes: [deck, gunports, sternhouse, hatch, stairs, mast, yard, crows_nest, bowsprit, sails, rigging, rudder, anchor, lamps, capstan, decor, loose_props]
+  deck:
+    required: true
+    separate_mesh: true
+    current_validation_companion: true
+    simple_scalable_board: true
+    manual_scale_and_height_alignment_allowed: true
+    filename: SM_SmallSailer01_Deck.fbx
+  gunport:
+    required: true
+    separate_reusable_module: true
+    current_validation_scope: false
+    total_instances: 4
+    port_instances: 2
+    starboard_instances: 2
+    uniform_size_required: true
+    bilateral_correspondence_required: true
+    built_into_hull: false
+    boolean_cutter_required: true
+    cannon_anchor_required: true
+    installed_cannon_count_locked: false
+    filename: SM_SmallSailer01_Gunport.fbx
   stern_superstructure:
     required: true
-    separate_mesh: false
-    note: welded to hull for v0; low one-level wooden sternhouse, floor at main-deck level, walkable roof platform with railing
+    separate_during_production: true
+    current_validation_scope: false
+    recursive_component_breakdown_allowed: true
   mast_rig_01:
     required: true
     separate_mesh: true
-    scheme: A
-    whole_package: true
-    contains:
-      - mast
-      - yards
-      - sail
-      - minimal_rigging
-    not_separate_ue_meshes:
-      - Mast_Main
-      - Yard_Main
-      - Sail_Main
-    meshy_may_block_out_parts_separately: true
-    blender_must_deliver_as_package: true
+    current_validation_scope: false
     hang_socket: Attach_MastRig_01
-    hang_host: Hull
     centerline_required: true
     length_m: 18
     length_status: LOCKED
-    length_must_exceed_ship_length: true
-    rig_types_phase_one:
-      - Square
-      - Lateen
-    rig_types_compatible_deferred:
-      - Gaff
-    states:
-      - Full
-      - Half
-      - Furled
-    filename_pattern: SM_SmallSailer01_MastRig01_<RigType>_<State>
-    active_one_rigtype_at_a_time: true
-    starter_default_rigtype:
-      value: null
-      status: UNSET
-    flag_socket_on_this_mesh: Attach_Flag
-  headsail_01:
-    hull_socket_required: true
-    hull_socket_name: Attach_Headsail_01
-    separate_mesh: true
-    mesh_on_starter_loadout: false
-    filename_pattern: SM_SmallSailer01_Headsail01_<State>
-    states:
-      - Full
-      - Half
-      - Furled
-  bowsprit:
-    required: true
-    separate_mesh: false
-    note: hull structure; do not delete
   rudder:
     required: true
     separate_mesh: true
-    mounting: stern_centerline
+    current_validation_scope: false
     hang_socket: Attach_Rudder
-    hang_host: Hull
-    filename: SM_SmallSailer01_Rudder.fbx
+    mounting: stern_centerline
   flag:
     required: true
     separate_mesh: true
-    replaceable: true
+    current_validation_scope: false
     hang_socket: Attach_Flag
     hang_host: MastRig
-    hide_when_rig_hidden_or_mast_broken: true
-    filename: SM_SmallSailer01_Flag_Placeholder.fbx
   figurehead:
     actual_asset_required: false
     separate_mesh: true
-    replaceable: true
+    current_validation_scope: false
     hang_socket: Attach_Figurehead
     hang_host: Hull
-    filename: SM_SmallSailer01_Figurehead_Placeholder.fbx
-  anchor:
-    required: true
-    separate_mesh: true
-    hang_socket: Attach_Anchor
-    hang_host: Hull
-    filename: SM_SmallSailer01_Anchor.fbx
-  mast_broken:
-    required: true
-    separate_mesh: true
-    hang_socket: Attach_Mast_Broken
-    hang_host: Hull
-    filename: SM_SmallSailer01_MastBroken.fbx
 
 interfaces:
-  pontoon_bow:
+  mast_mount: {required: true, name: Attach_MastRig_01, host: Hull}
+  rudder_mount: {required: true, name: Attach_Rudder, host: Hull}
+  flag_socket: {required: true, name: Attach_Flag, host: MastRig}
+  figurehead_socket: {required: true, name: Attach_Figurehead, host: Hull}
+  gunport_cannon_socket:
     required: true
-    name: Pontoon_Bow
-    host: Hull
-    missing_severity: Error
-  pontoon_stern:
-    required: true
-    name: Pontoon_Stern
-    host: Hull
-    missing_severity: Error
-  pontoon_port:
-    required: true
-    name: Pontoon_Port
-    host: Hull
-    missing_severity: Error
-  pontoon_starboard:
-    required: true
-    name: Pontoon_Starboard
-    host: Hull
-    missing_severity: Error
-  mast_mount:
-    required: true
-    name: Attach_MastRig_01
-    host: Hull
-    centerline_required: true
-    deprecated_alias: Attach_Sail_Main
-  flag_socket:
-    required: true
-    name: Attach_Flag
-    host: MastRig
-    status: REVIEW
-  figurehead_socket:
-    required: true
-    name: Attach_Figurehead
-    host: Hull
-    status: REVIEW
-  rudder_mount:
-    required: true
-    name: Attach_Rudder
-    host: Hull
-    stern_centerline_required: true
-  anchor_socket:
-    required: true
-    name: Attach_Anchor
-    host: Hull
-  fx_fire:
-    required: true
-    name: Attach_FX_Fire
-    host: Hull
-  mast_broken_socket:
-    required: true
-    name: Attach_Mast_Broken
-    host: Hull
-  headsail_socket:
-    required: true
-    name: Attach_Headsail_01
-    host: Hull
-  weapon_port_01:
-    required: true
-    name: Attach_Weapon_Port_01
-    host: Hull
-    mesh_optional_v0: true
-  weapon_starboard_01:
-    required: true
-    name: Attach_Weapon_Starboard_01
-    host: Hull
-    mesh_optional_v0: true
-  crew_sockets:
-    allowed: false
+    name: Attach_Cannon
+    host: Gunport
+    repeated_per_instance: true
+  crew_sockets: {allowed: false}
 
-hull_openings:
-  gunports:
-    structural_feature: true
-    total_count: 4
-    port_count: 2
-    starboard_count: 2
-    mirror_axis: longitudinal_centerline
-    bilateral_mirror_required: true
-    uniform_size_required: true
-    deck_level: top_deck
-    other_deck_levels_allowed: false
-    note: Structural hull openings only; does not define installed weapon count or require one weapon socket per gunport.
-
-deck:
-  main_cargo_hatch:
-    count: 1
-    cover_panels_allowed: true
-    relative_size: compact
-    must_not_dominate_main_deck: true
-    overlap_with_main_mast_or_mast_step_allowed: false
-    must_clear_main_mast_footprint: true
-  stairs_to_stern_platform:
-    required: true
-    count: 1
-    placement: adjacent_to_ship_side
-    inside_hull_required: true
-    centerline_allowed: false
-    lower_endpoint: main_deck
-    upper_endpoint: sternhouse_roof_platform
-    side:
-      value: starboard
-      status: LOCKED
-      allowed_values:
-        - port
-        - starboard
-    forward_of_stern_cabin_required: true
-    buried_inside_solid_cabin_allowed: false
-    double_symmetric_stairs_allowed: false
-  decorative_barrels:
-    allowed_in_base_asset: false
-  loose_clutter:
-    allowed_in_base_asset: false
-
-visual_constraints:
-  preserve_v0_8_bow_midship_transition: true
-  preserve_v0_8_midship_stern_transition: true
-  stern_canvas_canopy_allowed: false
-  low_one_level_wooden_sternhouse_required: true
+ship_layout:
+  historical_prototype: "Cog (ship)"
+  single_mast: true
+  single_main_deck: true
+  main_cargo_hatch_count: 1
+  main_cargo_hatch_alignment: longitudinal_centerline_aft_of_mast
+  sternhouse_levels: 1
   sternhouse_floor_same_level_as_main_deck: true
-  sternhouse_roof_walkable_platform_required: true
-  sternhouse_roof_railing_required: true
-  small_functional_windows_required: true
-  sternhouse_wood_same_material_system_as_hull: true
-  dark_external_bands_must_read_as_wood: true
-  expanded_sail_allowed_in_hull_concept: false
+  stern_stairs_count: 1
+  stern_stairs_side: starboard
+  stern_stairs_inside_hull: true
+  rudder_alignment: stern_centerline
+  bowsprit_required_in_final_ship: true
+  main_yard_required_in_final_ship: true
+  crows_nest_required_in_final_ship: true
+  decorative_barrels_allowed: false
+  loose_clutter_allowed: false
 
-view_and_detail:
-  typical_gameplay_distance_m: [50, 200]
-  extreme_minimum_readable_distance_m: 10
-  note: 50-200m is normal strategic view; 10m is extreme close, not a conflict
+ai_3d:
+  primary_tool: tripo_3d
+  generation_target: hull_only
+  expected_output_path: assets/ships/ShipType_SmallSailer01/tripo3d/hull/
+  component_reference_pack_required: true
+  whole_ship_final_multiview_required: false
+  first_pass_texture_required: false
+  output_is_intermediate: true
+  blender_cleanup_required: true
 
-cargo_visualization:
-  generate_by_commodity_type: false
-  generate_by_quantity: false
+blender:
+  assembly_authority: true
+  symmetry_check_required: true
+  topology_cleanup_required: true
+  component_scale_alignment_required: true
+  uv_required_before_ue: true
+  lod_required: true
+  collision_required: true
+  output_path: assets/ships/ShipType_SmallSailer01/blender/
 
 job_layout_2d:
   required: true
   view: perspective_side
   bow_direction: left
-  size: 2048x1024
-  transparent: true
-  margin_percent: [8, 10]
-  baked_hotspots_allowed: false
   strict_structural_match_to_3d: true
-  filename: T_SmallSailer01_OutfitDiagram.png
-  asset_path: Content/UI/Ship/ or Content/Ship/UI/
   status: REVIEW
-  slot_ids:
-    - OutfitSlot_CaptainCabin
-    - OutfitSlot_Deck
-    - OutfitSlot_GunDeck
-    - OutfitSlot_ChartRoom
-    - OutfitSlot_Lookout
-    - OutfitSlot_Sails
-    - OutfitSlot_CannonRefit
-
-meshy:
-  generation_target: hull_base
-  remove_expanded_sails: true
-  simplify_rigging: true
-  remove_loose_deck_props: true
-  preserve_locked_silhouette: true
-  expected_output_path: assets/ships/ShipType_SmallSailer01/meshy/
-
-blender:
-  symmetry_check_required: true
-  topology_cleanup_required: true
-  modularization_required: true
-  uv_required: true
-  material_slots_required: true
-  lod_required: true
-  collision_required: true
-  output_path: assets/ships/ShipType_SmallSailer01/blender/
-  one_fbx_per_asset: true
-  shared_geometry_blockout:
-    status: APPROVED
-    path: assets/ships/ShipType_SmallSailer01/blender/ShipType_SmallSailer01_blockout.blend
-    sha256: 7ef92e5dcbf32ba4592731495ba6acb27e476b4f0011898c00f3b8fa47d113a4
-    approved_commit: 395dba69a46ac050fb2a612203e3341458b8748c
-    geometry_shared: true
-    role: structure_review_and_drawing_aid
-    not_ue_mesh: true
-    ortho_cameras:
-      status: APPROVED
-      views: [top, port, starboard, bow, stern]
-      unified_ortho_scale: 48.50
-      note: framing locked with approved review PNGs; do not scale views independently
-
-line_multiview:
-  work_r1:
-    status: REJECTED
-    note: whole work rejected; do not reuse as input
-  work_r2:
-    status: APPROVED
-    renderer: blender_freestyle_line_ortho
-    source_blend: assets/ships/ShipType_SmallSailer01/blender/ShipType_SmallSailer01_blockout.blend
-    path: assets/ships/ShipType_SmallSailer01/line-multiview/candidates/work-r2/
-    registered_commit: 0e0044f2b3e73cfc201ad16c82dd22d14d826150
-    files:
-      top:
-        name: ShipType_SmallSailer01_line-multiview_work-r2_top.png
-        sha256: 38d6f0a372bb3cc142d576538077759980d0c8065feb5dec7996e2b333f3624b
-      port:
-        name: ShipType_SmallSailer01_line-multiview_work-r2_port.png
-        sha256: 3b7e5d6db7c56c2761ee867b4c0748f751150b52a3d1a3dc265622ae688ccbae
-      starboard:
-        name: ShipType_SmallSailer01_line-multiview_work-r2_starboard.png
-        sha256: cab66001e1f0fa3db0aaf9adef94fd01172a6d533feff88666fd7447d2d7b2c9
-      bow:
-        name: ShipType_SmallSailer01_line-multiview_work-r2_bow.png
-        sha256: d282152114a9b6e5927beeb1ca7e6596ed8685601b0fd1c9768309464236bb25
-      stern:
-        name: ShipType_SmallSailer01_line-multiview_work-r2_stern.png
-        sha256: 2f2b11658216b9879d73ded5acfea28e58616605cdd5d0631dc41b64c085b841
-    downstream_authority: true
-    do_not_modify_approved_files: true
-
-concept_multiview:
-  status: NOT_STARTED
-  upstream:
-    - visual_master_v0.8
-    - line_multiview.work_r2
-    - MAT-001
-  note: do not start candidates until design-AI work order; do not export UE
 
 ue5:
   destination_path: /Game/Ships/ShipType_SmallSailer01/
   mesh_folder: /Game/Ships/ShipType_SmallSailer01/Mesh/
   disk_fbx_inbox: Content/Ships/ShipType_SmallSailer01/Mesh/
-  sockets_authored_in: UE Static Mesh Editor
-  validate_reads: final UE StaticMesh
   lod_required: true
   collision_required: true
-  nanite:
-    enabled: null
-    status: UNSET
   output_path: assets/ships/ShipType_SmallSailer01/ue5/
-  import_tool: Tools/ImportSmallSailer01Meshes.py
-  validate_tool: Tools/ValidateShipMeshes.py
 
 forbidden:
+  - restore_deprecated_whole_ship_line_or_multiview_pipeline
+  - use_old_workflow_images_or_prompts_as_input
+  - build_gunports_into_hull_validation_mesh
+  - add_decor_or_nonessential_props_to_hull_validation
   - invent_unapproved_dimensions
   - add_crew_sockets
-  - generate_cargo_by_type_or_quantity
-  - flatten_locked_hull_transitions
-  - treat_tool_adapter_as_canonical
-  - deliver_mast_yard_sail_as_separate_ue_meshes_for_phase_one
-  - put_Attach_Flag_on_Hull
-  - attach_character_meshes_to_Attach_sockets
-  - place_stern_stairs_on_centerline
-  - place_stern_stairs_outside_hull
-  - overlap_main_cargo_hatch_with_main_mast
-  - oversize_main_cargo_hatch_to_dominate_main_deck
-  - place_gunports_below_top_deck
-  - use_nonuniform_gunport_sizes
-  - make_sternhouse_two_levels
-  - change_locked_ship_length_or_main_mast_length_without_approved_rule_change
+  - change_locked_ship_length_or_main_mast_length_without_approval
