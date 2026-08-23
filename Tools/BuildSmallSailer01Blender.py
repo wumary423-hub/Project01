@@ -18,6 +18,11 @@ Modes are split so a later --ortho cannot wipe a hand-edited blend.
   --perspective --input-blend <path>
       Same load rules; render perspective review only.
 
+  --line-ortho --input-blend <path>
+      Open an existing .blend, do not rebuild or save geometry.
+      Render five technical line-ortho candidates from the approved
+      ortho cameras. Does not overwrite blockout_ortho_* review PNGs.
+
 PowerShell:
 
     & "$env:BLENDER_EXE" --background --factory-startup --python `
@@ -29,7 +34,7 @@ PowerShell:
         "E:\\newlife\\Project01\\assets\\ships\\ShipType_SmallSailer01\\blender\\ShipType_SmallSailer01_blockout_manual-r1.blend"
 
 No flag = refuse (will not reset the scene).
---build and --ortho together = refuse.
+--build, --ortho, and --line-ortho are mutually exclusive.
 
 This is a structure-review blockout, not a UE FBX / socket / MastRig export.
 
@@ -109,6 +114,7 @@ Usage (after Blender --python <this> --):
   --build
   --ortho --input-blend <path>
   --perspective --input-blend <path>
+  --line-ortho --input-blend <path>
   optional: --skip-render
 """
 
@@ -133,6 +139,7 @@ def parse_script_args() -> dict:
         "build": "--build" in extra,
         "ortho": "--ortho" in extra,
         "perspective": "--perspective" in extra,
+        "line_ortho": "--line-ortho" in extra,
         "skip_render": "--skip-render" in extra,
         "input_blend": value_after("--input-blend"),
     }
@@ -829,6 +836,89 @@ def parent_to_root(root: bpy.types.Object, collections: list[bpy.types.Collectio
         obj.parent = root
 
 
+ORTHO_MARGIN = 1.20
+ORTHO_PAD_M = 0.60
+ORTHO_RENDER_W = 1920.0
+ORTHO_RENDER_H = 1080.0
+
+
+def unified_ortho_scale(mins: Vector, maxs: Vector) -> float:
+    size = maxs - mins
+    size.x += ORTHO_PAD_M * 2.0
+    size.y += ORTHO_PAD_M * 2.0
+    size.z += ORTHO_PAD_M * 2.0
+    aspect = ORTHO_RENDER_W / ORTHO_RENDER_H
+    # ortho_scale is the horizontal world width. Height on a 16:9 frame is scale/aspect.
+    needed = max(
+        size.x,
+        size.y,
+        size.z * aspect,
+        size.y * aspect,
+    )
+    return needed * ORTHO_MARGIN
+
+
+def fit_ortho_review_cameras(cameras: dict[str, bpy.types.Object]) -> None:
+    mins, maxs = world_bounds(all_mesh_objects())
+    center = (mins + maxs) * 0.5
+    size = maxs - mins
+    scale = unified_ortho_scale(mins, maxs)
+    far = max(size.x, size.y, size.z, 16.0) + 24.0
+    frames = {
+        "top": (Vector((center.x, center.y, maxs.z + far)), center.copy()),
+        "port": (Vector((center.x, maxs.y + far, center.z)), center.copy()),
+        "starboard": (Vector((center.x, mins.y - far, center.z)), center.copy()),
+        "bow": (Vector((maxs.x + far, center.y, center.z)), center.copy()),
+        "stern": (Vector((mins.x - far, center.y, center.z)), center.copy()),
+    }
+    clip_end = max(400.0, far + size.length + 40.0)
+    for key, (location, target) in frames.items():
+        cam = cameras[key]
+        cam.location = location
+        look_at(cam, target)
+        cam.data.type = "ORTHO"
+        cam.data.ortho_scale = scale
+        cam.data.clip_start = 0.05
+        cam.data.clip_end = clip_end
+    _log(
+        f"ortho fit mins={tuple(round(c, 2) for c in mins)} maxs={tuple(round(c, 2) for c in maxs)} "
+        f"center={tuple(round(c, 2) for c in center)} unified_scale={scale:.2f}"
+    )
+
+
+# Locked by docs-sync commit 395dba6. --line-ortho reapplies this framing in
+# memory only; the on-disk .blend still has the older build cameras.
+APPROVED_ORTHO_MINS = Vector((-7.92, -6.1, -2.08))
+APPROVED_ORTHO_MAXS = Vector((12.49, 6.1, 19.45))
+APPROVED_ORTHO_CENTER = Vector((2.28, 0.0, 8.68))
+APPROVED_ORTHO_SCALE = 48.50
+
+
+def apply_approved_ortho_framing(cameras: dict[str, bpy.types.Object]) -> None:
+    mins = APPROVED_ORTHO_MINS
+    maxs = APPROVED_ORTHO_MAXS
+    center = APPROVED_ORTHO_CENTER
+    size = maxs - mins
+    far = max(size.x, size.y, size.z, 16.0) + 24.0
+    frames = {
+        "top": (Vector((center.x, center.y, maxs.z + far)), center.copy()),
+        "port": (Vector((center.x, maxs.y + far, center.z)), center.copy()),
+        "starboard": (Vector((center.x, mins.y - far, center.z)), center.copy()),
+        "bow": (Vector((maxs.x + far, center.y, center.z)), center.copy()),
+        "stern": (Vector((mins.x - far, center.y, center.z)), center.copy()),
+    }
+    clip_end = max(400.0, far + size.length + 40.0)
+    for key, (location, target) in frames.items():
+        cam = cameras[key]
+        cam.location = location
+        look_at(cam, target)
+        cam.data.type = "ORTHO"
+        cam.data.ortho_scale = APPROVED_ORTHO_SCALE
+        cam.data.clip_start = 0.05
+        cam.data.clip_end = clip_end
+    _log(f"applied approved ortho framing scale={APPROVED_ORTHO_SCALE:.2f} center={tuple(center)}")
+
+
 def add_camera(
     name: str,
     location: Vector,
@@ -862,7 +952,6 @@ def setup_cameras(
     # Approved starboard-bow 3/4. Hatch is visible once bulwarks are two rails.
     mast_top_z = DECK_Z + MAST_LENGTH_M + 0.40
     target = Vector((-1.25, -0.38, 5.10))
-    margin = 1.24
     depress = math.radians(18.0)
     horiz = Vector((0.60, -1.14, 0.0)).normalized()
     persp_dir = Vector((horiz.x, horiz.y, math.tan(depress))).normalized()
@@ -880,53 +969,15 @@ def setup_cameras(
     )
     _log(f"persp camera loc={tuple(round(c, 2) for c in persp_loc)} target={tuple(round(c, 2) for c in target)} dist={persp_dist:.1f}")
 
-    far = 48.0
-    side_z = DECK_Z + 0.05
-    side_scale = max(size.x, size.z) * margin
-    end_scale = max(size.y, size.z) * margin
     cameras = {
         "perspective": persp,
-        "top": add_camera(
-            CAMERA_NAMES["top"],
-            Vector((target.x, 0.0, far)),
-            Vector((target.x, 0.0, 0.0)),
-            collection,
-            True,
-            max(size.x, size.y) * margin,
-        ),
-        "port": add_camera(
-            CAMERA_NAMES["port"],
-            Vector((target.x, far, side_z)),
-            Vector((target.x, 0.0, side_z)),
-            collection,
-            True,
-            side_scale,
-        ),
-        "starboard": add_camera(
-            CAMERA_NAMES["starboard"],
-            Vector((target.x, -far, side_z)),
-            Vector((target.x, 0.0, side_z)),
-            collection,
-            True,
-            side_scale,
-        ),
-        "bow": add_camera(
-            CAMERA_NAMES["bow"],
-            Vector((far, 0.0, side_z + 2.0)),
-            Vector((0.0, 0.0, side_z + 2.0)),
-            collection,
-            True,
-            end_scale,
-        ),
-        "stern": add_camera(
-            CAMERA_NAMES["stern"],
-            Vector((-far, 0.0, side_z + 2.0)),
-            Vector((0.0, 0.0, side_z + 2.0)),
-            collection,
-            True,
-            end_scale,
-        ),
+        "top": add_camera(CAMERA_NAMES["top"], Vector((0.0, 0.0, 48.0)), Vector((0.0, 0.0, 0.0)), collection, True, 40.0),
+        "port": add_camera(CAMERA_NAMES["port"], Vector((0.0, 48.0, 0.0)), Vector((0.0, 0.0, 0.0)), collection, True, 40.0),
+        "starboard": add_camera(CAMERA_NAMES["starboard"], Vector((0.0, -48.0, 0.0)), Vector((0.0, 0.0, 0.0)), collection, True, 40.0),
+        "bow": add_camera(CAMERA_NAMES["bow"], Vector((48.0, 0.0, 0.0)), Vector((0.0, 0.0, 0.0)), collection, True, 40.0),
+        "stern": add_camera(CAMERA_NAMES["stern"], Vector((-48.0, 0.0, 0.0)), Vector((0.0, 0.0, 0.0)), collection, True, 40.0),
     }
+    fit_ortho_review_cameras(cameras)
     return cameras
 
 
@@ -1028,6 +1079,102 @@ def render_ortho(scene: bpy.types.Scene, cameras: dict[str, bpy.types.Object], r
         render_camera(scene, cameras[key], review_dir / f"{ASSET_ID}_blockout_{suffix}.png")
 
 
+def setup_line_ortho(scene: bpy.types.Scene) -> None:
+    scene.render.engine = "BLENDER_EEVEE"
+    scene.render.use_freestyle = True
+    scene.render.image_settings.file_format = "PNG"
+    scene.render.image_settings.color_mode = "RGB"
+    scene.render.film_transparent = False
+    scene.render.resolution_x = int(ORTHO_RENDER_W)
+    scene.render.resolution_y = int(ORTHO_RENDER_H)
+    scene.render.resolution_percentage = 100
+    scene.view_settings.view_transform = "Standard"
+    scene.view_settings.look = "None"
+    scene.view_settings.exposure = 0.0
+    eevee = getattr(scene, "eevee", None)
+    if eevee is not None:
+        if hasattr(eevee, "use_shadows"):
+            eevee.use_shadows = False
+        if hasattr(eevee, "use_gtao"):
+            eevee.use_gtao = False
+        if hasattr(eevee, "use_bloom"):
+            eevee.use_bloom = False
+
+    white = (1.0, 1.0, 1.0, 1.0)
+    world = bpy.data.worlds.get("World") or bpy.data.worlds.new("World")
+    scene.world = world
+    if world.node_tree is not None:
+        for node in world.node_tree.nodes:
+            if node.type == "BACKGROUND" and node.inputs:
+                node.inputs[0].default_value = white
+                if len(node.inputs) > 1:
+                    node.inputs[1].default_value = 1.0
+    else:
+        world.color = (1.0, 1.0, 1.0)
+    for obj in bpy.data.objects:
+        if obj.type == "LIGHT":
+            obj.hide_render = True
+            obj.hide_viewport = True
+    line_mat = bpy.data.materials.get("SS01_LineWhite") or bpy.data.materials.new("SS01_LineWhite")
+    line_mat.diffuse_color = white
+    line_mat.use_nodes = True
+    tree = line_mat.node_tree
+    if tree is not None:
+        tree.nodes.clear()
+        output = tree.nodes.new("ShaderNodeOutputMaterial")
+        emit = tree.nodes.new("ShaderNodeEmission")
+        emit.inputs[0].default_value = white
+        if len(emit.inputs) > 1:
+            emit.inputs[1].default_value = 1.0
+        tree.links.new(emit.outputs[0], output.inputs[0])
+    for obj in all_mesh_objects():
+        obj.color = white
+        data = obj.data
+        if data is not None and hasattr(data, "materials"):
+            data.materials.clear()
+            data.materials.append(line_mat)
+
+    view_layer = scene.view_layers[0]
+    view_layer.use_freestyle = True
+    fs = view_layer.freestyle_settings
+    while fs.linesets:
+        fs.linesets.remove(fs.linesets[0])
+    lineset = fs.linesets.new("TechnicalVisible")
+    lineset.select_by_visibility = True
+    lineset.visibility = "VISIBLE"
+    lineset.select_silhouette = True
+    lineset.select_crease = True
+    if hasattr(lineset, "crease_angle"):
+        lineset.crease_angle = math.radians(140.0)
+    lineset.select_border = True
+    lineset.select_contour = True
+    lineset.select_external_contour = True
+    lineset.select_material_boundary = False
+    lineset.select_edge_mark = False
+    lineset.select_suggestive_contour = False
+    lineset.select_ridge_valley = False
+    style = lineset.linestyle
+    style.color = (0.05, 0.05, 0.05)
+    style.thickness = 1.6
+    if hasattr(style, "use_chaining"):
+        style.use_chaining = True
+
+
+def render_line_ortho(scene: bpy.types.Scene, cameras: dict[str, bpy.types.Object], out_dir: Path) -> None:
+    setup_line_ortho(scene)
+    set_water_visible(False)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for key, suffix in (
+        ("top", "top"),
+        ("port", "port"),
+        ("starboard", "starboard"),
+        ("bow", "bow"),
+        ("stern", "stern"),
+    ):
+        path = out_dir / f"{ASSET_ID}_line-multiview_work-r2_{suffix}.png"
+        render_camera(scene, cameras[key], path)
+
+
 def open_blend(path: Path) -> None:
     if not path.is_file():
         raise SystemExit(f"blend not found: {path}")
@@ -1081,15 +1228,19 @@ def main() -> int:
     project, generated_blend, review_dir = resolve_paths()
     _log(f"project={project}")
 
-    if args["build"] and args["ortho"]:
-        _log("refuse: --build and --ortho cannot run together")
+    exclusive = [name for name in ("build", "ortho", "line_ortho") if args[name]]
+    if len(exclusive) > 1:
+        _log("refuse: --build, --ortho, and --line-ortho cannot run together")
         return 2
-    if not args["build"] and not args["ortho"] and not args["perspective"]:
+    if not args["build"] and not args["ortho"] and not args["perspective"] and not args["line_ortho"]:
         _log("refuse: no mode. Will not reset the scene.")
         print(USAGE)
         return 2
     if args["ortho"] and not args["input_blend"]:
         _log("refuse: --ortho requires --input-blend <path> so a hand-edited file is not rebuilt")
+        return 2
+    if args["line_ortho"] and not args["input_blend"]:
+        _log("refuse: --line-ortho requires --input-blend <path>")
         return 2
     if args["perspective"] and not args["build"] and not args["input_blend"]:
         _log("refuse: --perspective without --build requires --input-blend <path>")
@@ -1118,12 +1269,29 @@ def main() -> int:
     open_blend(input_blend)
     scene = bpy.context.scene
     cameras = collect_or_create_cameras()
+    if args["line_ortho"]:
+        apply_approved_ortho_framing(cameras)
+        if not args["skip_render"]:
+            line_dir = (
+                project
+                / "assets"
+                / "ships"
+                / ASSET_ID
+                / "line-multiview"
+                / "candidates"
+                / "work-r2"
+            )
+            render_line_ortho(scene, cameras, line_dir)
+        _log("line-ortho done; blend was not saved; blockout_ortho_* was not overwritten")
+        return 0
+    if args["ortho"]:
+        fit_ortho_review_cameras(cameras)
     if args["perspective"] and not args["skip_render"]:
         render_perspective(scene, cameras, review_dir)
     if args["ortho"]:
         if not args["skip_render"]:
             render_ortho(scene, cameras, review_dir)
-        _log("ortho done; blend was not saved (hand edits preserved)")
+        _log("ortho done; blend was not saved (geometry unchanged on disk)")
     return 0
 
 

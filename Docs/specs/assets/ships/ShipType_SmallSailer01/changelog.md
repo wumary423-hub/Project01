@@ -1,5 +1,13 @@
 # ShipType_SmallSailer01 Changelog
 
+## Design Spec 0.1.8 — 2026-08-23 — REVIEW
+
+- Shared Geometry Blockout 标记为 **APPROVED**：`assets/ships/ShipType_SmallSailer01/blender/ShipType_SmallSailer01_blockout.blend`，SHA-256 `7ef92e5dcbf32ba4592731495ba6acb27e476b4f0011898c00f3b8fa47d113a4`。
+- 正交相机与取景基准随 commit `395dba69a46ac050fb2a612203e3341458b8748c` **APPROVED**（统一 `ortho_scale = 48.50`）。
+- `[线稿多视图]` Work R2 登记为 **DRAFT**（`--line-ortho` 机械渲染候选）；确认前不得作下游权威输入。
+- `[线稿多视图]` Work R1 保持 **REJECTED**，不得复用。
+- `integration.yaml` 同步至 0.1.7。
+
 ## Design Spec 0.1.7 — 2026-08-23 — REVIEW
 
 - 艉楼楼梯侧别由 UNSET 锁定为**右舷**；楼梯在船体内部、艉楼前方，不得居中、不得埋入实体艉楼。

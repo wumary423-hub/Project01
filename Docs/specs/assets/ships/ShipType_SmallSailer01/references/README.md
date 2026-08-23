@@ -46,6 +46,22 @@ R1 的使用范围：船体、主甲板、单层艉楼、内部楼梯、紧凑�
 
 被引用处：`design.md`、`integration.yaml`、`spec-manifest.yaml`、`decisions/ADR-0006-reference-master-r1.md`。
 
+## Shared Geometry Blockout — APPROVED
+
+```text
+assets/ships/ShipType_SmallSailer01/blender/ShipType_SmallSailer01_blockout.blend
+```
+
+SHA-256：`7ef92e5dcbf32ba4592731495ba6acb27e476b4f0011898c00f3b8fa47d113a4`  
+正交取景批准 commit：`395dba69a46ac050fb2a612203e3341458b8748c`
+
+## `[线稿多视图]`
+
+- Work R1：`REJECTED`
+- Work R2：`DRAFT`（`assets/ships/ShipType_SmallSailer01/line-multiview/candidates/work-r2/`）
+
+确认前不得作为下游权威输入。
+
 ## 归档约束
 
 否决图、试画、Meshy 中间图不要放进上述母版路径。工作文件使用 `assets/ships/ShipType_SmallSailer01/meshy/` 等对应工作目录。

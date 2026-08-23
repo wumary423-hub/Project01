@@ -6,7 +6,7 @@ title_zh: 小型单桅沿岸商船
 title_en: Small Single-Mast Coastal Trader
 working_name: SmallSailer01
 former_starter_id: SHIP-0001
-document_version: 0.1.7
+document_version: 0.1.8
 status: REVIEW
 authority: canonical
 last_updated: 2026-08-23
@@ -104,6 +104,32 @@ assets/ships/ShipType_SmallSailer01/reference/ShipType_SmallSailer01_reference-m
 R1 的职责是提供船体、甲板、艉楼、楼梯、主桅/帆桁/瞭望塔、炮窗与货舱口的结构参考。为了结构阅读，R1 主动省略索具和帆；该省略**不等于最终船只永久禁止索具或帆**。
 
 后续任务是否读取 R1，服从全局 `production-rules.md` 的目标产物与上游依赖规则；如果“重新”制作的目标本身就是 R1，则不得用旧 R1 作为输入。
+
+### 3.3 Shared Geometry Blockout — APPROVED
+
+本机共享白模（几何与正交相机已批准；`.blend` 通常只留本机，不以二进制进 Git）：
+
+```text
+assets/ships/ShipType_SmallSailer01/blender/ShipType_SmallSailer01_blockout.blend
+```
+
+SHA-256：
+
+```text
+7ef92e5dcbf32ba4592731495ba6acb27e476b4f0011898c00f3b8fa47d113a4
+```
+
+正交相机与取景基准随 docs-sync commit `395dba69a46ac050fb2a612203e3341458b8748c` 批准：顶 / 左舷 / 右舷 / 船首 / 船尾，统一 `ortho_scale = 48.50`。不得分别缩放单视图。该白模用于结构审核与辅助作图；不是 UE mesh。
+
+### 3.4 `[线稿多视图]` Work R2 — DRAFT
+
+候选路径：
+
+```text
+assets/ships/ShipType_SmallSailer01/line-multiview/candidates/work-r2/
+```
+
+五张图由同一份已批准 `.blend` 与批准正交相机机械渲染（`--line-ortho`），不是五次独立生图。Work R1 已整体 `REJECTED`，不得复用。Work R2 在用户确认前不得成为下游权威输入。
 
 ## 4. 观察距离（不冲突）
 

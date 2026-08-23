@@ -1,5 +1,5 @@
 schema_version: 1
-contract_version: 0.1.6
+contract_version: 0.1.7
 
 asset:
   asset_id: ShipType_SmallSailer01
@@ -348,6 +348,36 @@ blender:
   collision_required: true
   output_path: assets/ships/ShipType_SmallSailer01/blender/
   one_fbx_per_asset: true
+  shared_geometry_blockout:
+    status: APPROVED
+    path: assets/ships/ShipType_SmallSailer01/blender/ShipType_SmallSailer01_blockout.blend
+    sha256: 7ef92e5dcbf32ba4592731495ba6acb27e476b4f0011898c00f3b8fa47d113a4
+    approved_commit: 395dba69a46ac050fb2a612203e3341458b8748c
+    geometry_shared: true
+    role: structure_review_and_drawing_aid
+    not_ue_mesh: true
+    ortho_cameras:
+      status: APPROVED
+      views: [top, port, starboard, bow, stern]
+      unified_ortho_scale: 48.50
+      note: framing locked with approved review PNGs; do not scale views independently
+
+line_multiview:
+  work_r1:
+    status: REJECTED
+    note: whole work rejected; do not reuse as input
+  work_r2:
+    status: DRAFT
+    renderer: blender_freestyle_line_ortho
+    source_blend: assets/ships/ShipType_SmallSailer01/blender/ShipType_SmallSailer01_blockout.blend
+    path: assets/ships/ShipType_SmallSailer01/line-multiview/candidates/work-r2/
+    files:
+      - ShipType_SmallSailer01_line-multiview_work-r2_top.png
+      - ShipType_SmallSailer01_line-multiview_work-r2_port.png
+      - ShipType_SmallSailer01_line-multiview_work-r2_starboard.png
+      - ShipType_SmallSailer01_line-multiview_work-r2_bow.png
+      - ShipType_SmallSailer01_line-multiview_work-r2_stern.png
+    not_downstream_authority_until_approved: true
 
 ue5:
   destination_path: /Game/Ships/ShipType_SmallSailer01/

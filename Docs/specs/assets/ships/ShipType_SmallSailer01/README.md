@@ -11,9 +11,13 @@
 |----|------|
 | V0.8 Concept Master | LOCKED |
 | Reference Master R1 | LOCKED identity / PNG `PENDING_IMPORT` |
-| `design.md` | REVIEW |
-| 当前阶段 | Concept Design / Structural Reference |
-| 下一阶段 | V1 Hull-Focused Concept |
+| Shared Geometry Blockout | APPROVED |
+| 正交相机与取景 | APPROVED（commit `395dba6`） |
+| `[线稿多视图]` Work R1 | REJECTED |
+| `[线稿多视图]` Work R2 | DRAFT（待审核） |
+| `design.md` | REVIEW 0.1.8 |
+| 当前阶段 | Line Multiview Work R2 |
+| 下一阶段 | 等 Work R2 确认；不要进入 `[概念多视图]` |
 
 ## 当前 Reference Master R1
 
