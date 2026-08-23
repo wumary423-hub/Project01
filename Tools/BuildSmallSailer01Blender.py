@@ -75,9 +75,9 @@ BULWARK_H = 0.95
 
 # Midship slightly aft of x=0. Hatch stays compact and fully aft of the mast.
 MAST_X = -0.55
-HATCH_X = -2.10
-HATCH_LEN = 1.30
-HATCH_WID = 1.15
+HATCH_X = -2.45
+HATCH_LEN = 1.20
+HATCH_WID = 1.05
 
 # Stern cabin: X0 = aft wall, X1 = bow-facing front wall.
 STERN_CABIN_X0 = -6.90
@@ -89,7 +89,7 @@ HULL_COLOR = (0.74, 0.73, 0.70, 1.0)
 DECK_COLOR = (0.84, 0.82, 0.78, 1.0)
 STRAKE_COLOR = (0.36, 0.34, 0.32, 1.0)
 STERN_COLOR = (0.70, 0.68, 0.64, 1.0)
-HATCH_COLOR = (0.30, 0.29, 0.27, 1.0)
+HATCH_COLOR = (0.12, 0.11, 0.10, 1.0)
 MAST_COLOR = (0.56, 0.53, 0.48, 1.0)
 RUDDER_COLOR = (0.46, 0.43, 0.39, 1.0)
 WINDOW_COLOR = (0.16, 0.16, 0.15, 1.0)
@@ -182,8 +182,26 @@ def ensure_collection(name: str, parent: bpy.types.Collection | None = None) -> 
     return col
 
 
+def ensure_color_material(color: tuple[float, float, float, float]) -> bpy.types.Material:
+    key = "SS01_{:02X}{:02X}{:02X}".format(
+        int(round(color[0] * 255.0)),
+        int(round(color[1] * 255.0)),
+        int(round(color[2] * 255.0)),
+    )
+    mat = bpy.data.materials.get(key)
+    if mat is None:
+        mat = bpy.data.materials.new(key)
+    mat.diffuse_color = color
+    return mat
+
+
 def set_object_color(obj: bpy.types.Object, color: tuple[float, float, float, float]) -> None:
     obj.color = color
+    mat = ensure_color_material(color)
+    data = obj.data
+    if data is not None and hasattr(data, "materials"):
+        data.materials.clear()
+        data.materials.append(mat)
 
 
 def new_mesh_object(
@@ -461,51 +479,114 @@ def build_deck_and_hatch(collection: bpy.types.Collection) -> None:
         if i > 0:
             a = (i - 1) * 2
             faces.append((a, a + 1, a + 3, a + 2))
-    new_mesh_object("Deck", verts, faces, collection, DECK_COLOR)
+    deck = new_mesh_object("Deck", verts, faces, collection, DECK_COLOR)
 
-    mast_aft = MAST_X - 0.28
+    hatch_z = deck_z_at(HATCH_X) + 0.03
     hatch_fwd = HATCH_X + HATCH_LEN * 0.5
-    if hatch_fwd > mast_aft - 0.10:
+    hatch_aft = HATCH_X - HATCH_LEN * 0.5
+    if hatch_fwd > MAST_X - 0.50:
         raise RuntimeError("hatch overlaps mast; adjust HATCH_X / MAST_X")
-    add_box("MastStep", (0.58, 0.58, 0.16), (MAST_X, 0.0, DECK_Z + 0.10), collection, STRAKE_COLOR)
-    add_box(
-        "CargoHatchCoaming",
-        (HATCH_LEN + 0.16, HATCH_WID + 0.16, 0.12),
-        (HATCH_X, 0.0, DECK_Z + 0.10),
-        collection,
-        STRAKE_COLOR,
-    )
-    add_box("CargoHatchWell", (HATCH_LEN, HATCH_WID, 0.08), (HATCH_X, 0.0, DECK_Z + 0.03), collection, HATCH_COLOR)
-    add_box(
-        "CargoHatchCover",
-        (HATCH_LEN - 0.08, HATCH_WID - 0.08, 0.04),
-        (HATCH_X, 0.0, DECK_Z + 0.14),
+    if hatch_aft < STERN_CABIN_X1 + 0.40:
+        raise RuntimeError("hatch overlaps stern cabin; adjust HATCH_X")
+    if abs(STAIR_Y) - HATCH_WID * 0.5 < 0.70:
+        raise RuntimeError("hatch overlaps starboard stairs")
+
+    cutter = add_box(
+        "CargoHatchCutter",
+        (HATCH_LEN + 0.04, HATCH_WID + 0.04, 0.50),
+        (HATCH_X, 0.0, hatch_z),
         collection,
         HATCH_COLOR,
     )
+    apply_boolean_cut(deck, cutter)
+
+    add_box("MastStep", (0.58, 0.58, 0.16), (MAST_X, 0.0, deck_z_at(MAST_X) + 0.10), collection, STRAKE_COLOR)
+    frame_h = 0.38
+    frame_t = 0.14
+    add_box(
+        "CargoHatchCoaming_Fwd",
+        (frame_t, HATCH_WID + 0.24, frame_h),
+        (HATCH_X + HATCH_LEN * 0.5, 0.0, hatch_z + frame_h * 0.5),
+        collection,
+        HATCH_COLOR,
+    )
+    add_box(
+        "CargoHatchCoaming_Aft",
+        (frame_t, HATCH_WID + 0.24, frame_h),
+        (HATCH_X - HATCH_LEN * 0.5, 0.0, hatch_z + frame_h * 0.5),
+        collection,
+        HATCH_COLOR,
+    )
+    add_box(
+        "CargoHatchCoaming_Port",
+        (HATCH_LEN + 0.24, frame_t, frame_h),
+        (HATCH_X, HATCH_WID * 0.5, hatch_z + frame_h * 0.5),
+        collection,
+        HATCH_COLOR,
+    )
+    add_box(
+        "CargoHatchCoaming_Starboard",
+        (HATCH_LEN + 0.24, frame_t, frame_h),
+        (HATCH_X, -HATCH_WID * 0.5, hatch_z + frame_h * 0.5),
+        collection,
+        HATCH_COLOR,
+    )
+    add_box(
+        "CargoHatchWell",
+        (HATCH_LEN, HATCH_WID, 0.28),
+        (HATCH_X, 0.0, hatch_z - 0.08),
+        collection,
+        HATCH_COLOR,
+    )
+    # Leave the well open; two boards keep it readable as one compact hatch.
+    add_box(
+        "CargoHatchBoard_01",
+        (HATCH_LEN - 0.20, 0.16, 0.05),
+        (HATCH_X, -0.22, hatch_z + 0.18),
+        collection,
+        HATCH_COLOR,
+    )
+    add_box(
+        "CargoHatchBoard_02",
+        (HATCH_LEN - 0.20, 0.16, 0.05),
+        (HATCH_X, 0.22, hatch_z + 0.18),
+        collection,
+        HATCH_COLOR,
+    )
+    _log(f"hatch center=({HATCH_X:.2f}, 0.00, {hatch_z:.2f}) span=[{hatch_aft:.2f}, {hatch_fwd:.2f}]")
 
 
-def build_bulwarks(collection: bpy.types.Collection) -> bpy.types.Object:
+def build_bulwarks(collection: bpy.types.Collection) -> list[bpy.types.Object]:
+    # Two separate rails. A single ring would loft a lid across the deck
+    # and hide the hatch / cabin front from the review camera.
     stations = [s for s in hull_stations() if -7.2 <= s["x"] <= 6.9]
-    rings: list[list[tuple[float, float, float]]] = []
+    starboard: list[list[tuple[float, float, float]]] = []
+    port: list[list[tuple[float, float, float]]] = []
     for s in stations:
         hy = s["hy"] * 0.99
         z0 = s["deck"]
         z1 = s["deck"] + BULWARK_H
         thick = 0.10
-        rings.append(
+        starboard.append(
             [
                 (s["x"], -hy, z0),
                 (s["x"], -hy + thick, z0),
                 (s["x"], -hy + thick, z1),
                 (s["x"], -hy, z1),
-                (s["x"], hy, z1),
-                (s["x"], hy - thick, z1),
-                (s["x"], hy - thick, z0),
-                (s["x"], hy, z0),
             ]
         )
-    return loft_from_rings("Bulwarks", rings, collection, HULL_COLOR)
+        port.append(
+            [
+                (s["x"], hy, z0),
+                (s["x"], hy - thick, z0),
+                (s["x"], hy - thick, z1),
+                (s["x"], hy, z1),
+            ]
+        )
+    return [
+        loft_from_rings("Bulwarks_Starboard", starboard, collection, HULL_COLOR),
+        loft_from_rings("Bulwarks_Port", port, collection, HULL_COLOR),
+    ]
 
 
 def build_strakes(collection: bpy.types.Collection) -> None:
@@ -520,6 +601,13 @@ def stern_roof_z() -> float:
 
 def stern_half_widths() -> tuple[float, float]:
     return half_beam_at(STERN_CABIN_X1) * 0.99, half_beam_at(STERN_CABIN_X0) * 0.99
+
+
+def cabin_side_y(x: float) -> float:
+    hy_fwd, hy_aft = stern_half_widths()
+    span = STERN_CABIN_X0 - STERN_CABIN_X1
+    t = 0.0 if abs(span) < 1e-6 else (x - STERN_CABIN_X1) / span
+    return hy_fwd + t * (hy_aft - hy_fwd)
 
 
 def add_trapezoid_prism(
@@ -578,7 +666,7 @@ def build_open_rail(collection: bpy.types.Collection, hy_fwd: float, hy_aft: flo
 
 def build_stern(collection: bpy.types.Collection) -> None:
     hy_fwd, hy_aft = stern_half_widths()
-    add_trapezoid_prism(
+    cabin = add_trapezoid_prism(
         "SternCabin",
         STERN_CABIN_X1,
         STERN_CABIN_X0,
@@ -602,13 +690,57 @@ def build_stern(collection: bpy.types.Collection) -> None:
     )
     build_open_rail(collection, hy_fwd, hy_aft)
 
-    win_z = DECK_Z + 0.62
-    mid_x = (STERN_CABIN_X0 + STERN_CABIN_X1) * 0.5
-    for i, x in enumerate((mid_x + 0.55, mid_x - 0.55), start=1):
-        hy = half_beam_at(x) * 0.99
-        add_box(f"SternWindow_Port_{i:02d}", (0.28, 0.07, 0.22), (x, hy, win_z), collection, WINDOW_COLOR)
-        add_box(f"SternWindow_Starboard_{i:02d}", (0.28, 0.07, 0.22), (x, -hy, win_z), collection, WINDOW_COLOR)
-    add_box("SternWindow_Front_01", (0.07, 0.30, 0.22), (STERN_CABIN_X1, 0.0, win_z), collection, WINDOW_COLOR)
+    # Two equal side openings per wall, plus one small bow-facing front window.
+    win_z = DECK_Z + STERN_CABIN_HEIGHT * 0.50
+    win_l, win_h = 0.50, 0.42
+    side_xs = (
+        STERN_CABIN_X1 + (STERN_CABIN_X0 - STERN_CABIN_X1) * 0.32,
+        STERN_CABIN_X1 + (STERN_CABIN_X0 - STERN_CABIN_X1) * 0.68,
+    )
+    for i, x in enumerate(side_xs, start=1):
+        hy = cabin_side_y(x)
+        cutter_p = add_box(
+            f"SternWindowCutter_Port_{i:02d}",
+            (win_l, 0.55, win_h),
+            (x, hy, win_z),
+            collection,
+            WINDOW_COLOR,
+        )
+        apply_boolean_cut(cabin, cutter_p)
+        cutter_s = add_box(
+            f"SternWindowCutter_Starboard_{i:02d}",
+            (win_l, 0.55, win_h),
+            (x, -hy, win_z),
+            collection,
+            WINDOW_COLOR,
+        )
+        apply_boolean_cut(cabin, cutter_s)
+    front_cutter = add_box(
+        "SternWindowCutter_Front_01",
+        (0.40, 0.40, 0.34),
+        (STERN_CABIN_X1, 0.0, win_z),
+        collection,
+        WINDOW_COLOR,
+    )
+    apply_boolean_cut(cabin, front_cutter)
+    pane_d = 0.08
+    for i, x in enumerate(side_xs, start=1):
+        hy = cabin_side_y(x) + pane_d * 0.5 + 0.02
+        add_box(f"SternWindow_Port_{i:02d}", (win_l - 0.04, pane_d, win_h - 0.04), (x, hy, win_z), collection, WINDOW_COLOR)
+        add_box(
+            f"SternWindow_Starboard_{i:02d}",
+            (win_l - 0.04, pane_d, win_h - 0.04),
+            (x, -hy, win_z),
+            collection,
+            WINDOW_COLOR,
+        )
+    add_box(
+        "SternWindow_Front_01",
+        (0.10, 0.36, 0.30),
+        (STERN_CABIN_X1 + 0.08, 0.0, win_z),
+        collection,
+        WINDOW_COLOR,
+    )
 
 
 def build_stairs(collection: bpy.types.Collection) -> None:
@@ -661,11 +793,35 @@ def build_bowsprit(collection: bpy.types.Collection) -> None:
 
 
 def build_rudder(collection: bpy.types.Collection) -> None:
-    stern_gunwale_z = deck_z_at(-7.40)
-    rudder_top = stern_gunwale_z - 0.08
-    rudder_h = 2.55
-    add_box("Rudder", (0.28, 0.10, rudder_h), (-7.72, 0.0, rudder_top - rudder_h * 0.5), collection, RUDDER_COLOR)
-    add_box("RudderStock", (0.12, 0.10, rudder_top - 0.15), (-7.48, 0.0, (rudder_top - 0.15) * 0.5), collection, RUDDER_COLOR)
+    stern = hull_stations()[0]
+    stern_x = stern["x"]
+    keel_z = stern["keel"]
+    gunwale_z = stern["deck"] + 0.10
+    post_x = stern_x - 0.05
+    post_h = gunwale_z - keel_z
+    add_box(
+        "Sternpost",
+        (0.24, 0.18, post_h),
+        (post_x, 0.0, (keel_z + gunwale_z) * 0.5),
+        collection,
+        STRAKE_COLOR,
+    )
+
+    rudder_top = gunwale_z - 0.10
+    rudder_bottom = keel_z - 0.18
+    rudder_h = rudder_top - rudder_bottom
+    rudder_x = post_x - 0.20
+    add_box(
+        "Rudder",
+        (0.34, 0.12, rudder_h),
+        (rudder_x, 0.0, (rudder_top + rudder_bottom) * 0.5),
+        collection,
+        RUDDER_COLOR,
+    )
+    pintle_x = (post_x + rudder_x) * 0.5
+    for i, z in enumerate((rudder_top - 0.22, (rudder_top + keel_z) * 0.5, keel_z + 0.28), start=1):
+        add_box(f"RudderPintle_{i:02d}", (0.18, 0.10, 0.14), (pintle_x, 0.0, z), collection, STRAKE_COLOR)
+    _log(f"rudder x={rudder_x:.2f} top={rudder_top:.2f} gunwale={gunwale_z:.2f} post_x={post_x:.2f}")
 
 
 def parent_to_root(root: bpy.types.Object, collections: list[bpy.types.Collection]) -> None:
@@ -703,8 +859,7 @@ def setup_cameras(
 ) -> dict[str, bpy.types.Object]:
     mins, maxs = world_bounds(ship_objects)
     size = maxs - mins
-    # Starboard-bow 3/4, depression 18°. Camera stays above the masthead so
-    # crow's nest, hatch, starboard stairs, keel and rudder share one frame.
+    # Approved starboard-bow 3/4. Hatch is visible once bulwarks are two rails.
     mast_top_z = DECK_Z + MAST_LENGTH_M + 0.40
     target = Vector((-1.25, -0.38, 5.10))
     margin = 1.24
@@ -804,7 +959,7 @@ def setup_workbench(scene: bpy.types.Scene, line_style: bool) -> None:
     scene.view_settings.view_transform = "Standard"
     scene.view_settings.look = "None"
     shading = scene.display.shading
-    shading.light = "STUDIO"
+    shading.light = "FLAT"
     shading.studio_light = "outdoor.sl"
     shading.show_shadows = False
     shading.show_cavity = True
@@ -835,7 +990,7 @@ def setup_workbench(scene: bpy.types.Scene, line_style: bool) -> None:
                     node.inputs[1].default_value = 1.6
     else:
         world.color = bg_color[:3]
-    scene.view_settings.exposure = 0.35
+    scene.view_settings.exposure = 0.0
 
 
 def set_water_visible(visible: bool) -> None:
@@ -900,7 +1055,7 @@ def build_whitebox() -> dict[str, bpy.types.Object]:
 
     hull = build_hull(hull_col)
     bulwarks = build_bulwarks(hull_col)
-    punch_gunports([hull, bulwarks], hull_col)
+    punch_gunports([hull, *bulwarks], hull_col)
     build_strakes(hull_col)
     build_deck_and_hatch(deck_col)
     build_stern(stern_col)
