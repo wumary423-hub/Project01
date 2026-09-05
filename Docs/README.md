@@ -11,6 +11,7 @@
 | 谁说了算 | `Docs/governance/source-of-truth.md` |
 | 项目背景 | `Docs/specs/project/game-project-overview.md` |
 | 船只系统（LOCKED） | `Docs/specs/systems/ship-system/` |
+| 船帆模板与复用检查 | `Docs/specs/assets/ships/sails/README.md` |
 | 第一艘船 | `Docs/specs/assets/ships/ShipType_SmallSailer01/README.md` |
 | 默认概念材质卡 | `Docs/specs/assets/ships/material-cards/MAT-001/` |
 | ChatGPT 适配 | `Docs/tool-guides/chatgpt.md` |

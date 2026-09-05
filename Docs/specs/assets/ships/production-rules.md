@@ -1,11 +1,11 @@
 ---
 document_type: ship_asset_production_rules
 schema_version: 1
-document_version: 2.0.0
+document_version: 2.1.0
 status: LOCKED
 authority: canonical
 scope: all_ship_assets
-last_updated: 2026-08-23
+last_updated: 2026-09-05
 decision_records:
   - Docs/specs/assets/ships/decisions/ADR-0001-production-context-and-generation.md
   - Docs/specs/assets/ships/decisions/ADR-0002-target-scoped-regeneration.md
@@ -13,6 +13,7 @@ decision_records:
   - Docs/specs/assets/ships/decisions/ADR-0004-concept-image-full-mast-framing.md
   - Docs/specs/assets/ships/decisions/ADR-0006-tripo3d-primary-ai3d-tool.md
   - Docs/specs/assets/ships/decisions/ADR-0007-component-first-production-workflow.md
+  - Docs/specs/assets/ships/decisions/ADR-0008-sail-template-reuse.md
 ---
 
 # 船只资产制作全局规则
@@ -81,6 +82,17 @@ Deck 是独立的简单板件，只需能够在 Blender 中手动缩放并放入
 ## 6. 复用优先
 
 制作其他零件前必须先检查部件库。可复用零件只调整尺寸、材质、Pivot 和接口，不重复生成。复杂部件可以继续拆分；拆分边界应优先选择自然装配边界，而不是任意切碎网格。
+
+### 6.1 船帆与骨架：先复用，后新建
+
+1. 制作任何新船帆之前，必须先读取[船帆模板目录](sails/README.md)，检查已有帆面、骨架、权重和收放动画的版本与适用范围；不得默认从零建模或重新创建骨架。
+2. 模板以“帆型＋收放方式”为基本单位。外形相同但固定点、牵引方向或收拢方式不同，不视为自动兼容；例如沿斜桁收拢和绕前缘卷起的三角帆应分别判断。
+3. 采用顺序为：**直接复用 → 对已有模板作尺寸／比例适配 → 确认无法适配后才新建船帆及所需骨架**。帆面需改动不等于骨架必须重做；可继续沿用原骨架的，只制作帆面变体。
+4. 同帆型等比例尺寸优先整套缩放。宽高比例不同，先尝试参数化调整帆面、骨骼位置、权重与位移动画，保留兼容的骨骼命名、层级和接口；不得保证所有比例共用不变的动画数据。
+5. 适配必须检查满帆、收帆及过渡过程，确认安装点、轮廓、折叠和与桅杆／索具的间距合适，并符合目标船的性能需求。仅尺寸不同、材质不同或换了一艘船，不构成新建骨架的充分理由。
+6. 开工前记录：检查过的模板及版本、直接复用／适配／新建的结论。新建时必须说明现有方案不兼容的具体原因，不能以“没有看过旧资产”代替判断；资源不可访问时明确标记待核对，不得声称没有可复用资产。
+7. 新模板或比例变体制作后登记到目录，记录帆型、收放方式、源文件、骨架／动画版本、适用比例、三角面数、骨骼数量及验证状态，以供后续船只优先复用。候选与正式模板分开，不把流程验证稿直接作为性能定稿。
+8. 资源复用不等于运行时只计算一套骨骼。面向大量船只同屏，仍需按实例、距离和 LOD 评估骨骼变形、组件和渲染成本；本规则不锁定尚未实测的面数或骨骼预算。
 
 ## 7. 完整效果概念图规则
 

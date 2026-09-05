@@ -22,11 +22,13 @@ governance:
 production_rules:
   ship_assets:
     spec: Docs/specs/assets/ships/production-rules.md
-    version: "2.0.0"
+    version: "2.1.0"
     status: LOCKED
     scope: all_ship_assets
     decision_record: Docs/specs/assets/ships/decisions/ADR-0001-production-context-and-generation.md
-    latest_decision_record: Docs/specs/assets/ships/decisions/ADR-0007-component-first-production-workflow.md
+    latest_decision_record: Docs/specs/assets/ships/decisions/ADR-0008-sail-template-reuse.md
+    sail_template_catalog: Docs/specs/assets/ships/sails/README.md
+    changelog: Docs/specs/assets/ships/changelog.md
 
 systems:
   - system_id: SYS-SHIP
