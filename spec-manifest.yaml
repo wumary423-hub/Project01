@@ -39,6 +39,8 @@ systems:
     asset_production_rules: Docs/specs/assets/ships/production-rules.md
     changelog: Docs/specs/systems/ship-system/changelog.md
     status: LOCKED
+    document_version: "0.5.0"
+    latest_decision_record: docs/specs/systems/ship-system/decisions/ADR-0002-cabin-stations-and-type-groups.md
     migration:
       state: MIGRATED
       legacy_path: .cursor/rules/ship-system.mdc

@@ -32,7 +32,7 @@ This file keeps **C++ / UPROPERTY** conventions for Cursor. Do not invent a para
 - Prefer **system-prefixed** Ids so names never collide across systems (Fleet / Goods / Character / …).
 - Form: `<System>_<Name>` in PascalCase after the underscore. Examples:
   - Fleet: `Fleet_<序号>` (runtime serial; player mark is `PlayerCommandedFleetId`, not Id)
-  - Ship: `Ship_<序号>`
+  - Ship: `Ship_<序号>`；类型 `ShipType_<Name>`；船体 `ShipHull_<Name>`；桅 `ShipMast_<Name>`；桁帆 `ShipYardSail_<Name>`；舱室类型 `CabinType_<Name>`；舱室组 `CabinTypeGroup_<Name>`；空槽 `CabinStation_<Name>`
   - Company: `Company_Player`
   - Goods: `Goods_Grain`
   - Character: `Char_PlayerLeader`, `Char_Npc_Advisor`

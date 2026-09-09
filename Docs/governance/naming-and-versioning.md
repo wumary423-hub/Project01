@@ -1,9 +1,9 @@
 ---
 document_type: governance_policy
-document_version: 0.2.0
+document_version: 0.4.0
 status: LOCKED
 authority: canonical
-last_updated: 2026-08-19
+last_updated: 2026-09-09
 source_program_rule: .cursor/rules/ue-naming.mdc
 ---
 
@@ -18,7 +18,13 @@ source_program_rule: .cursor/rules/ue-naming.mdc
 | 系统 | 形式 | 例 |
 |------|------|-----|
 | 船实例 | `Ship_<序号>` | `Ship_1` |
-| 船类型（目录行） | `ShipType_<Name>` | `ShipType_SmallSailer01` |
+| 船类型（总表行） | `ShipType_<Name>` | `ShipType_SmallSailer01` |
+| 船体种（美术表） | `ShipHull_<Name>` | `ShipHull_SmallSailer01` |
+| 桅种（美术表） | `ShipMast_<Name>` | `ShipMast_SmallSailer01_Main` |
+| 桁帆种（美术表） | `ShipYardSail_<Name>` | `ShipYardSail_SmallSailer01_Square_01` |
+| 舱室类型 | `CabinType_<Name>` | `CabinType_CargoHold` |
+| 舱室类型组 | `CabinTypeGroup_<Name>` | `CabinTypeGroup_BelowWaterline` |
+| 船体舱室空槽 | `CabinStation_<Name>` | `CabinStation_Hold_01`（在该 Hull 上唯一） |
 | 舰队 | `Fleet_<序号>` | `Fleet_1` |
 | 商号 | `Company_<Name>` | `Company_Player` |
 | 角色 | `Char_<Name>` | `Char_PlayerLeader` |
@@ -39,8 +45,9 @@ source_program_rule: .cursor/rules/ue-naming.mdc
 |------|------|------|
 | Blueprint | `BP_` | `Content/Blueprint/<System>/` |
 | Widget | `WBP_` | `Content/UI/` 或 `Content/Blueprint/UI/` |
-| DataTable | `DT_` | `Content/<System>/`（船目录：`/Game/Ship/DT_Ships`） |
+| DataTable | `DT_` | `Content/<System>/`（船总表 `/Game/Ship/DT_Ships`；美术 `DT_ShipHulls` / `DT_ShipMasts` / `DT_ShipYardSails`；舱室 `DT_CabinTypes` / `DT_CabinTypeGroups`） |
 | Static mesh | `SM_` | 领域目录 |
+| Skeletal mesh | `SK_` | 领域目录（YardSail 优先骨骼） |
 | Material | `M_` | `Content/Materials/` |
 | Texture | `T_` | 领域目录；UI 临时 `T_UI_*` 在 `Content/Temp/UI/` |
 | Map | `Map_` | `Content/Maps/Map_<SeaRegion>` |

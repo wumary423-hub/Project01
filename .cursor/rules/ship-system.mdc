@@ -10,3 +10,5 @@ This file is not canonical. Read `spec-manifest.yaml`, `Docs/governance/source-o
 Current asset production is component-first. Retired whole-ship line, multiview and shared blockout workflows are forbidden as upstream context.
 
 Do not add `AShip`, Crew Sockets, `Family_*`, or a second ship identifier scheme. Runtime facts remain in `ship-program.md`.
+
+Cabins (LOCKED 0.5.0 / ADR-0002): empty slots live on the hull (`CabinStations`); each slot picks one `CabinTypeGroupId`; group contents are gameplay data. Sail slots are cabin slots. 2D outfit hotspots are `CabinStation_*`, sails drawn at sail positions. Not `HostKind = Ship` Facility.

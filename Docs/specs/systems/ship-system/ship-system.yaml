@@ -1,7 +1,8 @@
 schema_version: 1
 system_id: SYS-SHIP
-contract_version: 0.4.0
+contract_version: 0.5.0
 status: LOCKED
+decision_record: docs/specs/systems/ship-system/decisions/ADR-0002-cabin-stations-and-type-groups.md
 
 asset_pair:
   ship_3d_required: true
@@ -28,6 +29,24 @@ component_production:
     boolean_cutter_supported: true
     cannon_anchor_required: true
 
+crew_sockets:
+  allowed: false
+
+catalog:
+  cabin_type_table: /Game/Ship/DT_CabinTypes
+  cabin_type_group_table: /Game/Ship/DT_CabinTypeGroups
+  cabin_station_id_form: CabinStation_<Name>
+  cabin_station_picks_one_group: true
+  sail_slots_are_cabin_stations: true
+
+job_layout_2d:
+  view: perspective_side
+  bow_direction: left
+  size: 2048x1024
+  baked_hotspots_allowed: false
+  strict_match_to_3d: true
+  hotspot_ids: hull_cabin_stations
+
 workflow:
   - stage: 1
     name: Full-Effect Concept
@@ -51,8 +70,10 @@ program:
   flagship_field: FlagshipShipId
   catalog: DT_Ships
   catalog_struct: FShipDefinition
+  hull_catalog: DT_ShipHulls
   save_struct: FShipSaveData
-  save_schema: v7
+  save_schema: v8
+  save_schema_when_installs_persist: v8
   first_ship_asset_id: ShipType_SmallSailer01
   ue_content_root: /Game/Ships/ShipType_SmallSailer01/
   program_spec: Docs/specs/systems/ship-system/ship-program.md

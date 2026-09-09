@@ -3,17 +3,18 @@ document_type: system_spec
 schema_version: 1
 system_id: SYS-SHIP
 title_zh: 船只系统
-document_version: 0.4.0
+document_version: 0.5.0
 status: LOCKED
 migration_status: MIGRATED
-last_updated: 2026-08-23
+last_updated: 2026-09-09
+decision_record: docs/specs/systems/ship-system/decisions/ADR-0002-cabin-stations-and-type-groups.md
 ---
 
 # 船只系统规范
 
 跨 Cursor、ChatGPT、Tripo 3D、Blender、UE5 的船只系统规范。程序运行时见 `ship-program.md`，美术生产规则见 `Docs/specs/assets/ships/production-rules.md`。
 
-第一艘船主键为 `ShipType_SmallSailer01`；旧 ID `SHIP-0001` 已废止。UE 目录为 `/Game/Ships/ShipType_SmallSailer01/`。
+第一艘船主键为 `ShipType_SmallSailer01`；旧 ID `SHIP-0001` 已废止。UE 目录为 `/Game/Ships/ShipType_SmallSailer01/`。目录总表 `/Game/Ship/DT_Ships`，美术表 `DT_ShipHulls` / `DT_ShipMasts` / `DT_ShipYardSails`，舱室 `DT_CabinTypes` / `DT_CabinTypeGroups`。
 
 ## 1. 观察距离与细节
 
@@ -29,7 +30,7 @@ last_updated: 2026-08-23
 - `Deck`：独立甲板；
 - `Gunport`：独立炮窗模块，可带布尔 Cutter 与火炮锚点；
 - 艉楼/前楼及其可继续拆分的子部件；
-- `MastRig`、舵及其他具有运行时逻辑的模块。
+- 桅、YardSail（帆+桁一件）、舵及其他具有运行时逻辑的模块。
 
 部件可以进入跨船复用库。复用前只调整尺寸、材质、Pivot、Socket 和兼容标签。
 
@@ -60,3 +61,13 @@ Tripo 3D 只生成船身核心；Deck 可以在 Blender 中直接建立。装饰
 ## 6. UE5交付
 
 单船 `integration.yaml` 记录单位、坐标、模块、Pivot、Socket、材质槽、UV、LOD、Collision、导出路径和 2D 布局。最终是否合并网格由运行时逻辑决定，不得在制作阶段丢失炮窗、火炮等关键锚点。
+
+程序运行时见 `ship-program.md`。无 `AShip`；无 Crew Socket。岗位与改装用 2D 图 + 头像，不把角色网格挂到 `Attach_*`。
+
+## 7. 2D改装图 / 舱室槽
+
+有透视的侧视图；船头朝左；2048×1024；透明；8–10% 边距；**无烘焙热区**。玩法热区是船体 `CabinStation_*`（程序按逻辑坐标点，不烤进图）。不得画出 3D 没有的结构。
+
+可改装的**帆槽也是舱室槽**，画在**帆的位置**（不是船体内一间「帆具舱」）。几张可改装帆就几个槽。
+
+槽位 Id 形式：`CabinStation_<Name>`。废止把 `OutfitSlot_*` 当玩法热区主键。
