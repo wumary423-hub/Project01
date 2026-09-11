@@ -6,13 +6,13 @@ title_zh: 小型单桅沿岸商船
 title_en: Small Single-Mast Coastal Trader
 working_name: SmallSailer01
 former_starter_id: SHIP-0001
-document_version: 1.0.0
+document_version: 2.0.0
 status: REVIEW
 authority: canonical
-last_updated: 2026-08-23
+last_updated: 2026-09-11
 material_card: MAT-001
 current_stage: full_effect_concept
-latest_decision_record: Docs/specs/assets/ships/ShipType_SmallSailer01/decisions/ADR-0009-component-first-hull-validation.md
+latest_decision_record: Docs/specs/assets/ships/ShipType_SmallSailer01/decisions/ADR-0010-cog-dimensions-and-caravel-progression.md
 depends_on:
   - Docs/specs/systems/ship-system/ship-system.md
   - Docs/specs/assets/ships/production-rules.md
@@ -26,14 +26,22 @@ depends_on:
 - 历史原型：Cog，允许架空化调整，不要求复原具体实船；
 - 用途：近海贸易、短程运输、基础探索；
 - 气质：短、宽、厚实，重载倾向，不是细长快船；
-- 船长：15m，`LOCKED`；
+- 船体长度：16m，按用户现有模型更新；不含上层建筑及外伸杆件；
+- 最大船宽：约5.8m；
+- 满载吃水：约2m，暂定，待模型校核；
+- 满载排水量：约65t，暂定，待水下体积校核；
+- 船员：标准14人，最多20人；
+- 帆装：1面横帆、1根横桁；艏斜桅不另加帆面；
+- 火炮：4门轻型火炮，每舷2门；
 - 主桅长度：18m（桅脚至桅顶），`LOCKED`；
-- 船宽、吃水、排水量、船员和航速：`UNSET`。
+- 载货吨位和航速：`UNSET`。排水量包含船体、装备、人员、补给和货物，不等于载货量。
+- 玩家定位：初始船，承担近岸贸易、基础探索和有限自卫。下一艘为 [Caravel](../ShipType_Caravel01/design.md)。
+- 上述数值为游戏设定，不是历史实船测量值；本次不代表重新验收现有3D资产。
 
 ## 2. 整船结构设定
 
 1. 单桅，主桅位于船体纵向中心线；
-2. 单层主甲板；
+2. 一层连续主甲板，纵向水平，下方为货舱；
 3. 一个紧凑货舱口，位于中轴线、主桅艉侧，不与桅座重叠；
 4. 单层木质艉楼，地板与主甲板同层，屋顶为可上人平台；
 5. 一套船内楼梯，紧靠右舷，从主甲板通往艉楼屋顶；
@@ -62,7 +70,7 @@ Deck 是一块独立、简单、可手动缩放的甲板 Mesh。首轮不要求�
 - 炮窗不预制在 Hull 上；
 - 同一炮窗资产可以复用四次；
 - 炮窗模块后续包含可见框/盖板、Blender 布尔 Cutter 和火炮安装锚点；
-- 四个炮窗不等于锁定四门火炮，实际武装数量仍未锁定。
+- 本次设计确定实际武装为4门轻型火炮，每舷2门。
 
 ### 3.4 其他部件
 

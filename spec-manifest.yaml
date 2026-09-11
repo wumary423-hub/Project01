@@ -63,11 +63,11 @@ assets:
     title_zh: 小型单桅沿岸商船
     former_starter_id: SHIP-0001
     design_spec: Docs/specs/assets/ships/ShipType_SmallSailer01/design.md
-    design_version: "1.0.0"
+    design_version: "2.0.0"
     integration_contract: Docs/specs/assets/ships/ShipType_SmallSailer01/integration.yaml
-    integration_contract_version: "1.0.0"
+    integration_contract_version: "2.0.0"
     changelog: Docs/specs/assets/ships/ShipType_SmallSailer01/changelog.md
-    latest_decision_record: Docs/specs/assets/ships/ShipType_SmallSailer01/decisions/ADR-0009-component-first-hull-validation.md
+    latest_decision_record: Docs/specs/assets/ships/ShipType_SmallSailer01/decisions/ADR-0010-cog-dimensions-and-caravel-progression.md
     material_card: MAT-001
     full_effect_concept:
       status: PENDING
@@ -99,3 +99,13 @@ tool_adapters:
     guide: Docs/tool-guides/blender.md
   ue5:
     guide: Docs/tool-guides/ue5.md
+
+# 仅完成设计文稿；程序集成合同尚未定义，不登记为可交付运行时资产。
+design_drafts:
+  - asset_id: ShipType_Caravel01
+    title_zh: 小型双桅卡拉维尔帆船
+    design_spec: Docs/specs/assets/ships/ShipType_Caravel01/design.md
+    design_version: "0.1.0"
+    changelog: Docs/specs/assets/ships/ShipType_Caravel01/changelog.md
+    integration_status: UNSET
+    status: REVIEW

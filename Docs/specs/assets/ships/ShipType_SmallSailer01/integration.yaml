@@ -1,5 +1,5 @@
 schema_version: 3
-contract_version: 1.0.0
+contract_version: 2.0.0
 
 asset:
   asset_id: ShipType_SmallSailer01
@@ -34,9 +34,9 @@ production_workflow:
     - ue5_game_asset
 
 dimensions:
-  length_m: {value: 15, status: LOCKED}
-  beam_m: {value: null, status: UNSET}
-  draft_m: {value: null, status: UNSET}
+  length_m: {value: 16, status: LOCKED, measurement: hull_only_excluding_superstructure_and_projections}
+  beam_m: {value: 5.8, status: REVIEW, approximate: true}
+  draft_m: {value: 2, status: REVIEW, condition: full_load, validation: pending_hydrostatic_check}
   main_mast_length_m:
     value: 18
     status: LOCKED
@@ -79,7 +79,8 @@ modules:
     built_into_hull: false
     boolean_cutter_required: true
     cannon_anchor_required: true
-    installed_cannon_count_locked: false
+    installed_cannon_count_locked: true
+    installed_cannon_count: 4
     filename: SM_SmallSailer01_Gunport.fbx
   stern_superstructure:
     required: true
@@ -129,6 +130,7 @@ ship_layout:
   historical_prototype: "Cog (ship)"
   single_mast: true
   single_main_deck: true
+  main_deck_longitudinally_horizontal: true
   main_cargo_hatch_count: 1
   main_cargo_hatch_alignment: longitudinal_centerline_aft_of_mast
   sternhouse_levels: 1
@@ -186,3 +188,13 @@ forbidden:
   - invent_unapproved_dimensions
   - add_crew_sockets
   - change_locked_ship_length_or_main_mast_length_without_approval
+
+# 游戏设计值；满载排水量不是载货量，尚未完成水静力校核。
+gameplay_design:
+  full_load_displacement_t: {value: 65, status: REVIEW, validation: pending_hydrostatic_check}
+  crew_standard: 14
+  crew_max: 20
+  sail_count: 1
+  sail_type: square
+  cargo_capacity_t: {value: null, status: UNSET}
+  speed_knots: {value: null, status: UNSET}

@@ -29,3 +29,11 @@ assets:
       primary_component: hull
       companion_component: deck
       hull_built_in_gunports: false
+
+design_drafts:
+  - asset_id: ShipType_Caravel01
+    title_zh: 小型双桅卡拉维尔帆船
+    design_spec: Docs/specs/assets/ships/ShipType_Caravel01/design.md
+    material_card: MAT-001
+    status: REVIEW
+    integration_status: UNSET
